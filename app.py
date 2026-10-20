@@ -106,7 +106,12 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 </div>
                 <div>
                     <label class="text-slate-600 dark:text-slate-400 text-[11px] font-bold block mb-1 uppercase tracking-wider">Password</label>
-                    <input type="password" id="login-pass" placeholder="••••••••" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:border-indigo-500">
+                    <div class="relative flex items-center">
+                        <input type="password" id="login-pass" autocomplete="new-password" placeholder="Enter password" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl pl-3.5 pr-10 py-2.5 text-sm font-medium focus:outline-none focus:border-indigo-500">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 text-slate-400 hover:text-slate-200 focus:outline-none">
+                            <i id="pass-toggle-icon" class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
                 <div id="login-error" class="hidden text-xs text-rose-500 font-bold text-center">
                     Incorrect password! Please try again.
@@ -1218,12 +1223,24 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
         setInterval(updateLiveDateTime, 1000);
 
+        function togglePasswordVisibility() {
+            let passInput = document.getElementById('login-pass');
+            let icon = document.getElementById('pass-toggle-icon');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                passInput.type = 'password';
+                icon.className = 'fa-solid fa-eye';
+            }
+        }
+
         function performLogin() {
             let role = document.getElementById('login-role').value;
             let pass = document.getElementById('login-pass').value;
             let err = document.getElementById('login-error');
 
-            if (pass === PASSWORDS[role] || pass === '') {
+            if (pass === PASSWORDS[role]) {
                 currentRole = role;
                 document.getElementById('login-modal').classList.add('hidden');
                 err.classList.add('hidden');
@@ -1863,7 +1880,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let totalVal = products.reduce((sum, p) => sum + (p.cost * p.stock), 0);
             document.getElementById('inv-stock-value').textContent = '₱' + Math.round(totalVal).toLocaleString();
 
-            // Check warning alerts count
             let today = new Date();
             today.setHours(0,0,0,0);
             let alertCount = 0;
