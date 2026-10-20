@@ -469,25 +469,30 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
         <!-- POS TERMINAL TAB -->
         <section id="view-pos" class="hidden space-y-4 relative pb-32">
-            <h2 class="text-lg font-black tracking-wide">POS Terminal</h2>
+            <!-- STICKY CONTROL BAR CONTAINER FOR POS -->
+            <div class="sticky top-[112px] z-30 bg-slate-100/95 dark:bg-obsidianDark/95 backdrop-blur-md py-2 space-y-2 transition-colors">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-black tracking-wide">POS Terminal</h2>
+                </div>
 
-            <div class="relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
-                <input type="text" id="pos-search" oninput="renderPOSGrid()" placeholder="Search products" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl pl-9 pr-4 py-3 text-xs placeholder-slate-400 focus:outline-none focus:border-indigo-500 shadow-inner obsidian-key">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+                    <input type="text" id="pos-search" oninput="renderPOSGrid()" placeholder="Search products" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl pl-9 pr-4 py-3 text-xs placeholder-slate-400 focus:outline-none focus:border-indigo-500 shadow-inner obsidian-key">
+                </div>
+
+                <div class="flex space-x-2 overflow-x-auto no-scrollbar py-1">
+                    <button onclick="filterPOSCategory('All')" id="pos-cat-All" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white whitespace-nowrap obsidian-key">All</button>
+                    <button onclick="filterPOSCategory('Dairy')" id="pos-cat-Dairy" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Dairy</button>
+                    <button onclick="filterPOSCategory('Canned')" id="pos-cat-Canned" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Canned</button>
+                    <button onclick="filterPOSCategory('Drinks')" id="pos-cat-Drinks" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Drinks</button>
+                    <button onclick="filterPOSCategory('Grains')" id="pos-cat-Grains" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Grains</button>
+                    <button onclick="filterPOSCategory('Noodles')" id="pos-cat-Noodles" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Noodles</button>
+                    <button onclick="filterPOSCategory('Snacks')" id="pos-cat-Snacks" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Snacks</button>
+                    <button onclick="filterPOSCategory('Beverages')" id="pos-cat-Beverages" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Beverages</button>
+                </div>
             </div>
 
-            <div class="flex space-x-2 overflow-x-auto no-scrollbar py-1">
-                <button onclick="filterPOSCategory('All')" id="pos-cat-All" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white whitespace-nowrap obsidian-key">All</button>
-                <button onclick="filterPOSCategory('Dairy')" id="pos-cat-Dairy" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Dairy</button>
-                <button onclick="filterPOSCategory('Canned')" id="pos-cat-Canned" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Canned</button>
-                <button onclick="filterPOSCategory('Drinks')" id="pos-cat-Drinks" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Drinks</button>
-                <button onclick="filterPOSCategory('Grains')" id="pos-cat-Grains" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Grains</button>
-                <button onclick="filterPOSCategory('Noodles')" id="pos-cat-Noodles" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Noodles</button>
-                <button onclick="filterPOSCategory('Snacks')" id="pos-cat-Snacks" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Snacks</button>
-                <button onclick="filterPOSCategory('Beverages')" id="pos-cat-Beverages" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Beverages</button>
-            </div>
-
-            <div id="pos-products-grid" class="grid grid-cols-2 gap-3"></div>
+            <div id="pos-products-grid" class="grid grid-cols-2 gap-3 pt-2"></div>
 
             <div class="bg-white dark:bg-obsidianCard border-2 border-indigo-500/50 rounded-3xl p-5 space-y-4 shadow-2xl relative obsidian-key">
                 <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
