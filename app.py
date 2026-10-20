@@ -1170,7 +1170,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
     <script>
         let currentRole = 'Admin';
-        const PASSWORDS = { 'Admin': 'admin123', 'Store Keeper': 'store123' };
+        const PASSWORDS = { 'Admin': '12345bert', 'Store Keeper': 'store123' };
 
         let products = [
             { id: '1', name: 'Bear Brand 33g', category: 'Dairy', cost: 10, margin: 3, price: 13, stock: 10, unit: 'sachet', dateAdded: '2026-09-01', expiryDate: '2027-05-15' },
