@@ -136,7 +136,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 <p class="text-[10px] text-slate-400 font-medium">Official Transaction Receipt</p>
                 <div class="text-[10px] text-slate-400 font-bold pt-1 flex justify-between">
                     <span id="rcpt-id">TX-000</span>
-                    <span id="rcpt-date">2026-10-20</span>
+                    <span id="rcpt-date">2026-10-20 | 00:00:00</span>
                 </div>
             </div>
 
@@ -163,12 +163,12 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             <p class="text-[10px] text-slate-400 italic font-medium">Thank you for shopping with us!</p>
         </div>
 
-        <div class="w-full max-w-sm mt-3 space-y-2">
-            <button onclick="saveReceiptToGallery()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl text-xs obsidian-key shadow-lg flex items-center justify-center gap-2">
-                <i class="fa-solid fa-download"></i> Save to Gallery
+        <div class="w-full max-w-sm mt-3 grid grid-cols-2 gap-2">
+            <button onclick="saveReceiptToGallery()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 px-2 rounded-xl text-[11px] obsidian-key shadow-lg flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-download"></i> Save Gallery
             </button>
-            <button onclick="closeReceiptModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl text-xs obsidian-key shadow-lg flex items-center justify-center gap-2">
-                <i class="fa-solid fa-check"></i> Close Receipt
+            <button onclick="closeReceiptModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 px-2 rounded-xl text-[11px] obsidian-key shadow-lg flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-check"></i> Close
             </button>
         </div>
     </div>
@@ -570,7 +570,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             </div>
 
             <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-5 space-y-4 obsidian-key">
-                <h3 class="font-bold text-sm">Add Item</h3>
+                <h3 class="font-bold text-sm" id="p-form-title">Add Item</h3>
+                <input type="hidden" id="p-edit-id">
                 <div class="flex bg-slate-100 dark:bg-[#12151C] p-1 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder">
                     <button onclick="setPurchaserMode('plan')" id="btn-p-plan" class="flex-1 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key">Plan Item List</button>
                     <button onclick="setPurchaserMode('log')" id="btn-p-log" class="flex-1 py-2 rounded-xl text-xs font-bold text-slate-400">Log Actual Purchase</button>
@@ -582,7 +583,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         <input type="text" id="p-item-name" placeholder="e.g. Itlog, Shampoo, Colgate" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl px-4 py-3">
                     </div>
 
-                    <div id="p-log-details" class="space-y-3 hidden">
+                    <div id="p-log-details" class="space-y-3">
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">TOTAL COST (₱)</label>
@@ -602,6 +603,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                                     <option value="kg">kg</option>
                                     <option value="sacks">sacks</option>
                                     <option value="tray">tray</option>
+                                    <option value="sachet">sachet</option>
                                 </select>
                             </div>
                             <div>
@@ -611,9 +613,12 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         </div>
                     </div>
 
-                    <button onclick="addPurchaserItem()" id="p-submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-2xl text-xs obsidian-key flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-clipboard-list"></i> Add to Planned List
-                    </button>
+                    <div class="flex gap-2">
+                        <button onclick="cancelPurchaserEdit()" id="p-cancel-btn" class="hidden flex-1 bg-slate-200 dark:bg-obsidianBorder font-bold py-3.5 rounded-2xl text-xs obsidian-key">Cancel</button>
+                        <button onclick="addPurchaserItem()" id="p-submit-btn" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-2xl text-xs obsidian-key flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-clipboard-list"></i> Add to Planned List
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -949,7 +954,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             <div class="space-y-3 text-xs">
                 <input type="hidden" id="etx-id">
                 <div>
-                    <label class="block mb-1 font-bold">Date</label>
+                    <label class="block mb-1 font-bold">Date & Time</label>
                     <input type="text" id="etx-date" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5">
                 </div>
                 <div>
@@ -1165,10 +1170,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         let utangFilter = 'balance';
 
         let transactions = [
-            { id: 'TX-1309', date: '2026-10-19', customer: 'Mina', items: 'Coca-Cola 1.5L Bottle x1, Jasmine Rice x1, Kopiko Brown Coffee x1', amount: 142, cogs: 115, cash: 500, change: 358, type: 'Paid' },
-            { id: 'TX-1001', date: '2026-10-20', customer: 'Dikong', items: 'Jasmine Rice (20 kg) x1, Bear Brand 33g x21', amount: 1473, cogs: 1170, cash: 2000, change: 527, type: 'Paid' },
-            { id: 'TX-8813', date: '2026-10-20', customer: 'Fing', items: 'Bear Brand 33g x1, Century Tuna 155g x1, Coca-Cola 1.5L Bottle x1', amount: 123, cogs: 100, cash: 123, change: 0, type: 'Utang' },
-            { id: 'e1', date: '2026-10-20', customer: 'Store Expense', items: 'Vegetables', amount: 150, cogs: 0, cash: 150, change: 0, type: 'Expense' }
+            { id: 'TX-1309', date: '2026-10-19 14:20:00', customer: 'Mina', items: 'Coca-Cola 1.5L Bottle x1, Jasmine Rice x1, Kopiko Brown Coffee x1', amount: 142, cogs: 115, cash: 500, change: 358, type: 'Paid' },
+            { id: 'TX-1001', date: '2026-10-20 09:15:00', customer: 'Dikong', items: 'Jasmine Rice (20 kg) x1, Bear Brand 33g x21', amount: 1473, cogs: 1170, cash: 2000, change: 527, type: 'Paid' },
+            { id: 'TX-8813', date: '2026-10-20 11:45:00', customer: 'Fing', items: 'Bear Brand 33g x1, Century Tuna 155g x1, Coca-Cola 1.5L Bottle x1', amount: 123, cogs: 100, cash: 123, change: 0, type: 'Utang' },
+            { id: 'e1', date: '2026-10-20 12:00:00', customer: 'Store Expense', items: 'Vegetables', amount: 150, cogs: 0, cash: 150, change: 0, type: 'Expense' }
         ];
 
         function updateLiveDateTime() {
@@ -1486,14 +1491,15 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let amount = parseFloat(document.getElementById('ae-amount').value) || 0;
             if (!desc || amount <= 0) return;
 
-            let todayDate = new Date().toISOString().split('T')[0];
+            let now = new Date();
+            let todayDate = now.toISOString().split('T')[0] + ' ' + now.toTimeString().split(' ')[0];
 
             if (id) {
                 let e = expenses.find(item => item.id === id);
                 if (e) { e.description = desc; e.amount = amount; }
             } else {
                 let newId = 'e-' + Date.now();
-                expenses.push({ id: newId, description: desc, amount, date: todayDate });
+                expenses.push({ id: newId, description: desc, amount, date: todayDate.split(' ')[0] });
                 transactions.unshift({
                     id: newId, date: todayDate, customer: 'Store Expense', items: desc, amount: amount, cogs: 0, cash: amount, change: 0, type: 'Expense'
                 });
@@ -1556,37 +1562,111 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let btnPlan = document.getElementById('btn-p-plan');
             let btnLog = document.getElementById('btn-p-log');
             let submitBtn = document.getElementById('p-submit-btn');
-            let logDetails = document.getElementById('p-log-details');
 
             if (mode === 'plan') {
                 btnPlan.className = "flex-1 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key";
                 btnLog.className = "flex-1 py-2 rounded-xl text-xs font-bold text-slate-400 obsidian-key";
                 submitBtn.innerHTML = '<i class="fa-solid fa-clipboard-list"></i> Add to Planned List';
-                logDetails.classList.add('hidden');
             } else {
                 btnLog.className = "flex-1 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key";
                 btnPlan.className = "flex-1 py-2 rounded-xl text-xs font-bold text-slate-400 obsidian-key";
                 submitBtn.innerHTML = '<i class="fa-solid fa-cart-shopping"></i> Add & Save Purchase';
-                logDetails.classList.remove('hidden');
             }
         }
 
         function addPurchaserItem() {
+            let editId = document.getElementById('p-edit-id').value;
             let name = document.getElementById('p-item-name').value.trim();
             if (!name) return;
 
-            let amount = purchaserMode === 'plan' ? 0 : (parseFloat(document.getElementById('p-cost').value) || 0);
-            let qty = purchaserMode === 'plan' ? 0 : (parseFloat(document.getElementById('p-qty').value) || 1);
-            let unit = purchaserMode === 'plan' ? 'pcs' : document.getElementById('p-unit').value;
-            let margin = purchaserMode === 'plan' ? 20 : (parseFloat(document.getElementById('p-margin').value) || 20);
+            let amount = parseFloat(document.getElementById('p-cost').value) || 0;
+            let qty = parseFloat(document.getElementById('p-qty').value) || 1;
+            let unit = document.getElementById('p-unit').value;
+            let margin = parseFloat(document.getElementById('p-margin').value) || 20;
+            let status = purchaserMode === 'plan' && !editId ? 'To buy' : 'Bought';
 
-            purchaserItems.push({
-                id: 'p-' + Date.now(), name, status: purchaserMode === 'plan' ? 'To buy' : 'Bought', amount, qty, unit, margin
-            });
+            if (editId) {
+                let item = purchaserItems.find(i => i.id === editId);
+                if (item) {
+                    item.name = name;
+                    item.amount = amount;
+                    item.qty = qty;
+                    item.unit = unit;
+                    item.margin = margin;
+                }
+                cancelPurchaserEdit();
+                showToast("Purchaser item updated!");
+            } else {
+                purchaserItems.push({
+                    id: 'p-' + Date.now(), name, status, amount, qty, unit, margin
+                });
+                showToast("Item added!");
+            }
 
             document.getElementById('p-item-name').value = '';
             renderPurchaser();
-            showToast("Item added!");
+        }
+
+        function editPurchaserItem(id) {
+            let item = purchaserItems.find(i => i.id === id);
+            if (!item) return;
+
+            document.getElementById('p-edit-id').value = item.id;
+            document.getElementById('p-item-name').value = item.name;
+            document.getElementById('p-cost').value = item.amount;
+            document.getElementById('p-qty').value = item.qty;
+            document.getElementById('p-unit').value = item.unit;
+            document.getElementById('p-margin').value = item.margin;
+
+            document.getElementById('p-form-title').textContent = 'Edit Purchaser Item';
+            document.getElementById('p-submit-btn').innerHTML = '<i class="fa-solid fa-check"></i> Save Changes';
+            document.getElementById('p-cancel-btn').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelPurchaserEdit() {
+            document.getElementById('p-edit-id').value = '';
+            document.getElementById('p-item-name').value = '';
+            document.getElementById('p-cost').value = '150';
+            document.getElementById('p-qty').value = '1';
+            document.getElementById('p-unit').value = 'pcs';
+            document.getElementById('p-margin').value = '20';
+
+            document.getElementById('p-form-title').textContent = 'Add Item';
+            document.getElementById('p-submit-btn').innerHTML = '<i class="fa-solid fa-clipboard-list"></i> Add to Planned List';
+            document.getElementById('p-cancel-btn').classList.add('hidden');
+        }
+
+        function deletePurchaserItem(id) {
+            if (confirm("Delete this purchaser item?")) {
+                purchaserItems = purchaserItems.filter(i => i.id !== id);
+                renderPurchaser();
+                showToast("Purchaser item deleted.");
+            }
+        }
+
+        function importPurchaserToInventory(id) {
+            let item = purchaserItems.find(i => i.id === id);
+            if (!item) return;
+
+            let unitCost = item.qty > 0 ? (item.amount / item.qty) : item.amount;
+            let marginVal = unitCost * (item.margin / 100);
+            let sellingPrice = unitCost + marginVal;
+
+            products.push({
+                id: Date.now().toString(),
+                name: item.name,
+                category: 'General',
+                cost: Math.round(unitCost),
+                margin: Math.round(marginVal),
+                price: Math.round(sellingPrice),
+                stock: item.qty || 1,
+                unit: item.unit || 'pcs'
+            });
+
+            renderInventory();
+            renderPOSGrid();
+            showToast(`Imported ${item.name} to inventory!`);
         }
 
         function filterPurchaser(filter) {
@@ -1621,8 +1701,22 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 html += `
                     <div class="p-4 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl space-y-2 text-xs obsidian-key">
                         <div class="flex justify-between items-center">
-                            <div><span class="font-bold text-sm">${i.name}</span><div class="mt-1"><span class="px-2 py-0.5 rounded text-[10px] font-black ${i.status === 'Bought' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${i.status}</span></div></div>
-                            <div class="text-right"><span class="font-black text-emerald-400 text-sm">₱${i.amount.toLocaleString()}</span><p class="text-[10px] text-slate-400">${i.qty} ${i.unit}</p></div>
+                            <div>
+                                <span class="font-bold text-sm">${i.name}</span>
+                                <div class="mt-1 flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-black ${i.status === 'Bought' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${i.status}</span>
+                                    <span class="text-[10px] text-slate-400">Margin: ${i.margin}%</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="font-black text-emerald-400 text-sm">₱${i.amount.toLocaleString()}</span>
+                                <p class="text-[10px] text-slate-400">${i.qty} ${i.unit}</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-obsidianBorder/60">
+                            ${i.status === 'Bought' ? `<button onclick="importPurchaserToInventory('${i.id}')" class="bg-emerald-500/10 text-emerald-400 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key"><i class="fa-solid fa-file-import mr-1"></i> Import</button>` : ''}
+                            <button onclick="editPurchaserItem('${i.id}')" class="bg-indigo-500/10 text-indigo-400 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Edit</button>
+                            <button onclick="deletePurchaserItem('${i.id}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Delete</button>
                         </div>
                     </div>`;
             });
@@ -1737,7 +1831,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             prod.stock = Math.max(0, prod.stock - kilos);
 
             let txId = 'TX-' + Math.floor(1000 + Math.random() * 9000);
-            let todayDate = new Date().toISOString().split('T')[0];
+            let now = new Date();
+            let todayDate = now.toISOString().split('T')[0] + ' ' + now.toTimeString().split(' ')[0];
             let itemDesc = `${prod.name} (${kilos.toFixed(2)} ${prod.unit})`;
 
             transactions.unshift({
@@ -1989,11 +2084,19 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         function renderTransactions() {
             let list = document.getElementById('full-transactions-list');
             let query = (document.getElementById('tx-search')?.value || '').toLowerCase();
+            let dateFrom = document.getElementById('tx-date-from')?.value || '';
+            let dateTo = document.getElementById('tx-date-to')?.value || '';
+
             let filtered = transactions.filter(t => {
                 if (currentTxFilter === 'Sales' && t.type !== 'Paid') return false;
                 if (currentTxFilter === 'Utang' && t.type !== 'Utang') return false;
                 if (currentTxFilter === 'Expenses' && t.type !== 'Expense') return false;
                 if (query && !t.customer.toLowerCase().includes(query) && !t.items.toLowerCase().includes(query)) return false;
+                
+                let txDateOnly = t.date.split(' ')[0];
+                if (dateFrom && txDateOnly < dateFrom) return false;
+                if (dateTo && txDateOnly > dateTo) return false;
+
                 return true;
             });
 
@@ -2056,7 +2159,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
         function renderDashboard() {
             let todayDate = new Date().toISOString().split('T')[0];
-            let todaySales = transactions.filter(t => t.date === todayDate && t.type !== 'Expense');
+            let todaySales = transactions.filter(t => t.date.startsWith(todayDate) && t.type !== 'Expense');
             let todayExpenses = expenses.filter(e => e.date === todayDate);
 
             let revToday = todaySales.reduce((sum, s) => sum + s.amount, 0);
@@ -2231,7 +2334,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let customer = document.getElementById('pos-customer-input').value.trim() || 'Walk-in Customer';
             let itemSummary = keys.map(k => `${cart[k].name} x${cart[k].qty}`).join(', ');
             let txId = 'TX-' + Math.floor(1000 + Math.random() * 9000);
-            let todayDate = new Date().toISOString().split('T')[0];
+            
+            let now = new Date();
+            let todayDate = now.toISOString().split('T')[0] + ' ' + now.toTimeString().split(' ')[0];
 
             transactions.unshift({
                 id: txId, date: todayDate, customer, items: itemSummary, amount: total, cogs: totalCogs, cash, change, type
