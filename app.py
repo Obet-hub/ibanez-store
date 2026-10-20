@@ -6,9 +6,10 @@ import threading
 import socket
 import json
 import time
+import os
 from datetime import datetime
 
-PORT = 8090
+PORT = int(os.environ.get("PORT", 8090))
 
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -99,13 +100,13 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 <div>
                     <label class="text-slate-600 dark:text-slate-400 text-[11px] font-bold block mb-1 uppercase tracking-wider">Username / Role</label>
                     <select id="login-role" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:border-indigo-500">
-                        <option value="Admin">Admin (admin)</option>
-                        <option value="Store Keeper">Store Keeper (keeper)</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Store Keeper">Store Keeper</option>
                     </select>
                 </div>
                 <div>
                     <label class="text-slate-600 dark:text-slate-400 text-[11px] font-bold block mb-1 uppercase tracking-wider">Password</label>
-                    <input type="password" id="login-pass" placeholder="Enter password (e.g. admin123)" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:border-indigo-500">
+                    <input type="password" id="login-pass" placeholder="Enter password" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:border-indigo-500">
                 </div>
                 <div id="login-error" class="hidden text-xs text-rose-500 font-bold text-center">
                     Incorrect password! Please try again.
@@ -872,7 +873,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         </section>
 
         <!-- USERS MANAGEMENT TAB (ADMIN ONLY) -->
-        <section id="view-users" class="hidden space-y-4">
+        <section id="view-users" class="hidden space-y-4 admin-only">
             <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-5 space-y-4 obsidian-key">
                 <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
                     <div>
@@ -934,7 +935,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <i class="fa-solid fa-chevron-right text-slate-400"></i>
                 </button>
 
-                <button onclick="openAddProductModal(); closeQuickActionModal();" class="w-full bg-slate-100 dark:bg-[#12151C] p-3.5 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder flex items-center justify-between text-left obsidian-key group">
+                <button onclick="openAddProductModal(); closeQuickActionModal();" class="admin-only w-full bg-slate-100 dark:bg-[#12151C] p-3.5 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder flex items-center justify-between text-left obsidian-key group">
                     <div class="flex items-center gap-3.5">
                         <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-sm"><i class="fa-solid fa-tag"></i></div>
                         <div><span class="font-bold text-sm block">Add Product</span><span class="text-[11px] text-slate-400">New item in inventory</span></div>
@@ -942,7 +943,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <i class="fa-solid fa-chevron-right text-slate-400"></i>
                 </button>
 
-                <button onclick="openAddExpenseModal(); closeQuickActionModal();" class="w-full bg-slate-100 dark:bg-[#12151C] p-3.5 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder flex items-center justify-between text-left obsidian-key group">
+                <button onclick="openAddExpenseModal(); closeQuickActionModal();" class="admin-only w-full bg-slate-100 dark:bg-[#12151C] p-3.5 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder flex items-center justify-between text-left obsidian-key group">
                     <div class="flex items-center gap-3.5">
                         <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-sm"><i class="fa-solid fa-wallet"></i></div>
                         <div><span class="font-bold text-sm block">Add Expense</span><span class="text-[11px] text-slate-400">Rent, bills, salary...</span></div>
@@ -968,7 +969,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 </div>
                 <div>
                     <label class="block mb-1 font-bold">Password Key</label>
-                    <input type="password" id="um-pass" placeholder="Enter secure password" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2.5 font-bold">
+                    <input type="password" id="um-pass" placeholder="Enter password" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2.5 font-bold">
                 </div>
             </div>
             <div class="flex gap-2 pt-2">
@@ -1237,7 +1238,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderPurchaser();
             renderDashboard();
             renderPLReport();
-            renderUsers();
+            if (currentRole === 'Admin') renderUsers();
         }
 
         function toggleTheme() {
@@ -1268,7 +1269,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             
             if (tab === 'pl') renderPLReport();
             if (tab === 'dashboard') renderDashboard();
-            if (tab === 'users') renderUsers();
+            if (tab === 'users' && currentRole === 'Admin') renderUsers();
         }
 
         function openQuickActionModal() { document.getElementById('quick-action-modal').classList.remove('hidden'); }
@@ -1276,6 +1277,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
         /* USER MANAGEMENT FUNCTIONS */
         function renderUsers() {
+            if (currentRole !== 'Admin') return;
             let container = document.getElementById('users-list-container');
             let keys = Object.keys(PASSWORDS);
             let html = '';
@@ -1300,6 +1302,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function openAddUserModal() {
+            if (currentRole !== 'Admin') return showToast("Admin access required");
             document.getElementById('um-title').textContent = 'Add User Account';
             document.getElementById('um-original-role').value = '';
             document.getElementById('um-role').value = '';
@@ -1308,6 +1311,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function openEditUserModal(role) {
+            if (currentRole !== 'Admin') return showToast("Admin access required");
             document.getElementById('um-title').textContent = 'Edit User Account';
             document.getElementById('um-original-role').value = role;
             document.getElementById('um-role').value = role;
@@ -1320,6 +1324,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function saveUser() {
+            if (currentRole !== 'Admin') return showToast("Admin access required");
             let orig = document.getElementById('um-original-role').value;
             let role = document.getElementById('um-role').value.trim();
             let pass = document.getElementById('um-pass').value.trim();
@@ -1336,6 +1341,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function deleteUser(role) {
+            if (currentRole !== 'Admin') return showToast("Admin access required");
             if (role === 'Admin') return showToast("Cannot delete primary Admin");
             if (confirm(`Delete user account '${role}'?`)) {
                 delete PASSWORDS[role];
