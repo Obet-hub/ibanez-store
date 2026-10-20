@@ -59,7 +59,7 @@ def init_db():
         )
     ''')
     
-    # Insert default users if table is empty
+    # Insert default users if empty
     cursor.execute("SELECT COUNT(*) FROM users")
     if cursor.fetchone()[0] == 0:
         default_users = [
@@ -128,6 +128,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             <!-- NAVIGATION TABS -->
             <div class="max-w-7xl mx-auto px-4 flex gap-2 overflow-x-auto pb-2 scrollbar-none">
                 <button onclick="switchTab('pos')" id="tab-pos" class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 text-white transition">POS</button>
+                <button onclick="switchTab('calc')" id="tab-calc" class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700 transition">Calculators</button>
                 <button onclick="switchTab('inventory')" id="tab-inventory" class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700 transition">Inventory</button>
                 <button onclick="switchTab('ledger')" id="tab-ledger" class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700 transition">Ledger & P&L</button>
                 <button onclick="switchTab('users')" id="tab-users" class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700 transition">Users</button>
@@ -160,6 +161,59 @@ HTML_CONTENT = """<!DOCTYPE html>
                                 <span id="change-due" class="font-semibold text-emerald-400">₱0.00</span>
                             </div>
                             <button onclick="checkout()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition shadow-lg">Complete Sale</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CALCULATORS TAB -->
+            <section id="section-calc" class="hidden space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Rice Per Kilo Calculator -->
+                    <div class="bg-slate-800/50 border border-slate-800 p-5 rounded-xl space-y-4">
+                        <h3 class="font-bold text-lg text-indigo-300 border-b border-slate-700 pb-2">🍚 Rice Per-Kilo Margin Calculator</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-xs text-slate-400">Sack Cost (₱)</label>
+                                <input type="number" id="rice-cost" value="1950" oninput="calcRice()" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                            </div>
+                            <div>
+                                <label class="text-xs text-slate-400">Sack Weight (kg)</label>
+                                <input type="number" id="rice-weight" value="50" oninput="calcRice()" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                            </div>
+                            <div>
+                                <label class="text-xs text-slate-400">Target Selling Price / kg (₱)</label>
+                                <input type="number" id="rice-sell" value="48" oninput="calcRice()" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                            </div>
+                        </div>
+                        <div class="bg-slate-900 p-4 rounded-lg space-y-2 border border-slate-800 text-sm">
+                            <div class="flex justify-between"><span>Base Cost / kg:</span><span id="rice-cost-kg" class="font-bold text-slate-200">₱0.00</span></div>
+                            <div class="flex justify-between"><span>Profit / kg:</span><span id="rice-profit-kg" class="font-bold text-emerald-400">₱0.00</span></div>
+                            <div class="flex justify-between border-t border-slate-800 pt-2"><span>Total Sack Profit:</span><span id="rice-profit-sack" class="font-bold text-indigo-400">₱0.00</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Bulk Packaging Calculator -->
+                    <div class="bg-slate-800/50 border border-slate-800 p-5 rounded-xl space-y-4">
+                        <h3 class="font-bold text-lg text-indigo-300 border-b border-slate-700 pb-2">📦 Bulk Box & Reseller Pricing</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-xs text-slate-400">Bulk Box Cost (₱)</label>
+                                <input type="number" id="bulk-cost" value="1200" oninput="calcBulk()" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                            </div>
+                            <div>
+                                <label class="text-xs text-slate-400">Units Per Box</label>
+                                <input type="number" id="bulk-units" value="24" oninput="calcBulk()" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                            </div>
+                            <div>
+                                <label class="text-xs text-slate-400">Desired Margin (%)</label>
+                                <input type="number" id="bulk-margin" value="20" oninput="calcBulk()" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                            </div>
+                        </div>
+                        <div class="bg-slate-900 p-4 rounded-lg space-y-2 border border-slate-800 text-sm">
+                            <div class="flex justify-between"><span>Unit Cost:</span><span id="bulk-unit-cost" class="font-bold text-slate-200">₱0.00</span></div>
+                            <div class="flex justify-between"><span>Suggested Retail Price:</span><span id="bulk-srp" class="font-bold text-emerald-400">₱0.00</span></div>
+                            <div class="flex justify-between border-t border-slate-800 pt-2"><span>Total Box Profit:</span><span id="bulk-total-profit" class="font-bold text-indigo-400">₱0.00</span></div>
                         </div>
                     </div>
                 </div>
@@ -310,6 +364,8 @@ HTML_CONTENT = """<!DOCTYPE html>
                     document.getElementById('add-item-card').style.display = 'block';
                 }
                 loadData();
+                calcRice();
+                calcBulk();
             } else {
                 document.getElementById('login-error').classList.remove('hidden');
             }
@@ -324,7 +380,7 @@ HTML_CONTENT = """<!DOCTYPE html>
         }
 
         function switchTab(tab) {
-            ['pos', 'inventory', 'ledger', 'users'].forEach(t => {
+            ['pos', 'calc', 'inventory', 'ledger', 'users'].forEach(t => {
                 document.getElementById(`section-${t}`).classList.add('hidden');
                 document.getElementById(`tab-${t}`).classList.remove('bg-indigo-600', 'text-white');
                 document.getElementById(`tab-${t}`).classList.add('bg-slate-800', 'text-slate-400');
@@ -432,6 +488,34 @@ HTML_CONTENT = """<!DOCTYPE html>
             }
         }
 
+        function calcRice() {
+            const cost = parseFloat(document.getElementById('rice-cost').value) || 0;
+            const weight = parseFloat(document.getElementById('rice-weight').value) || 1;
+            const sell = parseFloat(document.getElementById('rice-sell').value) || 0;
+            
+            const costKg = cost / weight;
+            const profitKg = sell - costKg;
+            const totalProfit = profitKg * weight;
+
+            document.getElementById('rice-cost-kg').innerText = `₱${costKg.toFixed(2)}`;
+            document.getElementById('rice-profit-kg').innerText = `₱${profitKg.toFixed(2)}`;
+            document.getElementById('rice-profit-sack').innerText = `₱${totalProfit.toFixed(2)}`;
+        }
+
+        function calcBulk() {
+            const cost = parseFloat(document.getElementById('bulk-cost').value) || 0;
+            const units = parseFloat(document.getElementById('bulk-units').value) || 1;
+            const margin = parseFloat(document.getElementById('bulk-margin').value) || 0;
+
+            const unitCost = cost / units;
+            const srp = unitCost * (1 + (margin / 100));
+            const totalProfit = (srp - unitCost) * units;
+
+            document.getElementById('bulk-unit-cost').innerText = `₱${unitCost.toFixed(2)}`;
+            document.getElementById('bulk-srp').innerText = `₱${srp.toFixed(2)}`;
+            document.getElementById('bulk-total-profit').innerText = `₱${totalProfit.toFixed(2)}`;
+        }
+
         function renderInventory() {
             const tbody = document.getElementById('inventory-table-body');
             tbody.innerHTML = inventory.map(item => `
@@ -449,7 +533,6 @@ HTML_CONTENT = """<!DOCTYPE html>
                 </tr>
             `).join('');
             
-            // Hide action columns or buttons for non-admins
             if(currentUser && currentUser.role !== 'admin') {
                 document.querySelectorAll('.action-col').forEach(el => el.style.display = 'none');
             } else {
