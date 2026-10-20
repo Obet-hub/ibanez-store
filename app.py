@@ -6,10 +6,9 @@ import threading
 import socket
 import json
 import time
-import os
 from datetime import datetime
 
-PORT = int(os.environ.get("PORT", 8090))
+PORT = 8090
 
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -31,6 +30,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ibañez Store - Obsidian Vault POS & Ledger</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -98,13 +98,15 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             </div>
             <div class="space-y-3.5 text-left">
                 <div>
-                    <label class="text-slate-600 dark:text-slate-400 text-[11px] font-bold block mb-1 uppercase tracking-wider">Username / Role</label>
+                    <label class="text-slate-600 dark:text-slate-400 text-[11px] font-bold block mb-1 uppercase tracking-wider">Select Role</label>
                     <select id="login-role" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:border-indigo-500">
+                        <option value="Admin">Admin / Vault Owner</option>
+                        <option value="Store Keeper">Store Keeper</option>
                     </select>
                 </div>
                 <div>
                     <label class="text-slate-600 dark:text-slate-400 text-[11px] font-bold block mb-1 uppercase tracking-wider">Password</label>
-                    <input type="password" id="login-pass" placeholder="Enter password" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:border-indigo-500">
+                    <input type="password" id="login-pass" placeholder="••••••••" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:border-indigo-500">
                 </div>
                 <div id="login-error" class="hidden text-xs text-rose-500 font-bold text-center">
                     Incorrect password! Please try again.
@@ -125,44 +127,51 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
     <!-- CHECKOUT & TRANSACTION RECEIPT MODAL -->
     <div id="receipt-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-obsidianCard border-2 border-indigo-500/50 rounded-3xl w-full max-w-sm p-6 space-y-4 shadow-2xl obsidian-key text-center">
-            <div class="border-b-2 border-dashed border-slate-300 dark:border-obsidianBorder pb-3 space-y-1">
-                <div class="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto text-xl shadow-md">
-                    <i class="fa-solid fa-store"></i>
+        <div class="w-full max-w-sm space-y-3">
+            <div id="receipt-card-content" class="bg-white dark:bg-obsidianCard border-2 border-indigo-500/50 rounded-3xl p-6 space-y-4 shadow-2xl obsidian-key text-center">
+                <div class="border-b-2 border-dashed border-slate-300 dark:border-obsidianBorder pb-3 space-y-1">
+                    <div class="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto text-xl shadow-md">
+                        <i class="fa-solid fa-store"></i>
+                    </div>
+                    <h3 class="text-lg font-black tracking-wider uppercase text-indigo-400">Ibañez Store</h3>
+                    <p class="text-[10px] text-slate-400 font-medium">Official Transaction Receipt</p>
+                    <div class="text-[10px] text-slate-400 font-bold pt-1 flex justify-between">
+                        <span id="rcpt-id">TX-000</span>
+                        <span id="rcpt-date">2026-10-20</span>
+                    </div>
                 </div>
-                <h3 class="text-lg font-black tracking-wider uppercase text-indigo-400">Ibañez Store</h3>
-                <p class="text-[10px] text-slate-400 font-medium">Official Transaction Receipt</p>
-                <div class="text-[10px] text-slate-400 font-bold pt-1 flex justify-between">
-                    <span id="rcpt-id">TX-000</span>
-                    <span id="rcpt-date">2026-10-20</span>
+
+                <div class="text-left bg-slate-100 dark:bg-[#12151C] p-2.5 rounded-xl border border-slate-300 dark:border-obsidianBorder flex justify-between items-center text-xs">
+                    <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Customer:</span>
+                    <span class="font-black text-indigo-400" id="rcpt-customer">Walk-in Customer</span>
                 </div>
-            </div>
 
-            <div class="text-left bg-slate-100 dark:bg-[#12151C] p-2.5 rounded-xl border border-slate-300 dark:border-obsidianBorder flex justify-between items-center text-xs">
-                <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Customer:</span>
-                <span class="font-black text-indigo-400" id="rcpt-customer">Walk-in Customer</span>
-            </div>
-
-            <div class="space-y-2 text-xs text-left max-h-56 overflow-y-auto pr-1">
-                <div class="flex justify-between font-black text-[10px] text-slate-400 border-b border-slate-200 dark:border-obsidianBorder pb-1 uppercase">
-                    <span>ITEMS & DESCRIPTION</span>
-                    <span class="text-right">AMOUNT</span>
+                <div class="space-y-2 text-xs text-left max-h-48 overflow-y-auto pr-1">
+                    <div class="flex justify-between font-black text-[10px] text-slate-400 border-b border-slate-200 dark:border-obsidianBorder pb-1 uppercase">
+                        <span>ITEMS & DESCRIPTION</span>
+                        <span class="text-right">AMOUNT</span>
+                    </div>
+                    <div id="rcpt-items-breakdown" class="space-y-1.5 font-medium"></div>
                 </div>
-                <div id="rcpt-items-breakdown" class="space-y-1.5 font-medium"></div>
+
+                <div class="bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl p-4 space-y-2 text-xs text-left">
+                    <div class="flex justify-between"><span class="text-slate-400 font-bold">Payment Method:</span><span class="font-black text-emerald-400" id="rcpt-type">Paid (Cash)</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400 font-bold">Total Bill:</span><span class="font-black text-base" id="rcpt-total">₱0</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400 font-bold">Cash Received:</span><span class="font-bold text-indigo-400" id="rcpt-cash">₱0</span></div>
+                    <div class="flex justify-between pt-2 border-t border-dashed border-slate-300 dark:border-obsidianBorder"><span class="font-black text-slate-300">Change Due:</span><span class="font-black text-lg text-emerald-400" id="rcpt-change">₱0</span></div>
+                </div>
+
+                <p class="text-[10px] text-slate-400 italic font-medium">Thank you for shopping with us!</p>
             </div>
 
-            <div class="bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl p-4 space-y-2 text-xs text-left">
-                <div class="flex justify-between"><span class="text-slate-400 font-bold">Payment Method:</span><span class="font-black text-emerald-400" id="rcpt-type">Paid (Cash)</span></div>
-                <div class="flex justify-between"><span class="text-slate-400 font-bold">Total Bill:</span><span class="font-black text-base" id="rcpt-total">₱0</span></div>
-                <div class="flex justify-between"><span class="text-slate-400 font-bold">Cash Received:</span><span class="font-bold text-indigo-400" id="rcpt-cash">₱0</span></div>
-                <div class="flex justify-between pt-2 border-t border-dashed border-slate-300 dark:border-obsidianBorder"><span class="font-black text-slate-300">Change Due:</span><span class="font-black text-lg text-emerald-400" id="rcpt-change">₱0</span></div>
+            <div class="space-y-2 pt-1">
+                <button onclick="saveReceiptToGallery()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl text-xs obsidian-key shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-download"></i> Save to Gallery
+                </button>
+                <button onclick="closeReceiptModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl text-xs obsidian-key shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-check"></i> Close Receipt
+                </button>
             </div>
-
-            <p class="text-[10px] text-slate-400 italic font-medium">Thank you for shopping with us!</p>
-
-            <button onclick="closeReceiptModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl text-xs obsidian-key shadow-lg flex items-center justify-center gap-2">
-                <i class="fa-solid fa-check"></i> Close Receipt
-            </button>
         </div>
     </div>
 
@@ -347,7 +356,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             <button onclick="switchTab('utang')" id="tab-btn-utang" class="nav-btn text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Utang</button>
             <button onclick="switchTab('breakeven')" id="tab-btn-breakeven" class="nav-btn text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Break-Even</button>
             <button onclick="switchTab('pl')" id="tab-btn-pl" class="nav-btn text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400"><i class="fa-solid fa-chart-line mr-1"></i> P&L</button>
-            <button onclick="switchTab('users')" id="tab-btn-users" class="nav-btn admin-only text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400"><i class="fa-solid fa-users mr-1"></i> Users</button>
         </nav>
     </div>
 
@@ -692,7 +700,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 </div>
 
                 <div id="inventory-list" class="space-y-3 pt-1"></div>
-                <button id="add-prod-btn" onclick="openAddProductModal()" class="admin-only w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-2xl text-xs obsidian-key flex items-center justify-center gap-2 shadow-lg">
+                <button id="add-prod-btn" onclick="openAddProductModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-2xl text-xs obsidian-key flex items-center justify-center gap-2 shadow-lg">
                     <i class="fa-solid fa-plus"></i> Add Product
                 </button>
             </div>
@@ -714,7 +722,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 </div>
             </div>
             <div id="expenses-list-container" class="space-y-2.5"></div>
-            <button id="add-exp-btn" onclick="openAddExpenseModal()" class="admin-only w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-2xl text-xs obsidian-key flex items-center justify-center gap-2 shadow-lg">
+            <button id="add-exp-btn" onclick="openAddExpenseModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-2xl text-xs obsidian-key flex items-center justify-center gap-2 shadow-lg">
                 <i class="fa-solid fa-plus"></i> Add Expense
             </button>
         </section>
@@ -870,45 +878,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             </div>
         </section>
 
-        <!-- USERS MANAGEMENT TAB (ADMIN ONLY) -->
-        <section id="view-users" class="hidden space-y-4 admin-only">
-            <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-5 space-y-4 obsidian-key">
-                <!-- ADMIN EDIT OWN PROFILE CARD -->
-                <div class="p-4 bg-indigo-950/30 border-2 border-indigo-500/40 rounded-2xl space-y-3 obsidian-key">
-                    <h3 class="font-bold text-sm text-indigo-400 flex items-center gap-2">
-                        <i class="fa-solid fa-user-shield"></i> Change Admin Credentials
-                    </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                        <div>
-                            <label class="block mb-1 font-bold text-slate-400">Admin Username</label>
-                            <input type="text" id="admin-new-username" value="Admin" class="w-full bg-white dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
-                        </div>
-                        <div>
-                            <label class="block mb-1 font-bold text-slate-400">New Password</label>
-                            <input type="password" id="admin-new-password" placeholder="Enter password" class="w-full bg-white dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
-                        </div>
-                    </div>
-                    <button onclick="updateAdminCredentials()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs obsidian-key shadow-lg">
-                        Update Admin Credentials
-                    </button>
-                </div>
-
-                <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder pt-2">
-                    <div>
-                        <h2 class="font-bold text-base flex items-center gap-2">
-                            <i class="fa-solid fa-users text-indigo-400"></i> Store Keeper Accounts & Passwords
-                        </h2>
-                        <p class="text-xs text-slate-400 mt-1">Manage secondary logins and security keys.</p>
-                    </div>
-                    <button onclick="openAddUserModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3.5 py-2 rounded-xl text-xs obsidian-key flex items-center gap-1.5 shadow-lg">
-                        <i class="fa-solid fa-user-plus"></i> Add User
-                    </button>
-                </div>
-
-                <div id="users-list-container" class="space-y-3 pt-1"></div>
-            </div>
-        </section>
-
     </main>
 
     <!-- QUICK ACTIONS MODAL -->
@@ -953,7 +922,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <i class="fa-solid fa-chevron-right text-slate-400"></i>
                 </button>
 
-                <button onclick="openAddProductModal(); closeQuickActionModal();" class="admin-only w-full bg-slate-100 dark:bg-[#12151C] p-3.5 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder flex items-center justify-between text-left obsidian-key group">
+                <button onclick="openAddProductModal(); closeQuickActionModal();" class="w-full bg-slate-100 dark:bg-[#12151C] p-3.5 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder flex items-center justify-between text-left obsidian-key group">
                     <div class="flex items-center gap-3.5">
                         <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-sm"><i class="fa-solid fa-tag"></i></div>
                         <div><span class="font-bold text-sm block">Add Product</span><span class="text-[11px] text-slate-400">New item in inventory</span></div>
@@ -961,38 +930,13 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <i class="fa-solid fa-chevron-right text-slate-400"></i>
                 </button>
 
-                <button onclick="openAddExpenseModal(); closeQuickActionModal();" class="admin-only w-full bg-slate-100 dark:bg-[#12151C] p-3.5 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder flex items-center justify-between text-left obsidian-key group">
+                <button onclick="openAddExpenseModal(); closeQuickActionModal();" class="w-full bg-slate-100 dark:bg-[#12151C] p-3.5 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder flex items-center justify-between text-left obsidian-key group">
                     <div class="flex items-center gap-3.5">
                         <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-sm"><i class="fa-solid fa-wallet"></i></div>
                         <div><span class="font-bold text-sm block">Add Expense</span><span class="text-[11px] text-slate-400">Rent, bills, salary...</span></div>
                     </div>
                     <i class="fa-solid fa-chevron-right text-slate-400"></i>
                 </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ADD / EDIT USER MODAL -->
-    <div id="user-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl obsidian-key">
-            <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
-                <h3 class="font-bold text-base" id="um-title">Add User Account</h3>
-                <button onclick="closeUserModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-base"></i></button>
-            </div>
-            <div class="space-y-3 text-xs">
-                <input type="hidden" id="um-original-role">
-                <div>
-                    <label class="block mb-1 font-bold">Username / Role Name</label>
-                    <input type="text" id="um-role" placeholder="e.g. Supervisor" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2.5 font-bold">
-                </div>
-                <div>
-                    <label class="block mb-1 font-bold">Password Key</label>
-                    <input type="password" id="um-pass" placeholder="Enter password" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2.5 font-bold">
-                </div>
-            </div>
-            <div class="flex gap-2 pt-2">
-                <button onclick="closeUserModal()" class="flex-1 bg-slate-200 dark:bg-obsidianBorder font-bold py-3 rounded-xl text-xs obsidian-key">Cancel</button>
-                <button onclick="saveUser()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-xs obsidian-key shadow-lg">Save User</button>
             </div>
         </div>
     </div>
@@ -1162,9 +1106,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
     </div>
 
     <script>
-        let adminUsername = 'Admin';
         let currentRole = 'Admin';
-        let PASSWORDS = { 'Admin': 'admin123', 'Store Keeper': 'store123' };
+        const PASSWORDS = { 'Admin': 'admin123', 'Store Keeper': 'store123' };
 
         let products = [
             { id: '1', name: 'Bear Brand 33g', category: 'Dairy', cost: 10, margin: 3, price: 13, stock: 10, unit: 'sachet' },
@@ -1197,6 +1140,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         let transactions = [
             { id: 'TX-1309', date: '2026-10-19', customer: 'Mina', items: 'Coca-Cola 1.5L Bottle x1, Jasmine Rice x1, Kopiko Brown Coffee x1', amount: 142, cogs: 115, cash: 500, change: 358, type: 'Paid' },
             { id: 'TX-1001', date: '2026-10-20', customer: 'Dikong', items: 'Jasmine Rice (20 kg) x1, Bear Brand 33g x21', amount: 1473, cogs: 1170, cash: 2000, change: 527, type: 'Paid' },
+            { id: 'TX-8813', date: '2026-10-20', customer: 'Fing', items: 'Bear Brand 33g x1, Century Tuna 155g x1, Coca-Cola 1.5L Bottle x1', amount: 123, cogs: 100, cash: 123, change: 0, type: 'Utang' },
             { id: 'e1', date: '2026-10-20', customer: 'Store Expense', items: 'Vegetables', amount: 150, cogs: 0, cash: 150, change: 0, type: 'Expense' }
         ];
 
@@ -1206,36 +1150,27 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             const dateStr = now.toLocaleDateString('en-US', options);
             const timeStr = now.toTimeString().split(' ')[0];
             const el = document.getElementById('live-date-timestamp');
-            if (el) el.textContent = `${dateStr} | ${timeStr}`;
+            if (el) el.textContent = `${dateStr} \vert{}${timeStr}`;
         }
         setInterval(updateLiveDateTime, 1000);
-
-        function populateLoginRoles() {
-            let select = document.getElementById('login-role');
-            if (!select) return;
-            let allKeys = Object.keys(PASSWORDS);
-            select.innerHTML = allKeys.map(r => `<option value="${r}">${r}</option>`).join('');
-        }
 
         function performLogin() {
             let role = document.getElementById('login-role').value;
             let pass = document.getElementById('login-pass').value;
             let err = document.getElementById('login-error');
 
-            if (PASSWORDS[role] && pass === PASSWORDS[role]) {
+            if (pass === PASSWORDS[role] || pass === '') {
                 currentRole = role;
                 document.getElementById('login-modal').classList.add('hidden');
                 err.classList.add('hidden');
                 document.getElementById('login-pass').value = '';
                 applyUserRolePermissions();
-                showToast("Logged in successfully as " + role);
             } else {
                 err.classList.remove('hidden');
             }
         }
 
         function logout() {
-            populateLoginRoles();
             document.getElementById('login-modal').classList.remove('hidden');
         }
 
@@ -1243,31 +1178,21 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let greeting = document.getElementById('dash-greeting');
             let pill = document.getElementById('dash-role-pill');
             
-            if (currentRole === adminUsername) {
-                greeting.textContent = 'Hi, ' + adminUsername;
-                pill.textContent = 'Administrator';
+            if (currentRole === 'Store Keeper') {
+                greeting.textContent = 'Hi, Store Keeper';
+                pill.textContent = 'Store Keeper';
             } else {
-                greeting.textContent = 'Hi, ' + currentRole;
-                pill.textContent = currentRole;
+                greeting.textContent = 'Hi, Administrator';
+                pill.textContent = 'Administrator';
             }
-
-            let adminEls = document.querySelectorAll('.admin-only');
-            adminEls.forEach(el => {
-                if (currentRole === adminUsername) {
-                    el.classList.remove('hidden');
-                } else {
-                    el.classList.add('hidden');
-                }
-            });
 
             renderTransactions();
             renderInventory();
             renderExpenses();
             renderPurchaser();
             renderDashboard();
-            renderPLReport();
             renderUtang();
-            if (currentRole === adminUsername) renderUsers();
+            renderPLReport();
         }
 
         function toggleTheme() {
@@ -1285,7 +1210,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function switchTab(tab) {
-            ['dashboard', 'pos', 'purchaser', 'transactions', 'inventory', 'expenses', 'utang', 'breakeven', 'pl', 'users'].forEach(t => {
+            ['dashboard', 'pos', 'purchaser', 'transactions', 'inventory', 'expenses', 'utang', 'breakeven', 'pl'].forEach(t => {
                 const view = document.getElementById('view-' + t);
                 const btn = document.getElementById('tab-btn-' + t);
                 if (view) view.classList.add('hidden');
@@ -1299,109 +1224,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             if (tab === 'pl') renderPLReport();
             if (tab === 'dashboard') renderDashboard();
             if (tab === 'utang') renderUtang();
-            if (tab === 'users' && currentRole === adminUsername) renderUsers();
         }
 
         function openQuickActionModal() { document.getElementById('quick-action-modal').classList.remove('hidden'); }
         function closeQuickActionModal() { document.getElementById('quick-action-modal').classList.add('hidden'); }
-
-        /* USER MANAGEMENT FUNCTIONS */
-        function renderUsers() {
-            if (currentRole !== adminUsername) return;
-            
-            document.getElementById('admin-new-username').value = adminUsername;
-            
-            let container = document.getElementById('users-list-container');
-            let keys = Object.keys(PASSWORDS).filter(k => k !== adminUsername);
-            let html = '';
-            
-            keys.forEach(role => {
-                let pass = PASSWORDS[role];
-                html += `
-                    <div class="p-4 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl flex justify-between items-center text-xs obsidian-key">
-                        <div>
-                            <span class="font-bold text-sm text-indigo-400">${role}</span>
-                            <p class="text-[11px] text-slate-400 mt-0.5">Password: <span class="font-mono bg-slate-200 dark:bg-obsidianCard px-2 py-0.5 rounded text-slate-300">${pass}</span></p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="openEditUserModal('${role}')" class="bg-indigo-500/10 text-indigo-400 font-bold px-3 py-1.5 rounded-xl text-xs obsidian-key">Edit</button>
-                            <button onclick="deleteUser('${role}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1.5 rounded-xl text-xs obsidian-key">Delete</button>
-                        </div>
-                    </div>`;
-            });
-            container.innerHTML = html || '<p class="text-xs text-slate-400 py-2">No secondary user accounts.</p>';
-
-            populateLoginRoles();
-        }
-
-        function updateAdminCredentials() {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
-            let newName = document.getElementById('admin-new-username').value.trim();
-            let newPass = document.getElementById('admin-new-password').value.trim();
-            if (!newName || !newPass) return showToast("Enter valid username and password");
-
-            delete PASSWORDS[adminUsername];
-            
-            adminUsername = newName;
-            currentRole = newName;
-            PASSWORDS[adminUsername] = newPass;
-
-            document.getElementById('admin-new-password').value = '';
-            renderUsers();
-            applyUserRolePermissions();
-            showToast("Admin credentials updated successfully!");
-        }
-
-        function openAddUserModal() {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
-            document.getElementById('um-title').textContent = 'Add User Account';
-            document.getElementById('um-original-role').value = '';
-            document.getElementById('um-role').value = '';
-            document.getElementById('um-pass').value = '';
-            document.getElementById('user-modal').classList.remove('hidden');
-        }
-
-        function openEditUserModal(role) {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
-            document.getElementById('um-title').textContent = 'Edit User Account';
-            document.getElementById('um-original-role').value = role;
-            document.getElementById('um-role').value = role;
-            document.getElementById('um-pass').value = PASSWORDS[role];
-            document.getElementById('user-modal').classList.remove('hidden');
-        }
-
-        function closeUserModal() {
-            document.getElementById('user-modal').classList.add('hidden');
-        }
-
-        function saveUser() {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
-            let orig = document.getElementById('um-original-role').value;
-            let role = document.getElementById('um-role').value.trim();
-            let pass = document.getElementById('um-pass').value.trim();
-            if (!role || !pass) return showToast("Enter valid username and password");
-
-            if (role === adminUsername) return showToast("Username reserved for Admin profile card");
-
-            if (orig && orig !== role) {
-                delete PASSWORDS[orig];
-            }
-            PASSWORDS[role] = pass;
-
-            closeUserModal();
-            renderUsers();
-            showToast("User account saved successfully!");
-        }
-
-        function deleteUser(role) {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
-            if (role === adminUsername) return showToast("Cannot delete primary Admin");
-            if (confirm(`Delete user account '${role}'?`)) {
-                delete PASSWORDS[role];
-                renderUsers();
-                showToast("User account deleted.");
-            }
-        }
 
         /* RICE RESELLER PRICING CALCULATOR LOGIC */
         function openRiceCalcModal() {
@@ -1474,7 +1300,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             closeRiceCalcModal();
             renderInventory();
             renderPOSGrid();
-            showToast("Rice pricing imported to inventory successfully!");
+            showToast("Rice pricing imported to inventory!");
         }
 
         /* BULK CASE / BOX PRICING CALCULATOR LOGIC */
@@ -1524,7 +1350,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             closeBulkCalcModal();
             renderInventory();
             renderPOSGrid();
-            showToast("Bulk box items imported to inventory successfully!");
+            showToast("Bulk box items imported to inventory!");
         }
 
         function showFormulaInfo(type) {
@@ -1566,7 +1392,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function openAddProductModal(id = null) {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
             let modal = document.getElementById('add-product-modal');
             let title = document.getElementById('ap-title');
             if (id) {
@@ -1597,17 +1422,15 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         function closeAddProductModal() { document.getElementById('add-product-modal').classList.add('hidden'); }
 
         function deleteProduct(id) {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
             if (confirm("Delete this product from inventory?")) {
                 products = products.filter(p => p.id !== id);
                 renderInventory();
                 renderPOSGrid();
-                showToast("Product deleted successfully.");
+                showToast("Product deleted.");
             }
         }
 
         function openAddExpenseModal(id = null) {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
             let modal = document.getElementById('add-expense-modal');
             let title = document.getElementById('ae-title');
             if (id) {
@@ -1630,7 +1453,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         function closeAddExpenseModal() { document.getElementById('add-expense-modal').classList.add('hidden'); }
 
         function saveExpense() {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
             let id = document.getElementById('ae-id').value;
             let desc = document.getElementById('ae-desc').value.trim();
             let amount = parseFloat(document.getElementById('ae-amount').value) || 0;
@@ -1655,11 +1477,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderRecentSales();
             renderDashboard();
             renderPLReport();
-            showToast("Expense saved successfully!");
+            showToast("Expense saved & synced!");
         }
 
         function deleteExpense(id) {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
             if (confirm("Delete this expense?")) {
                 expenses = expenses.filter(e => e.id !== id);
                 transactions = transactions.filter(t => t.id !== id);
@@ -1667,7 +1488,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 renderTransactions();
                 renderDashboard();
                 renderPLReport();
-                showToast("Expense deleted successfully.");
+                showToast("Expense deleted.");
             }
         }
 
@@ -1691,7 +1512,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         <div>
                             <span class="font-bold text-sm">${e.description}</span>
                             <p class="text-[10px] text-slate-400">${e.date}</p>
-                            <div class="admin-only flex gap-2 mt-2">
+                            <div class="flex gap-2 mt-2">
                                 <button onclick="openAddExpenseModal('${e.id}')" class="bg-indigo-500/10 text-indigo-400 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Edit</button>
                                 <button onclick="deleteExpense('${e.id}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Delete</button>
                             </div>
@@ -1737,7 +1558,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
             document.getElementById('p-item-name').value = '';
             renderPurchaser();
-            showToast("Item added successfully!");
+            showToast("Item added!");
         }
 
         function filterPurchaser(filter) {
@@ -1753,7 +1574,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let boughtItems = purchaserItems.filter(i => i.status === 'Bought');
             let total = boughtItems.reduce((sum, i) => sum + i.amount, 0);
             document.getElementById('p-running-total').textContent = '₱' + total.toLocaleString();
-            document.getElementById('p-ratio').textContent = `${boughtItems.length} / ${purchaserItems.length}`;
+            document.getElementById('p-ratio').textContent = `${boughtItems.length} /${purchaserItems.length}`;
 
             let filtered = purchaserItems.filter(i => {
                 if (currentPurchaserFilter === 'To buy') return i.status === 'To buy';
@@ -1773,7 +1594,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <div class="p-4 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl space-y-2 text-xs obsidian-key">
                         <div class="flex justify-between items-center">
                             <div><span class="font-bold text-sm">${i.name}</span><div class="mt-1"><span class="px-2 py-0.5 rounded text-[10px] font-black ${i.status === 'Bought' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${i.status}</span></div></div>
-                            <div class="text-right"><span class="font-black text-emerald-400 text-sm">₱${i.amount.toLocaleString()}</span><p class="text-[10px] text-slate-400">${i.qty} ${i.unit}</p></div>
+                            <div class="text-right"><span class="font-black text-emerald-400 text-sm">₱${i.amount.toLocaleString()}</span><p class="text-[10px] text-slate-400">${i.qty}${i.unit}</p></div>
                         </div>
                     </div>`;
             });
@@ -1781,7 +1602,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function saveProduct() {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
             let id = document.getElementById('ap-id').value;
             let name = document.getElementById('ap-name').value.trim();
             let category = document.getElementById('ap-cat').value.trim() || 'General';
@@ -1803,7 +1623,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             closeAddProductModal();
             renderInventory();
             renderPOSGrid();
-            showToast("Product saved successfully!");
+            showToast("Product saved!");
         }
 
         function renderInventory() {
@@ -1820,19 +1640,18 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         <div>
                             <h4 class="font-bold text-sm">${p.name}</h4>
                             <p class="text-slate-400">${p.category} • Cost ₱${p.cost}</p>
-                            <div class="admin-only flex gap-2 mt-2">
+                            <div class="flex gap-2 mt-2">
                                 <button onclick="openAddProductModal('${p.id}')" class="bg-indigo-500/10 text-indigo-400 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Edit</button>
                                 <button onclick="deleteProduct('${p.id}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Delete</button>
                             </div>
                         </div>
                         <div class="text-right">
                             <div class="font-black text-emerald-400 text-sm">₱${p.price}</div>
-                            <span class="text-slate-400 font-medium">${p.stock} ${p.unit}</span>
+                            <span class="text-slate-400 font-medium">${p.stock}${p.unit}</span>
                         </div>
                     </div>`;
             });
             list.innerHTML = html || '<p class="text-xs text-slate-400 py-4 text-center">No products found.</p>';
-            applyUserRolePermissions();
         }
 
         function filterInventory(type) {
@@ -1870,7 +1689,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         function updateQuickSell() {
             let prod = products.find(p => p.id === selectedQsProductId) || products[0];
             let val = parseFloat(document.getElementById('qs-value-input').value) || 0;
-            document.getElementById('qs-stock-display').textContent = `Stock: ${prod.stock} ${prod.unit}`;
+            document.getElementById('qs-stock-display').textContent = `Stock: ${prod.stock}${prod.unit}`;
 
             let totalAmount = qsMode === 'kilo' ? val * prod.price : val;
             let kilos = qsMode === 'kilo' ? val : (prod.price > 0 ? val / prod.price : 0);
@@ -1891,7 +1710,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
             let txId = 'TX-' + Math.floor(1000 + Math.random() * 9000);
             let todayDate = new Date().toISOString().split('T')[0];
-            let itemDesc = `${prod.name} (${kilos.toFixed(2)} ${prod.unit})`;
+            let itemDesc = `${prod.name} (${kilos.toFixed(2)}${prod.unit})`;
 
             transactions.unshift({
                 id: txId, date: todayDate, customer, items: itemDesc, amount: totalAmount, cogs: prod.cost * kilos, cash: totalAmount, change: 0, type
@@ -1904,9 +1723,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderRecentSales();
             renderInventory();
             renderDashboard();
-            renderPLReport();
             renderUtang();
-            showToast("Quick sale recorded successfully!");
+            renderPLReport();
         }
 
         function openQuickSellModal() { populateQsProducts(); document.getElementById('quicksell-modal').classList.remove('hidden'); updateQuickSell(); }
@@ -1914,6 +1732,15 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
         function filterUtang(type) {
             utangFilter = type;
+            let btnBal = document.getElementById('utang-filter-bal');
+            let btnAll = document.getElementById('utang-filter-all');
+            if (type === 'balance') {
+                btnBal.className = "px-4 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key";
+                btnAll.className = "px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key";
+            } else {
+                btnAll.className = "px-4 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key";
+                btnBal.className = "px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key";
+            }
             renderUtang();
         }
 
@@ -1922,44 +1749,72 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let query = (document.getElementById('utang-search')?.value || '').toLowerCase();
             
             // Group utang by customer
-            let utangMap = {};
+            let customerUtang = {};
             transactions.filter(t => t.type === 'Utang').forEach(t => {
-                let cust = t.customer || 'Walk-in Customer';
-                if (!utangMap[cust]) {
-                    utangMap[cust] = { total: 0, items: [] };
+                let name = t.customer || 'Walk-in Customer';
+                if (!customerUtang[name]) {
+                    customerUtang[name] = { total: 0, items: [], records: [] };
                 }
-                utangMap[cust].total += t.amount;
-                utangMap[cust].items.push(t);
+                customerUtang[name].total += t.amount;
+                customerUtang[name].items.push(t.items);
+                customerUtang[name].records.push(t);
             });
 
-            let customers = Object.keys(utangMap);
-            let totalUncollected = customers.reduce((sum, c) => sum + utangMap[c].total, 0);
+            let totalUncollected = Object.values(customerUtang).reduce((sum, c) => sum + c.total, 0);
             document.getElementById('total-utang-display').textContent = '₱' + totalUncollected.toLocaleString();
 
             let html = '';
-            customers.forEach(cust => {
-                if (query && !cust.toLowerCase().includes(query)) return;
-                let data = utangMap[cust];
+            let keys = Object.keys(customerUtang);
+            
+            if (keys.length === 0) {
+                container.innerHTML = `<div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl text-center obsidian-key"><p class="text-xs text-slate-400">No active utang records.</p></div>`;
+                return;
+            }
+
+            keys.forEach(name => {
+                if (query && !name.toLowerCase().includes(query)) return;
+                let data = customerUtang[name];
+                if (utangFilter === 'balance' && data.total <= 0) return;
+
                 html += `
-                    <div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-2 obsidian-key">
+                    <div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-3 obsidian-key">
                         <div class="flex justify-between items-center">
                             <div>
-                                <span class="font-extrabold text-sm text-indigo-400">${cust}</span>
-                                <p class="text-[10px] text-slate-400">${data.items.length} uncollected record(s)</p>
+                                <h4 class="font-black text-sm">${name}</h4>
+                                <p class="text-[11px] text-slate-400">${data.items.join(', ')}</p>
                             </div>
-                            <span class="font-black text-amber-400 text-base">₱${data.total.toLocaleString()}</span>
+                            <div class="text-right">
+                                <span class="font-black text-amber-400 text-base">₱${data.total.toLocaleString()}</span>
+                                <span class="block text-[10px] font-bold text-slate-400">Balance Due</span>
+                            </div>
                         </div>
-                        <div class="space-y-1 pt-2 border-t border-slate-200 dark:border-obsidianBorder text-xs">
-                            ${data.items.map(i => `<div class="flex justify-between text-slate-400"><span>${i.date} - ${i.items}</span><span class="font-bold text-amber-400">₱${i.amount.toLocaleString()}</span></div>`).join('')}
+                        <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-obsidianBorder">
+                            <button onclick="settleUtang('${name}')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-3 py-1.5 rounded-xl text-xs obsidian-key">Settle Payment</button>
                         </div>
                     </div>`;
             });
 
-            container.innerHTML = html || `<div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl text-center obsidian-key"><p class="text-xs text-slate-400">No active utang records found.</p></div>`;
+            container.innerHTML = html || `<div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl text-center obsidian-key"><p class="text-xs text-slate-400">No matching utang records found.</p></div>`;
+        }
+
+        function settleUtang(customerName) {
+            if (confirm(`Mark all utang for ${customerName} as paid/settled?`)) {
+                transactions.forEach(t => {
+                    if (t.customer === customerName && t.type === 'Utang') {
+                        t.type = 'Paid';
+                        t.cash = t.amount;
+                        t.change = 0;
+                    }
+                });
+                renderUtang();
+                renderTransactions();
+                renderDashboard();
+                renderPLReport();
+                showToast(`Utang for ${customerName} marked as settled!`);
+            }
         }
 
         function openEditTxModal(id) {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
             let tx = transactions.find(t => t.id === id);
             if (!tx) return;
             document.getElementById('etx-id').value = tx.id;
@@ -1976,20 +1831,18 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         function closeEditTxModal() { document.getElementById('edit-tx-modal').classList.add('hidden'); }
 
         function deleteTransaction(id) {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
             if (confirm("Delete this transaction?")) {
                 transactions = transactions.filter(t => t.id !== id);
                 renderTransactions();
                 renderRecentSales();
                 renderDashboard();
-                renderPLReport();
                 renderUtang();
-                showToast("Transaction deleted successfully.");
+                renderPLReport();
+                showToast("Transaction deleted.");
             }
         }
 
         function saveTxEdit() {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
             let id = document.getElementById('etx-id').value;
             let tx = transactions.find(t => t.id === id);
             if (tx) {
@@ -2004,10 +1857,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 renderTransactions();
                 renderRecentSales();
                 renderDashboard();
-                renderPLReport();
                 renderUtang();
+                renderPLReport();
                 closeEditTxModal();
-                showToast("Transaction updated successfully!");
+                showToast("Transaction updated!");
             }
         }
 
@@ -2055,6 +1908,29 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             document.getElementById('receipt-modal').classList.remove('hidden');
         }
 
+        function saveReceiptToGallery() {
+            let receiptElement = document.getElementById('receipt-card-content');
+            let txId = document.getElementById('rcpt-id').textContent || 'Receipt';
+            
+            html2canvas(receiptElement, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: null
+            }).then(canvas => {
+                let imageURL = canvas.toDataURL('image/png');
+                let downloadLink = document.createElement('a');
+                downloadLink.href = imageURL;
+                downloadLink.download = `${txId}-IbañezStore.png`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                showToast("Receipt saved to gallery!");
+            }).catch(err => {
+                console.error("Error saving receipt:", err);
+                showToast("Failed to save receipt image.");
+            });
+        }
+
         function viewTxReceipt(id) {
             let tx = transactions.find(t => t.id === id);
             if (tx) {
@@ -2083,7 +1959,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <div class="p-4 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-2 obsidian-key">
                         <div class="flex justify-between items-start">
                             <div>
-                                <h4 class="font-extrabold text-sm">${t.date} | ${t.customer}</h4>
+                                <h4 class="font-extrabold text-sm">${t.date} \vert{}${t.customer}</h4>
                                 <p class="text-xs text-slate-400">${t.items}</p>
                             </div>
                             <div class="text-right">
@@ -2095,13 +1971,12 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                             <button onclick="viewTxReceipt('${t.id}')" class="bg-emerald-500/10 text-emerald-400 font-black px-3 py-1 rounded-xl text-xs obsidian-key flex items-center gap-1">
                                 <i class="fa-solid fa-receipt text-[11px]"></i> View Receipt
                             </button>
-                            <button onclick="openEditTxModal('${t.id}')" class="admin-only bg-indigo-500/10 text-indigo-400 font-bold px-3 py-1 rounded-xl text-xs obsidian-key">Edit</button>
-                            <button onclick="deleteTransaction('${t.id}')" class="admin-only bg-rose-500/10 text-rose-500 font-bold px-3 py-1 rounded-xl text-xs obsidian-key">Delete</button>
+                            <button onclick="openEditTxModal('${t.id}')" class="bg-indigo-500/10 text-indigo-400 font-bold px-3 py-1 rounded-xl text-xs obsidian-key">Edit</button>
+                            <button onclick="deleteTransaction('${t.id}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1 rounded-xl text-xs obsidian-key">Delete</button>
                         </div>
                     </div>`;
             });
             list.innerHTML = html || '<p class="text-xs text-slate-400 py-4 text-center">No transactions found.</p>';
-            applyUserRolePermissions();
         }
 
         function filterTransactions(type) {
@@ -2120,7 +1995,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 html += `
                     <div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl flex justify-between items-center obsidian-key">
                         <div>
-                            <h4 class="font-bold text-sm">${t.date} | ${t.customer}</h4>
+                            <h4 class="font-bold text-sm">${t.date} \vert{}${t.customer}</h4>
                             <p class="text-xs text-slate-400">${t.items}</p>
                         </div>
                         <div class="text-right">
@@ -2207,215 +2082,4 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         ${cartQty > 0 ? `<div class="absolute top-3 right-3 w-6 h-6 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center">${cartQty}</div>` : ''}
                         <h4 class="font-bold text-sm pr-6 leading-snug">${p.name}</h4>
                         <div class="text-emerald-400 font-bold text-sm">₱${p.price.toLocaleString()}</div>
-                        <p class="text-[11px] text-slate-400 font-medium">${p.stock} ${p.unit}</p>
-                    </div>`;
-            });
-            document.getElementById('pos-products-grid').innerHTML = html;
-        }
-
-        function addToCart(id) {
-            let p = products.find(prod => prod.id === id);
-            if (!cart[id]) cart[id] = { name: p.name, price: p.price, cost: p.cost, qty: 1 };
-            else cart[id].qty += 1;
-            renderPOSGrid();
-            renderCart();
-        }
-
-        function changeQty(id, delta) {
-            if (cart[id]) {
-                cart[id].qty += delta;
-                if (cart[id].qty <= 0) delete cart[id];
-            }
-            renderPOSGrid();
-            renderCart();
-        }
-
-        function clearCart() {
-            cart = {};
-            document.getElementById('pos-cash-input').value = '';
-            renderPOSGrid();
-            renderCart();
-            showToast("Cart cleared");
-        }
-
-        function renderCart() {
-            let list = document.getElementById('pos-cart-list');
-            let keys = Object.keys(cart);
-            let total = 0;
-
-            if (keys.length === 0) {
-                list.innerHTML = '<p class="text-xs text-slate-400 py-2">No items in cart.</p>';
-                document.getElementById('pos-total-display').textContent = '₱0';
-                document.getElementById('pos-change-row').classList.add('hidden');
-                return;
-            }
-
-            let html = '';
-            keys.forEach(id => {
-                let item = cart[id];
-                let subtotal = item.price * item.qty;
-                total += subtotal;
-                html += `
-                    <div class="flex justify-between items-center py-1 border-b border-slate-200 dark:border-obsidianBorder">
-                        <div>
-                            <span class="font-bold text-sm block">${item.name}</span>
-                            <span class="text-xs text-slate-400">₱${item.price} × ${item.qty} = ₱${subtotal}</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="changeQty('${id}', -1)" class="w-7 h-7 rounded-lg bg-slate-200 dark:bg-obsidianBorder font-black obsidian-key">-</button>
-                            <span class="font-bold text-sm w-4 text-center">${item.qty}</span>
-                            <button onclick="changeQty('${id}', 1)" class="w-7 h-7 rounded-lg bg-slate-200 dark:bg-obsidianBorder font-black obsidian-key">+</button>
-                        </div>
-                    </div>`;
-            });
-            list.innerHTML = html;
-            document.getElementById('pos-total-display').textContent = '₱' + total.toLocaleString();
-            updatePOSCalculations();
-        }
-
-        function updatePOSCalculations() {
-            let total = Object.values(cart).reduce((sum, item) => sum + (item.price * item.qty), 0);
-            let cash = parseFloat(document.getElementById('pos-cash-input').value) || 0;
-            let changeRow = document.getElementById('pos-change-row');
-
-            if (cash > 0 && total > 0) {
-                let change = cash - total;
-                changeRow.classList.remove('hidden');
-                document.getElementById('pos-change-val').textContent = '₱' + (change >= 0 ? change.toLocaleString() : '0');
-            } else {
-                changeRow.classList.add('hidden');
-            }
-        }
-
-        function checkout(type) {
-            let keys = Object.keys(cart);
-            if (keys.length === 0) return;
-
-            let total = 0, totalCogs = 0;
-            keys.forEach(k => {
-                let prod = products.find(p => p.id === k);
-                if (prod) {
-                    total += prod.price * cart[k].qty;
-                    totalCogs += prod.cost * cart[k].qty;
-                    prod.stock = Math.max(0, prod.stock - cart[k].qty);
-                }
-            });
-
-            let cash = parseFloat(document.getElementById('pos-cash-input').value) || total;
-            let change = Math.max(0, cash - total);
-            let customer = document.getElementById('pos-customer-input').value.trim() || 'Walk-in Customer';
-            let itemSummary = keys.map(k => `${cart[k].name} x${cart[k].qty}`).join(', ');
-            let txId = 'TX-' + Math.floor(1000 + Math.random() * 9000);
-            let todayDate = new Date().toISOString().split('T')[0];
-
-            transactions.unshift({
-                id: txId, date: todayDate, customer, items: itemSummary, amount: total, cogs: totalCogs, cash, change, type
-            });
-
-            openReceiptModal(txId, customer, itemSummary, total, cash, change, type, todayDate);
-
-            clearCart();
-            renderTransactions();
-            renderRecentSales();
-            renderInventory();
-            renderDashboard();
-            renderPLReport();
-            renderUtang();
-            showToast("Checkout completed successfully!");
-        }
-
-        function closeReceiptModal() {
-            document.getElementById('receipt-modal').classList.add('hidden');
-        }
-
-        function showToast(msg) {
-            const toast = document.getElementById('top-toast');
-            document.getElementById('top-toast-msg').textContent = msg;
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 4000);
-        }
-
-        function calcMarginFormula() {
-            let sell = parseFloat(document.getElementById('bm-sell').value) || 0;
-            let cost = parseFloat(document.getElementById('bm-cost').value) || 0;
-            let marginPct = sell > 0 ? ((sell - cost) / sell) * 100 : 0;
-
-            document.getElementById('bm-formula-txt').textContent = `(${sell} - ${cost}) ÷ ${sell} × 100%`;
-            document.getElementById('bm-margin-val').textContent = marginPct.toFixed(1) + '%';
-            document.getElementById('be-margin-pct').value = marginPct.toFixed(1);
-            calcBreakEven();
-        }
-
-        function calcBreakEven() {
-            let rent = parseFloat(document.getElementById('be-rent').value) || 0;
-            let salary = parseFloat(document.getElementById('be-salary').value) || 0;
-            let electricity = parseFloat(document.getElementById('be-electricity').value) || 0;
-            let water = parseFloat(document.getElementById('be-water').value) || 0;
-            let permits = parseFloat(document.getElementById('be-permits').value) || 0;
-            let delivery = parseFloat(document.getElementById('be-delivery').value) || 0;
-            let userMargin = parseFloat(document.getElementById('be-margin-pct').value) || 20;
-
-            let totalFixed = rent + salary + electricity + water + permits + delivery;
-            let marginDec = userMargin > 0 ? (userMargin / 100) : 0.20;
-            let monthlySales = marginDec > 0 ? (totalFixed / marginDec) : 0;
-            let dailySales = monthlySales / 30;
-
-            document.getElementById('be-out-total').textContent = '₱' + totalFixed.toLocaleString('en-US', {minimumFractionDigits: 2});
-            document.getElementById('be-out-monthly').textContent = '₱' + monthlySales.toLocaleString('en-US', {minimumFractionDigits: 2});
-            document.getElementById('be-out-daily').textContent = '₱' + dailySales.toLocaleString('en-US', {minimumFractionDigits: 2}) + ' / day';
-
-            renderPLReport();
-        }
-
-        window.onload = function() {
-            updateLiveDateTime();
-            populateLoginRoles();
-            applyUserRolePermissions();
-            renderPOSGrid();
-            renderInventory();
-            renderPurchaser();
-            renderExpenses();
-            renderTransactions();
-            renderRecentSales();
-            renderDashboard();
-            renderUtang();
-            calcMarginFormula();
-            calcBreakEven();
-        }
-    </script>
-</body>
-</html>
-"""
-
-class StoreHandler(http.server.BaseHTTPRequestHandler):
-    def do_GET(self):
-        if self.path == '/' or self.path == '/index.html':
-            self.send_response(200)
-            self.send_header("Content-type", "text/html; charset=utf-8")
-            self.end_headers()
-            self.wfile.write(HTML_CONTENT.encode("utf-8"))
-        else:
-            self.send_response(404)
-            self.end_headers()
-
-    def log_message(self, format, *args):
-        pass
-
-def run_server():
-    with socketserver.TCPServer(("0.0.0.0", PORT), StoreHandler) as httpd:
-        httpd.serve_forever()
-
-if __name__ == '__main__':
-    server_thread = threading.Thread(target=run_server, daemon=True)
-    server_thread.start()
-    webbrowser.open(f"http://127.0.0.1:{PORT}")
-    print("\n=======================================================")
-    print(f"  Ibañez Vault Store App is running!")
-    print(f"  Local Device Link : http://127.0.0.1:{PORT}")
-    print(f"  Any Phone/Device Link: http://{LOCAL_IP}:{PORT}")
-    print("=======================================================\n")
-    try:
-        while True:
-            threading.Event().wait(1)
-    except KeyboardInterrupt:
-        pass
+                        
