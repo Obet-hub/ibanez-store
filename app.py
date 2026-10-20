@@ -2325,6 +2325,7 @@ class StoreHandler(http.server.BaseHTTPRequestHandler):
         pass
 
 def run_server():
+    socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(("0.0.0.0", PORT), StoreHandler) as httpd:
         httpd.serve_forever()
 
