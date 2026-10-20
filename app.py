@@ -494,6 +494,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <button onclick="filterPOSCategory('Noodles')" id="pos-cat-Noodles" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Noodles</button>
                     <button onclick="filterPOSCategory('Snacks')" id="pos-cat-Snacks" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Snacks</button>
                     <button onclick="filterPOSCategory('Beverages')" id="pos-cat-Beverages" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Beverages</button>
+                    <button onclick="filterPOSCategory('Condiments')" id="pos-cat-Condiments" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Condiments</button>
+                    <button onclick="filterPOSCategory('Pantry')" id="pos-cat-Pantry" class="pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Pantry</button>
                 </div>
             </div>
 
@@ -706,10 +708,27 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
                     <input type="text" id="inv-search" oninput="renderInventory()" placeholder="Search products" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl pl-9 pr-4 py-3 text-xs placeholder-slate-400 focus:outline-none focus:border-indigo-500">
                 </div>
+
+                <!-- ITEM CATEGORY SELECTOR FOR EASY FINDING -->
+                <div class="space-y-1.5">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Item Category</span>
+                    <div class="flex space-x-2 overflow-x-auto no-scrollbar py-1">
+                        <button onclick="filterInventoryCategory('All')" id="inv-cat-All" class="inv-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white whitespace-nowrap obsidian-key">All</button>
+                        <button onclick="filterInventoryCategory('Dairy')" id="inv-cat-Dairy" class="inv-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Dairy</button>
+                        <button onclick="filterInventoryCategory('Canned')" id="inv-cat-Canned" class="inv-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Canned</button>
+                        <button onclick="filterInventoryCategory('Drinks')" id="inv-cat-Drinks" class="inv-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Drinks</button>
+                        <button onclick="filterInventoryCategory('Grains')" id="inv-cat-Grains" class="inv-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Grains</button>
+                        <button onclick="filterInventoryCategory('Noodles')" id="inv-cat-Noodles" class="inv-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Noodles</button>
+                        <button onclick="filterInventoryCategory('Snacks')" id="inv-cat-Snacks" class="inv-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Snacks</button>
+                        <button onclick="filterInventoryCategory('Beverages')" id="inv-cat-Beverages" class="inv-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Beverages</button>
+                        <button onclick="filterInventoryCategory('Condiments')" id="inv-cat-Condiments" class="inv-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Condiments</button>
+                        <button onclick="filterInventoryCategory('Pantry')" id="inv-cat-Pantry" class="inv-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Pantry</button>
+                    </div>
+                </div>
                 
-                <div class="flex flex-wrap justify-between items-center gap-2">
+                <div class="flex flex-wrap justify-between items-center gap-2 pt-1">
                     <div class="flex gap-2 overflow-x-auto no-scrollbar">
-                        <button onclick="filterInventory('All')" id="inv-filter-All" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key">All</button>
+                        <button onclick="filterInventory('All')" id="inv-filter-All" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key">All Status</button>
                         <button onclick="filterInventory('Low')" id="inv-filter-Low" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key">Low stock</button>
                         <button onclick="filterInventory('expired_soon')" id="inv-filter-expired_soon" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key text-amber-400">⚠️ Expiry Alerts</button>
                     </div>
@@ -1075,11 +1094,11 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 <input type="hidden" id="ap-id">
                 <div>
                     <label class="block mb-1 font-bold">Product Name</label>
-                    <input type="text" id="ap-name" placeholder="e.g. Bear Brand" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2">
+                    <input type="text" id="ap-name" placeholder="e.g. Silver Swan Vinegar" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2">
                 </div>
                 <div>
                     <label class="block mb-1 font-bold">Category</label>
-                    <input type="text" id="ap-cat" placeholder="e.g. Dairy" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2">
+                    <input type="text" id="ap-cat" placeholder="e.g. Condiments, Pantry, Dairy" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
@@ -1186,7 +1205,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             { id: '6', name: 'Kopiko Brown Coffee', category: 'Drinks', cost: 7, margin: 3, price: 10, stock: 57, unit: 'sachet', dateAdded: '2026-09-20', expiryDate: '2027-08-20' },
             { id: '7', name: 'Lucky Me Instant Noodles', category: 'Noodles', cost: 10, margin: 3, price: 13, stock: 40, unit: 'pack', dateAdded: '2026-09-25', expiryDate: '2026-10-25' },
             { id: '8', name: 'Piattos Cheese 85g', category: 'Snacks', cost: 30, margin: 8, price: 38, stock: 25, unit: 'pack', dateAdded: '2026-10-02', expiryDate: '2026-11-12' },
-            { id: '9', name: 'Red Bull Energy Drink', category: 'Beverages', cost: 45, margin: 10, price: 55, stock: 15, unit: 'can', dateAdded: '2026-10-05', expiryDate: '2026-10-18' }
+            { id: '9', name: 'Red Bull Energy Drink', category: 'Beverages', cost: 45, margin: 10, price: 55, stock: 15, unit: 'can', dateAdded: '2026-10-05', expiryDate: '2026-10-18' },
+            { id: '10', name: 'Silver Swan Vinegar 200ml', category: 'Condiments', cost: 12, margin: 3, price: 15, stock: 20, unit: 'pouch', dateAdded: '2026-10-08', expiryDate: '2027-12-01' },
+            { id: '11', name: 'Datu Puti Patis 350ml', category: 'Condiments', cost: 22, margin: 5, price: 27, stock: 15, unit: 'bottle', dateAdded: '2026-10-10', expiryDate: '2028-02-15' },
+            { id: '12', name: 'Special Tuyo 100g', category: 'Pantry', cost: 35, margin: 10, price: 45, stock: 12, unit: 'pack', dateAdded: '2026-10-12', expiryDate: '2027-01-30' }
         ];
 
         let cart = {};
@@ -1201,6 +1223,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         let currentPurchaserFilter = 'All';
         let currentTxFilter = 'All';
         let currentPosCategory = 'All';
+        let currentInvCategory = 'All';
         let currentInvFilter = 'All';
         let qsMode = 'kilo';
         let selectedQsProductId = '5';
@@ -1874,6 +1897,15 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             }
         }
 
+        function filterInventoryCategory(cat) {
+            currentInvCategory = cat;
+            ['All', 'Dairy', 'Canned', 'Drinks', 'Grains', 'Noodles', 'Snacks', 'Beverages', 'Condiments', 'Pantry'].forEach(c => {
+                let btn = document.getElementById('inv-cat-' + c);
+                if (btn) btn.className = (c === cat) ? "inv-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white whitespace-nowrap obsidian-key" : "inv-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key";
+            });
+            renderInventory();
+        }
+
         function renderInventory() {
             let list = document.getElementById('inventory-list');
             let query = (document.getElementById('inv-search')?.value || '').toLowerCase();
@@ -1903,6 +1935,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
             let html = '';
             products.forEach(p => {
+                if (currentInvCategory !== 'All' && p.category !== currentInvCategory) return;
                 if (query && !p.name.toLowerCase().includes(query)) return;
                 
                 let expInfo = getExpiryStatus(p.expiryDate);
@@ -2396,7 +2429,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
         function filterPOSCategory(cat) {
             currentPosCategory = cat;
-            ['All', 'Dairy', 'Canned', 'Drinks', 'Grains', 'Noodles', 'Snacks', 'Beverages'].forEach(c => {
+            ['All', 'Dairy', 'Canned', 'Drinks', 'Grains', 'Noodles', 'Snacks', 'Beverages', 'Condiments', 'Pantry'].forEach(c => {
                 let btn = document.getElementById('pos-cat-' + c);
                 if (btn) btn.className = (c === cat) ? "pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white whitespace-nowrap obsidian-key" : "pos-cat-btn px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key";
             });
