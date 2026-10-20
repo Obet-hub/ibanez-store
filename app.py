@@ -407,9 +407,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
                     <div id="dash-picker-yearly-container" class="hidden">
                         <select id="dash-year-picker" onchange="renderDashboard()" class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 text-xs font-black text-indigo-400 focus:outline-none focus:border-indigo-500 shadow-inner">
-                            <option value="2026">2026</option>
-                            <option value="2025">2025</option>
-                            <option value="2024">2024</option>
+                            <!-- Populated dynamically via JS -->
                         </select>
                     </div>
                 </div>
@@ -1282,6 +1280,39 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
         setInterval(updateLiveDateTime, 1000);
 
+        function populateYearPicker() {
+            let yearSelect = document.getElementById('dash-year-picker');
+            if (!yearSelect) return;
+            
+            // Gather all years present in transactions & expenses + current year + future years up to current year + 5
+            let currentYear = new Date().getFullYear();
+            let yearsSet = new Set([currentYear, 2024, 2025, 2026]);
+
+            transactions.forEach(t => {
+                if (t.date && t.date.length >= 4) {
+                    let yr = parseInt(t.date.substring(0, 4));
+                    if (!isNaN(yr)) yearsSet.add(yr);
+                }
+            });
+
+            expenses.forEach(e => {
+                if (e.date && e.date.length >= 4) {
+                    let yr = parseInt(e.date.substring(0, 4));
+                    if (!isNaN(yr)) yearsSet.add(yr);
+                }
+            });
+
+            // Include range up to current year + 5 for future readiness
+            for (let y = 2024; y <= currentYear + 5; y++) {
+                yearsSet.add(y);
+            }
+
+            let sortedYears = Array.from(yearsSet).sort((a, b) => b - a); // Descending order
+            let existingVal = yearSelect.value || currentYear.toString();
+
+            yearSelect.innerHTML = sortedYears.map(y => `<option value="${y}" ${y.toString() === existingVal ? 'selected' : ''}>${y}</option>`).join('');
+        }
+
         function setDashPeriod(period) {
             dashPeriod = period;
             ['daily', 'monthly', 'yearly'].forEach(p => {
@@ -1296,7 +1327,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let lbl = document.getElementById('dash-picker-label');
             if (period === 'daily') lbl.textContent = "Select Date:";
             else if (period === 'monthly') lbl.textContent = "Select Month:";
-            else lbl.textContent = "Select Year:";
+            else {
+                lbl.textContent = "Select Year:";
+                populateYearPicker();
+            }
 
             renderDashboard();
         }
@@ -1350,6 +1384,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderInventory();
             renderExpenses();
             renderPurchaser();
+            populateYearPicker();
             renderDashboard();
             renderUtang();
             renderPLReport();
@@ -1382,7 +1417,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             if (activeBtn) activeBtn.className = "nav-btn text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap obsidian-key bg-indigo-600 text-white";
             
             if (tab === 'pl') renderPLReport();
-            if (tab === 'dashboard') renderDashboard();
+            if (tab === 'dashboard') {
+                populateYearPicker();
+                renderDashboard();
+            }
             if (tab === 'utang') renderUtang();
             if (tab === 'inventory') renderInventory();
         }
@@ -1667,6 +1705,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderExpenses();
             renderTransactions();
             renderRecentSales();
+            populateYearPicker();
             renderDashboard();
             renderPLReport();
             showToast("Expense saved & synced!");
@@ -1682,6 +1721,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 transactions = transactions.filter(t => t.id !== id);
                 renderExpenses();
                 renderTransactions();
+                populateYearPicker();
                 renderDashboard();
                 renderPLReport();
                 showToast("Expense deleted.");
@@ -2104,6 +2144,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderTransactions();
             renderRecentSales();
             renderInventory();
+            populateYearPicker();
             renderDashboard();
             renderUtang();
             renderPLReport();
@@ -2245,6 +2286,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 transactions = transactions.filter(t => t.id !== id);
                 renderTransactions();
                 renderRecentSales();
+                populateYearPicker();
                 renderDashboard();
                 renderUtang();
                 renderPLReport();
@@ -2270,6 +2312,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
                 renderTransactions();
                 renderRecentSales();
+                populateYearPicker();
                 renderDashboard();
                 renderUtang();
                 renderPLReport();
@@ -2654,6 +2697,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderTransactions();
             renderRecentSales();
             renderInventory();
+            populateYearPicker();
             renderDashboard();
             renderUtang();
             renderPLReport();
@@ -2705,14 +2749,13 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         window.onload = function() {
             updateLiveDateTime();
             
-            // Set default date pickers to current date
             let todayStr = new Date().toISOString().split('T')[0];
             let currentMonthStr = todayStr.substring(0, 7);
-            let currentYearStr = todayStr.substring(0, 4);
 
             if (document.getElementById('dash-date-picker')) document.getElementById('dash-date-picker').value = todayStr;
             if (document.getElementById('dash-month-picker')) document.getElementById('dash-month-picker').value = currentMonthStr;
-            if (document.getElementById('dash-year-picker')) document.getElementById('dash-year-picker').value = currentYearStr;
+
+            populateYearPicker();
 
             applyUserRolePermissions();
             renderPOSGrid();
