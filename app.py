@@ -1430,6 +1430,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function openAddProductModal(id = null) {
+            if (currentRole !== 'Admin') {
+                showToast("Access Denied: Admin authorization required.");
+                return;
+            }
             let modal = document.getElementById('add-product-modal');
             let title = document.getElementById('ap-title');
             if (id) {
@@ -1460,6 +1464,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         function closeAddProductModal() { document.getElementById('add-product-modal').classList.add('hidden'); }
 
         function deleteProduct(id) {
+            if (currentRole !== 'Admin') {
+                showToast("Access Denied: Admin authorization required.");
+                return;
+            }
             if (confirm("Delete this product from inventory?")) {
                 products = products.filter(p => p.id !== id);
                 renderInventory();
@@ -1469,6 +1477,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function openAddExpenseModal(id = null) {
+            if (currentRole !== 'Admin') {
+                showToast("Access Denied: Admin authorization required.");
+                return;
+            }
             let modal = document.getElementById('add-expense-modal');
             let title = document.getElementById('ae-title');
             if (id) {
@@ -1491,6 +1503,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         function closeAddExpenseModal() { document.getElementById('add-expense-modal').classList.add('hidden'); }
 
         function saveExpense() {
+            if (currentRole !== 'Admin') {
+                showToast("Access Denied: Admin authorization required.");
+                return;
+            }
             let id = document.getElementById('ae-id').value;
             let desc = document.getElementById('ae-desc').value.trim();
             let amount = parseFloat(document.getElementById('ae-amount').value) || 0;
@@ -1520,6 +1536,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function deleteExpense(id) {
+            if (currentRole !== 'Admin') {
+                showToast("Access Denied: Admin authorization required.");
+                return;
+            }
             if (confirm("Delete this expense?")) {
                 expenses = expenses.filter(e => e.id !== id);
                 transactions = transactions.filter(t => t.id !== id);
@@ -1551,10 +1571,11 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         <div>
                             <span class="font-bold text-sm">${e.description}</span>
                             <p class="text-[10px] text-slate-400">${e.date}</p>
+                            ${currentRole === 'Admin' ? `
                             <div class="flex gap-2 mt-2">
                                 <button onclick="openAddExpenseModal('${e.id}')" class="bg-indigo-500/10 text-indigo-400 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Edit</button>
                                 <button onclick="deleteExpense('${e.id}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Delete</button>
-                            </div>
+                            </div>` : ''}
                         </div>
                         <span class="font-black text-rose-500 text-base">₱${e.amount.toLocaleString()}</span>
                     </div>`;
@@ -1583,6 +1604,11 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let editId = document.getElementById('p-edit-id').value;
             let name = document.getElementById('p-item-name').value.trim();
             if (!name) return;
+
+            if (editId && currentRole !== 'Admin') {
+                showToast("Access Denied: Admin authorization required.");
+                return;
+            }
 
             let amount = parseFloat(document.getElementById('p-cost').value) || 0;
             let qty = parseFloat(document.getElementById('p-qty').value) || 1;
@@ -1613,6 +1639,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function editPurchaserItem(id) {
+            if (currentRole !== 'Admin') {
+                showToast("Access Denied: Admin authorization required.");
+                return;
+            }
             let item = purchaserItems.find(i => i.id === id);
             if (!item) return;
 
@@ -1643,6 +1673,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function deletePurchaserItem(id) {
+            if (currentRole !== 'Admin') {
+                showToast("Access Denied: Admin authorization required.");
+                return;
+            }
             if (confirm("Delete this purchaser item?")) {
                 purchaserItems = purchaserItems.filter(i => i.id !== id);
                 renderPurchaser();
@@ -1720,8 +1754,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         </div>
                         <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-obsidianBorder/60">
                             ${i.status === 'Bought' ? `<button onclick="importPurchaserToInventory('${i.id}')" class="bg-emerald-500/10 text-emerald-400 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key"><i class="fa-solid fa-file-import mr-1"></i> Import</button>` : ''}
+                            ${currentRole === 'Admin' ? `
                             <button onclick="editPurchaserItem('${i.id}')" class="bg-indigo-500/10 text-indigo-400 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Edit</button>
-                            <button onclick="deletePurchaserItem('${i.id}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Delete</button>
+                            <button onclick="deletePurchaserItem('${i.id}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Delete</button>` : ''}
                         </div>
                     </div>`;
             });
@@ -1729,6 +1764,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function saveProduct() {
+            if (currentRole !== 'Admin') {
+                showToast("Access Denied: Admin authorization required.");
+                return;
+            }
             let id = document.getElementById('ap-id').value;
             let name = document.getElementById('ap-name').value.trim();
             let category = document.getElementById('ap-cat').value.trim() || 'General';
@@ -1767,10 +1806,11 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         <div>
                             <h4 class="font-bold text-sm">${p.name}</h4>
                             <p class="text-slate-400">${p.category} • Cost ₱${p.cost}</p>
+                            ${currentRole === 'Admin' ? `
                             <div class="flex gap-2 mt-2">
                                 <button onclick="openAddProductModal('${p.id}')" class="bg-indigo-500/10 text-indigo-400 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Edit</button>
                                 <button onclick="deleteProduct('${p.id}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Delete</button>
-                            </div>
+                            </div>` : ''}
                         </div>
                         <div class="text-right">
                             <div class="font-black text-emerald-400 text-sm">₱${p.price}</div>
@@ -1963,6 +2003,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function openEditTxModal(id) {
+            if (currentRole !== 'Admin') {
+                showToast("Access Denied: Admin authorization required.");
+                return;
+            }
             let tx = transactions.find(t => t.id === id);
             if (!tx) return;
             document.getElementById('etx-id').value = tx.id;
@@ -1979,6 +2023,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         function closeEditTxModal() { document.getElementById('edit-tx-modal').classList.add('hidden'); }
 
         function deleteTransaction(id) {
+            if (currentRole !== 'Admin') {
+                showToast("Access Denied: Admin authorization required.");
+                return;
+            }
             if (confirm("Delete this transaction?")) {
                 transactions = transactions.filter(t => t.id !== id);
                 renderTransactions();
@@ -1991,6 +2039,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function saveTxEdit() {
+            if (currentRole !== 'Admin') {
+                showToast("Access Denied: Admin authorization required.");
+                return;
+            }
             let id = document.getElementById('etx-id').value;
             let tx = transactions.find(t => t.id === id);
             if (tx) {
@@ -2127,8 +2179,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                             <button onclick="viewTxReceipt('${t.id}')" class="bg-emerald-500/10 text-emerald-400 font-black px-3 py-1 rounded-xl text-xs obsidian-key flex items-center gap-1">
                                 <i class="fa-solid fa-receipt text-[11px]"></i> View Receipt
                             </button>
+                            ${currentRole === 'Admin' ? `
                             <button onclick="openEditTxModal('${t.id}')" class="bg-indigo-500/10 text-indigo-400 font-bold px-3 py-1 rounded-xl text-xs obsidian-key">Edit</button>
-                            <button onclick="deleteTransaction('${t.id}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1 rounded-xl text-xs obsidian-key">Delete</button>
+                            <button onclick="deleteTransaction('${t.id}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1 rounded-xl text-xs obsidian-key">Delete</button>` : ''}
                         </div>
                     </div>`;
             });
