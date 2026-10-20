@@ -1228,6 +1228,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 err.classList.add('hidden');
                 document.getElementById('login-pass').value = '';
                 applyUserRolePermissions();
+                showToast("Logged in successfully as " + role);
             } else {
                 err.classList.remove('hidden');
             }
@@ -1265,6 +1266,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderPurchaser();
             renderDashboard();
             renderPLReport();
+            renderUtang();
             if (currentRole === adminUsername) renderUsers();
         }
 
@@ -1296,6 +1298,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             
             if (tab === 'pl') renderPLReport();
             if (tab === 'dashboard') renderDashboard();
+            if (tab === 'utang') renderUtang();
             if (tab === 'users' && currentRole === adminUsername) renderUsers();
         }
 
@@ -1337,7 +1340,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let newPass = document.getElementById('admin-new-password').value.trim();
             if (!newName || !newPass) return showToast("Enter valid username and password");
 
-            let oldPass = PASSWORDS[adminUsername];
             delete PASSWORDS[adminUsername];
             
             adminUsername = newName;
@@ -1388,7 +1390,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
             closeUserModal();
             renderUsers();
-            showToast("User account saved!");
+            showToast("User account saved successfully!");
         }
 
         function deleteUser(role) {
@@ -1472,7 +1474,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             closeRiceCalcModal();
             renderInventory();
             renderPOSGrid();
-            showToast("Rice pricing imported to inventory!");
+            showToast("Rice pricing imported to inventory successfully!");
         }
 
         /* BULK CASE / BOX PRICING CALCULATOR LOGIC */
@@ -1522,7 +1524,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             closeBulkCalcModal();
             renderInventory();
             renderPOSGrid();
-            showToast("Bulk box items imported to inventory!");
+            showToast("Bulk box items imported to inventory successfully!");
         }
 
         function showFormulaInfo(type) {
@@ -1600,7 +1602,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 products = products.filter(p => p.id !== id);
                 renderInventory();
                 renderPOSGrid();
-                showToast("Product deleted.");
+                showToast("Product deleted successfully.");
             }
         }
 
@@ -1653,7 +1655,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderRecentSales();
             renderDashboard();
             renderPLReport();
-            showToast("Expense saved & synced!");
+            showToast("Expense saved successfully!");
         }
 
         function deleteExpense(id) {
@@ -1665,7 +1667,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 renderTransactions();
                 renderDashboard();
                 renderPLReport();
-                showToast("Expense deleted.");
+                showToast("Expense deleted successfully.");
             }
         }
 
@@ -1735,7 +1737,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
             document.getElementById('p-item-name').value = '';
             renderPurchaser();
-            showToast("Item added!");
+            showToast("Item added successfully!");
         }
 
         function filterPurchaser(filter) {
@@ -1801,7 +1803,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             closeAddProductModal();
             renderInventory();
             renderPOSGrid();
-            showToast("Product saved!");
+            showToast("Product saved successfully!");
         }
 
         function renderInventory() {
@@ -1903,6 +1905,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderInventory();
             renderDashboard();
             renderPLReport();
+            renderUtang();
+            showToast("Quick sale recorded successfully!");
         }
 
         function openQuickSellModal() { populateQsProducts(); document.getElementById('quicksell-modal').classList.remove('hidden'); updateQuickSell(); }
@@ -1915,7 +1919,43 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
         function renderUtang() {
             let container = document.getElementById('utang-list-container');
-            container.innerHTML = `<div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl text-center obsidian-key"><p class="text-xs text-slate-400">No active utang records.</p></div>`;
+            let query = (document.getElementById('utang-search')?.value || '').toLowerCase();
+            
+            // Group utang by customer
+            let utangMap = {};
+            transactions.filter(t => t.type === 'Utang').forEach(t => {
+                let cust = t.customer || 'Walk-in Customer';
+                if (!utangMap[cust]) {
+                    utangMap[cust] = { total: 0, items: [] };
+                }
+                utangMap[cust].total += t.amount;
+                utangMap[cust].items.push(t);
+            });
+
+            let customers = Object.keys(utangMap);
+            let totalUncollected = customers.reduce((sum, c) => sum + utangMap[c].total, 0);
+            document.getElementById('total-utang-display').textContent = '₱' + totalUncollected.toLocaleString();
+
+            let html = '';
+            customers.forEach(cust => {
+                if (query && !cust.toLowerCase().includes(query)) return;
+                let data = utangMap[cust];
+                html += `
+                    <div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-2 obsidian-key">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="font-extrabold text-sm text-indigo-400">${cust}</span>
+                                <p class="text-[10px] text-slate-400">${data.items.length} uncollected record(s)</p>
+                            </div>
+                            <span class="font-black text-amber-400 text-base">₱${data.total.toLocaleString()}</span>
+                        </div>
+                        <div class="space-y-1 pt-2 border-t border-slate-200 dark:border-obsidianBorder text-xs">
+                            ${data.items.map(i => `<div class="flex justify-between text-slate-400"><span>${i.date} - ${i.items}</span><span class="font-bold text-amber-400">₱${i.amount.toLocaleString()}</span></div>`).join('')}
+                        </div>
+                    </div>`;
+            });
+
+            container.innerHTML = html || `<div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl text-center obsidian-key"><p class="text-xs text-slate-400">No active utang records found.</p></div>`;
         }
 
         function openEditTxModal(id) {
@@ -1943,7 +1983,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 renderRecentSales();
                 renderDashboard();
                 renderPLReport();
-                showToast("Transaction deleted.");
+                renderUtang();
+                showToast("Transaction deleted successfully.");
             }
         }
 
@@ -1964,8 +2005,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 renderRecentSales();
                 renderDashboard();
                 renderPLReport();
+                renderUtang();
                 closeEditTxModal();
-                showToast("Transaction updated!");
+                showToast("Transaction updated successfully!");
             }
         }
 
@@ -2278,6 +2320,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderInventory();
             renderDashboard();
             renderPLReport();
+            renderUtang();
+            showToast("Checkout completed successfully!");
         }
 
         function closeReceiptModal() {
@@ -2334,6 +2378,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderTransactions();
             renderRecentSales();
             renderDashboard();
+            renderUtang();
             calcMarginFormula();
             calcBreakEven();
         }
