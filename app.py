@@ -126,52 +126,50 @@ HTML_CONTENT = r"""<!DOCTYPE html>
     </div>
 
     <!-- CHECKOUT & TRANSACTION RECEIPT MODAL -->
-    <div id="receipt-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="w-full max-w-sm space-y-3">
-            <div id="receipt-card-content" class="bg-white dark:bg-obsidianCard border-2 border-indigo-500/50 rounded-3xl p-6 space-y-4 shadow-2xl obsidian-key text-center">
-                <div class="border-b-2 border-dashed border-slate-300 dark:border-obsidianBorder pb-3 space-y-1">
-                    <div class="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto text-xl shadow-md">
-                        <i class="fa-solid fa-store"></i>
-                    </div>
-                    <h3 class="text-lg font-black tracking-wider uppercase text-indigo-400">Ibañez Store</h3>
-                    <p class="text-[10px] text-slate-400 font-medium">Official Transaction Receipt</p>
-                    <div class="text-[10px] text-slate-400 font-bold pt-1 flex justify-between">
-                        <span id="rcpt-id">TX-000</span>
-                        <span id="rcpt-date">2026-10-20</span>
-                    </div>
+    <div id="receipt-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex flex-col items-center justify-center p-4 overflow-y-auto">
+        <div id="receipt-card-content" class="bg-white dark:bg-obsidianCard border-2 border-indigo-500/50 rounded-3xl w-full max-w-sm p-6 space-y-4 shadow-2xl obsidian-key text-center">
+            <div class="border-b-2 border-dashed border-slate-300 dark:border-obsidianBorder pb-3 space-y-1">
+                <div class="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto text-xl shadow-md">
+                    <i class="fa-solid fa-store"></i>
                 </div>
-
-                <div class="text-left bg-slate-100 dark:bg-[#12151C] p-2.5 rounded-xl border border-slate-300 dark:border-obsidianBorder flex justify-between items-center text-xs">
-                    <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Customer:</span>
-                    <span class="font-black text-indigo-400" id="rcpt-customer">Walk-in Customer</span>
+                <h3 class="text-lg font-black tracking-wider uppercase text-indigo-400">Ibañez Store</h3>
+                <p class="text-[10px] text-slate-400 font-medium">Official Transaction Receipt</p>
+                <div class="text-[10px] text-slate-400 font-bold pt-1 flex justify-between">
+                    <span id="rcpt-id">TX-000</span>
+                    <span id="rcpt-date">2026-10-20</span>
                 </div>
-
-                <div class="space-y-2 text-xs text-left max-h-48 overflow-y-auto pr-1">
-                    <div class="flex justify-between font-black text-[10px] text-slate-400 border-b border-slate-200 dark:border-obsidianBorder pb-1 uppercase">
-                        <span>ITEMS & DESCRIPTION</span>
-                        <span class="text-right">AMOUNT</span>
-                    </div>
-                    <div id="rcpt-items-breakdown" class="space-y-1.5 font-medium"></div>
-                </div>
-
-                <div class="bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl p-4 space-y-2 text-xs text-left">
-                    <div class="flex justify-between"><span class="text-slate-400 font-bold">Payment Method:</span><span class="font-black text-emerald-400" id="rcpt-type">Paid (Cash)</span></div>
-                    <div class="flex justify-between"><span class="text-slate-400 font-bold">Total Bill:</span><span class="font-black text-base" id="rcpt-total">₱0</span></div>
-                    <div class="flex justify-between"><span class="text-slate-400 font-bold">Cash Received:</span><span class="font-bold text-indigo-400" id="rcpt-cash">₱0</span></div>
-                    <div class="flex justify-between pt-2 border-t border-dashed border-slate-300 dark:border-obsidianBorder"><span class="font-black text-slate-300">Change Due:</span><span class="font-black text-lg text-emerald-400" id="rcpt-change">₱0</span></div>
-                </div>
-
-                <p class="text-[10px] text-slate-400 italic font-medium">Thank you for shopping with us!</p>
             </div>
 
-            <div class="space-y-2 pt-1">
-                <button onclick="saveReceiptToGallery()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl text-xs obsidian-key shadow-lg flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-download"></i> Save to Gallery
-                </button>
-                <button onclick="closeReceiptModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl text-xs obsidian-key shadow-lg flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-check"></i> Close Receipt
-                </button>
+            <div class="text-left bg-slate-100 dark:bg-[#12151C] p-2.5 rounded-xl border border-slate-300 dark:border-obsidianBorder flex justify-between items-center text-xs">
+                <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Customer:</span>
+                <span class="font-black text-indigo-400" id="rcpt-customer">Walk-in Customer</span>
             </div>
+
+            <div class="space-y-2 text-xs text-left max-h-56 overflow-y-auto pr-1">
+                <div class="flex justify-between font-black text-[10px] text-slate-400 border-b border-slate-200 dark:border-obsidianBorder pb-1 uppercase">
+                    <span>ITEMS & DESCRIPTION</span>
+                    <span class="text-right">AMOUNT</span>
+                </div>
+                <div id="rcpt-items-breakdown" class="space-y-1.5 font-medium"></div>
+            </div>
+
+            <div class="bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl p-4 space-y-2 text-xs text-left">
+                <div class="flex justify-between"><span class="text-slate-400 font-bold">Payment Method:</span><span class="font-black text-emerald-400" id="rcpt-type">Paid (Cash)</span></div>
+                <div class="flex justify-between"><span class="text-slate-400 font-bold">Total Bill:</span><span class="font-black text-base" id="rcpt-total">₱0</span></div>
+                <div class="flex justify-between"><span class="text-slate-400 font-bold">Cash Received:</span><span class="font-bold text-indigo-400" id="rcpt-cash">₱0</span></div>
+                <div class="flex justify-between pt-2 border-t border-dashed border-slate-300 dark:border-obsidianBorder"><span class="font-black text-slate-300">Change Due:</span><span class="font-black text-lg text-emerald-400" id="rcpt-change">₱0</span></div>
+            </div>
+
+            <p class="text-[10px] text-slate-400 italic font-medium">Thank you for shopping with us!</p>
+        </div>
+
+        <div class="w-full max-w-sm mt-3 space-y-2">
+            <button onclick="saveReceiptToGallery()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl text-xs obsidian-key shadow-lg flex items-center justify-center gap-2">
+                <i class="fa-solid fa-download"></i> Save to Gallery
+            </button>
+            <button onclick="closeReceiptModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl text-xs obsidian-key shadow-lg flex items-center justify-center gap-2">
+                <i class="fa-solid fa-check"></i> Close Receipt
+            </button>
         </div>
     </div>
 
@@ -1105,6 +1103,35 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         </div>
     </div>
 
+    <!-- SETTLEMENT MODAL FOR UTANG -->
+    <div id="settle-utang-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl obsidian-key">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
+                <h3 class="font-bold text-base">Settle Utang Balance</h3>
+                <button onclick="closeSettleModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-base"></i></button>
+            </div>
+            <div class="space-y-3 text-xs">
+                <input type="hidden" id="su-customer">
+                <div>
+                    <label class="block mb-1 font-bold text-slate-400">Customer</label>
+                    <div id="su-customer-name" class="font-black text-sm text-indigo-400">Customer</div>
+                </div>
+                <div>
+                    <label class="block mb-1 font-bold text-slate-400">Total Outstanding Balance</label>
+                    <div id="su-balance-display" class="font-black text-lg text-amber-400">₱0</div>
+                </div>
+                <div>
+                    <label class="block mb-1 font-bold">Payment Amount Collected (₱)</label>
+                    <input type="number" id="su-payment" placeholder="0.00" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 text-base font-black text-emerald-400">
+                </div>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="closeSettleModal()" class="flex-1 bg-slate-200 dark:bg-obsidianBorder font-bold py-3 rounded-xl text-xs obsidian-key">Cancel</button>
+                <button onclick="confirmSettleUtang()" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl text-xs obsidian-key shadow-lg">Confirm Payment</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let currentRole = 'Admin';
         const PASSWORDS = { 'Admin': 'admin123', 'Store Keeper': 'store123' };
@@ -1150,7 +1177,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             const dateStr = now.toLocaleDateString('en-US', options);
             const timeStr = now.toTimeString().split(' ')[0];
             const el = document.getElementById('live-date-timestamp');
-            if (el) el.textContent = `${dateStr} \vert{}${timeStr}`;
+            if (el) el.textContent = `${dateStr} | ${timeStr}`;
         }
         setInterval(updateLiveDateTime, 1000);
 
@@ -1165,6 +1192,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 err.classList.add('hidden');
                 document.getElementById('login-pass').value = '';
                 applyUserRolePermissions();
+                showToast(`Logged in as ${role}`);
             } else {
                 err.classList.remove('hidden');
             }
@@ -1574,7 +1602,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let boughtItems = purchaserItems.filter(i => i.status === 'Bought');
             let total = boughtItems.reduce((sum, i) => sum + i.amount, 0);
             document.getElementById('p-running-total').textContent = '₱' + total.toLocaleString();
-            document.getElementById('p-ratio').textContent = `${boughtItems.length} /${purchaserItems.length}`;
+            document.getElementById('p-ratio').textContent = `${boughtItems.length} / ${purchaserItems.length}`;
 
             let filtered = purchaserItems.filter(i => {
                 if (currentPurchaserFilter === 'To buy') return i.status === 'To buy';
@@ -1594,7 +1622,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <div class="p-4 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl space-y-2 text-xs obsidian-key">
                         <div class="flex justify-between items-center">
                             <div><span class="font-bold text-sm">${i.name}</span><div class="mt-1"><span class="px-2 py-0.5 rounded text-[10px] font-black ${i.status === 'Bought' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${i.status}</span></div></div>
-                            <div class="text-right"><span class="font-black text-emerald-400 text-sm">₱${i.amount.toLocaleString()}</span><p class="text-[10px] text-slate-400">${i.qty}${i.unit}</p></div>
+                            <div class="text-right"><span class="font-black text-emerald-400 text-sm">₱${i.amount.toLocaleString()}</span><p class="text-[10px] text-slate-400">${i.qty} ${i.unit}</p></div>
                         </div>
                     </div>`;
             });
@@ -1647,7 +1675,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         </div>
                         <div class="text-right">
                             <div class="font-black text-emerald-400 text-sm">₱${p.price}</div>
-                            <span class="text-slate-400 font-medium">${p.stock}${p.unit}</span>
+                            <span class="text-slate-400 font-medium">${p.stock} ${p.unit}</span>
                         </div>
                     </div>`;
             });
@@ -1689,7 +1717,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         function updateQuickSell() {
             let prod = products.find(p => p.id === selectedQsProductId) || products[0];
             let val = parseFloat(document.getElementById('qs-value-input').value) || 0;
-            document.getElementById('qs-stock-display').textContent = `Stock: ${prod.stock}${prod.unit}`;
+            document.getElementById('qs-stock-display').textContent = `Stock: ${prod.stock} ${prod.unit}`;
 
             let totalAmount = qsMode === 'kilo' ? val * prod.price : val;
             let kilos = qsMode === 'kilo' ? val : (prod.price > 0 ? val / prod.price : 0);
@@ -1710,7 +1738,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
             let txId = 'TX-' + Math.floor(1000 + Math.random() * 9000);
             let todayDate = new Date().toISOString().split('T')[0];
-            let itemDesc = `${prod.name} (${kilos.toFixed(2)}${prod.unit})`;
+            let itemDesc = `${prod.name} (${kilos.toFixed(2)} ${prod.unit})`;
 
             transactions.unshift({
                 id: txId, date: todayDate, customer, items: itemDesc, amount: totalAmount, cogs: prod.cost * kilos, cash: totalAmount, change: 0, type
@@ -1748,70 +1776,93 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let container = document.getElementById('utang-list-container');
             let query = (document.getElementById('utang-search')?.value || '').toLowerCase();
             
-            // Group utang by customer
-            let customerUtang = {};
+            // Group utang by customer name
+            let ledger = {};
             transactions.filter(t => t.type === 'Utang').forEach(t => {
-                let name = t.customer || 'Walk-in Customer';
-                if (!customerUtang[name]) {
-                    customerUtang[name] = { total: 0, items: [], records: [] };
-                }
-                customerUtang[name].total += t.amount;
-                customerUtang[name].items.push(t.items);
-                customerUtang[name].records.push(t);
+                let name = t.customer || 'Unknown';
+                if (!ledger[name]) ledger[name] = { totalUtang: 0, records: [] };
+                ledger[name].totalUtang += t.amount;
+                ledger[name].records.push(t);
             });
 
-            let totalUncollected = Object.values(customerUtang).reduce((sum, c) => sum + c.total, 0);
+            let totalUncollected = Object.values(ledger).reduce((sum, cust) => sum + cust.totalUtang, 0);
             document.getElementById('total-utang-display').textContent = '₱' + totalUncollected.toLocaleString();
 
             let html = '';
-            let keys = Object.keys(customerUtang);
-            
-            if (keys.length === 0) {
-                container.innerHTML = `<div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl text-center obsidian-key"><p class="text-xs text-slate-400">No active utang records.</p></div>`;
+            let custNames = Object.keys(ledger);
+
+            if (custNames.length === 0) {
+                container.innerHTML = `<div class="p-6 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl text-center obsidian-key"><p class="text-xs text-slate-400">No active utang records found.</p></div>`;
                 return;
             }
 
-            keys.forEach(name => {
+            custNames.forEach(name => {
                 if (query && !name.toLowerCase().includes(query)) return;
-                let data = customerUtang[name];
-                if (utangFilter === 'balance' && data.total <= 0) return;
+                let data = ledger[name];
+                if (utangFilter === 'balance' && data.totalUtang <= 0) return;
 
                 html += `
                     <div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-3 obsidian-key">
                         <div class="flex justify-between items-center">
                             <div>
-                                <h4 class="font-black text-sm">${name}</h4>
-                                <p class="text-[11px] text-slate-400">${data.items.join(', ')}</p>
+                                <h4 class="font-black text-sm text-indigo-400">${name}</h4>
+                                <span class="text-[10px] text-slate-400 font-bold">${data.records.length} purchase record(s)</span>
                             </div>
                             <div class="text-right">
-                                <span class="font-black text-amber-400 text-base">₱${data.total.toLocaleString()}</span>
-                                <span class="block text-[10px] font-bold text-slate-400">Balance Due</span>
+                                <span class="text-base font-black text-amber-400">₱${data.totalUtang.toLocaleString()}</span>
+                                <button onclick="openSettleModal('${name}', ${data.totalUtang})" class="block mt-1 bg-emerald-500/20 text-emerald-400 font-bold px-3 py-1 rounded-xl text-[10px] obsidian-key ml-auto">Settle / Pay</button>
                             </div>
                         </div>
-                        <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-obsidianBorder">
-                            <button onclick="settleUtang('${name}')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-3 py-1.5 rounded-xl text-xs obsidian-key">Settle Payment</button>
+                        <div class="space-y-1.5 pt-2 border-t border-slate-200 dark:border-obsidianBorder/60 text-xs">
+                `;
+
+                data.records.forEach(r => {
+                    html += `
+                        <div class="flex justify-between items-center text-[11px]">
+                            <span class="text-slate-400">${r.date} — ${r.items}</span>
+                            <span class="font-bold text-slate-200">₱${r.amount.toLocaleString()}</span>
                         </div>
-                    </div>`;
+                    `;
+                });
+
+                html += `</div></div>`;
             });
 
-            container.innerHTML = html || `<div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl text-center obsidian-key"><p class="text-xs text-slate-400">No matching utang records found.</p></div>`;
+            container.innerHTML = html || `<div class="p-6 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl text-center obsidian-key"><p class="text-xs text-slate-400">No matching customers found.</p></div>`;
         }
 
-        function settleUtang(customerName) {
-            if (confirm(`Mark all utang for ${customerName} as paid/settled?`)) {
-                transactions.forEach(t => {
-                    if (t.customer === customerName && t.type === 'Utang') {
-                        t.type = 'Paid';
-                        t.cash = t.amount;
-                        t.change = 0;
-                    }
-                });
-                renderUtang();
-                renderTransactions();
-                renderDashboard();
-                renderPLReport();
-                showToast(`Utang for ${customerName} marked as settled!`);
-            }
+        function openSettleModal(customerName, balance) {
+            document.getElementById('su-customer').value = customerName;
+            document.getElementById('su-customer-name').textContent = customerName;
+            document.getElementById('su-balance-display').textContent = '₱' + balance.toLocaleString();
+            document.getElementById('su-payment').value = balance;
+            document.getElementById('settle-utang-modal').classList.remove('hidden');
+        }
+
+        function closeSettleModal() {
+            document.getElementById('settle-utang-modal').classList.add('hidden');
+        }
+
+        function confirmSettleUtang() {
+            let customerName = document.getElementById('su-customer').value;
+            let payment = parseFloat(document.getElementById('su-payment').value) || 0;
+            if (payment <= 0) return;
+
+            // Convert utang records to Paid for this customer up to payment amount
+            let todayDate = new Date().toISOString().split('T')[0];
+            transactions.forEach(t => {
+                if (t.customer === customerName && t.type === 'Utang') {
+                    t.type = 'Paid';
+                    t.cash = t.amount;
+                }
+            });
+
+            closeSettleModal();
+            renderUtang();
+            renderTransactions();
+            renderDashboard();
+            renderPLReport();
+            showToast(`Utang settled for ${customerName}!`);
         }
 
         function openEditTxModal(id) {
@@ -1959,7 +2010,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <div class="p-4 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-2 obsidian-key">
                         <div class="flex justify-between items-start">
                             <div>
-                                <h4 class="font-extrabold text-sm">${t.date} \vert{}${t.customer}</h4>
+                                <h4 class="font-extrabold text-sm">${t.date} | ${t.customer}</h4>
                                 <p class="text-xs text-slate-400">${t.items}</p>
                             </div>
                             <div class="text-right">
@@ -1995,7 +2046,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 html += `
                     <div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl flex justify-between items-center obsidian-key">
                         <div>
-                            <h4 class="font-bold text-sm">${t.date} \vert{}${t.customer}</h4>
+                            <h4 class="font-bold text-sm">${t.date} | ${t.customer}</h4>
                             <p class="text-xs text-slate-400">${t.items}</p>
                         </div>
                         <div class="text-right">
@@ -2082,4 +2133,213 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         ${cartQty > 0 ? `<div class="absolute top-3 right-3 w-6 h-6 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center">${cartQty}</div>` : ''}
                         <h4 class="font-bold text-sm pr-6 leading-snug">${p.name}</h4>
                         <div class="text-emerald-400 font-bold text-sm">₱${p.price.toLocaleString()}</div>
-                        
+                        <p class="text-[11px] text-slate-400 font-medium">${p.stock} ${p.unit}</p>
+                    </div>`;
+            });
+            document.getElementById('pos-products-grid').innerHTML = html;
+        }
+
+        function addToCart(id) {
+            let p = products.find(prod => prod.id === id);
+            if (!cart[id]) cart[id] = { name: p.name, price: p.price, cost: p.cost, qty: 1 };
+            else cart[id].qty += 1;
+            renderPOSGrid();
+            renderCart();
+        }
+
+        function changeQty(id, delta) {
+            if (cart[id]) {
+                cart[id].qty += delta;
+                if (cart[id].qty <= 0) delete cart[id];
+            }
+            renderPOSGrid();
+            renderCart();
+        }
+
+        function clearCart() {
+            cart = {};
+            document.getElementById('pos-cash-input').value = '';
+            renderPOSGrid();
+            renderCart();
+            showToast("Cart cleared");
+        }
+
+        function renderCart() {
+            let list = document.getElementById('pos-cart-list');
+            let keys = Object.keys(cart);
+            let total = 0;
+
+            if (keys.length === 0) {
+                list.innerHTML = '<p class="text-xs text-slate-400 py-2">No items in cart.</p>';
+                document.getElementById('pos-total-display').textContent = '₱0';
+                document.getElementById('pos-change-row').classList.add('hidden');
+                return;
+            }
+
+            let html = '';
+            keys.forEach(id => {
+                let item = cart[id];
+                let subtotal = item.price * item.qty;
+                total += subtotal;
+                html += `
+                    <div class="flex justify-between items-center py-1 border-b border-slate-200 dark:border-obsidianBorder">
+                        <div>
+                            <span class="font-bold text-sm block">${item.name}</span>
+                            <span class="text-xs text-slate-400">₱${item.price} × ${item.qty} = ₱${subtotal}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="changeQty('${id}', -1)" class="w-7 h-7 rounded-lg bg-slate-200 dark:bg-obsidianBorder font-black obsidian-key">-</button>
+                            <span class="font-bold text-sm w-4 text-center">${item.qty}</span>
+                            <button onclick="changeQty('${id}', 1)" class="w-7 h-7 rounded-lg bg-slate-200 dark:bg-obsidianBorder font-black obsidian-key">+</button>
+                        </div>
+                    </div>`;
+            });
+            list.innerHTML = html;
+            document.getElementById('pos-total-display').textContent = '₱' + total.toLocaleString();
+            updatePOSCalculations();
+        }
+
+        function updatePOSCalculations() {
+            let total = Object.values(cart).reduce((sum, item) => sum + (item.price * item.qty), 0);
+            let cash = parseFloat(document.getElementById('pos-cash-input').value) || 0;
+            let changeRow = document.getElementById('pos-change-row');
+
+            if (cash > 0 && total > 0) {
+                let change = cash - total;
+                changeRow.classList.remove('hidden');
+                document.getElementById('pos-change-val').textContent = '₱' + (change >= 0 ? change.toLocaleString() : '0');
+            } else {
+                changeRow.classList.add('hidden');
+            }
+        }
+
+        function checkout(type) {
+            let keys = Object.keys(cart);
+            if (keys.length === 0) return;
+
+            let total = 0, totalCogs = 0;
+            keys.forEach(k => {
+                let prod = products.find(p => p.id === k);
+                if (prod) {
+                    total += prod.price * cart[k].qty;
+                    totalCogs += prod.cost * cart[k].qty;
+                    prod.stock = Math.max(0, prod.stock - cart[k].qty);
+                }
+            });
+
+            let cash = parseFloat(document.getElementById('pos-cash-input').value) || total;
+            let change = Math.max(0, cash - total);
+            let customer = document.getElementById('pos-customer-input').value.trim() || 'Walk-in Customer';
+            let itemSummary = keys.map(k => `${cart[k].name} x${cart[k].qty}`).join(', ');
+            let txId = 'TX-' + Math.floor(1000 + Math.random() * 9000);
+            let todayDate = new Date().toISOString().split('T')[0];
+
+            transactions.unshift({
+                id: txId, date: todayDate, customer, items: itemSummary, amount: total, cogs: totalCogs, cash, change, type
+            });
+
+            openReceiptModal(txId, customer, itemSummary, total, cash, change, type, todayDate);
+
+            clearCart();
+            renderTransactions();
+            renderRecentSales();
+            renderInventory();
+            renderDashboard();
+            renderUtang();
+            renderPLReport();
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receipt-modal').classList.add('hidden');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('top-toast');
+            document.getElementById('top-toast-msg').textContent = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 4000);
+        }
+
+        function calcMarginFormula() {
+            let sell = parseFloat(document.getElementById('bm-sell').value) || 0;
+            let cost = parseFloat(document.getElementById('bm-cost').value) || 0;
+            let marginPct = sell > 0 ? ((sell - cost) / sell) * 100 : 0;
+
+            document.getElementById('bm-formula-txt').textContent = `(${sell} - ${cost}) ÷ ${sell} × 100%`;
+            document.getElementById('bm-margin-val').textContent = marginPct.toFixed(1) + '%';
+            document.getElementById('be-margin-pct').value = marginPct.toFixed(1);
+            calcBreakEven();
+        }
+
+        function calcBreakEven() {
+            let rent = parseFloat(document.getElementById('be-rent').value) || 0;
+            let salary = parseFloat(document.getElementById('be-salary').value) || 0;
+            let electricity = parseFloat(document.getElementById('be-electricity').value) || 0;
+            let water = parseFloat(document.getElementById('be-water').value) || 0;
+            let permits = parseFloat(document.getElementById('be-permits').value) || 0;
+            let delivery = parseFloat(document.getElementById('be-delivery').value) || 0;
+            let userMargin = parseFloat(document.getElementById('be-margin-pct').value) || 20;
+
+            let totalFixed = rent + salary + electricity + water + permits + delivery;
+            let marginDec = userMargin > 0 ? (userMargin / 100) : 0.20;
+            let monthlySales = marginDec > 0 ? (totalFixed / marginDec) : 0;
+            let dailySales = monthlySales / 30;
+
+            document.getElementById('be-out-total').textContent = '₱' + totalFixed.toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('be-out-monthly').textContent = '₱' + monthlySales.toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('be-out-daily').textContent = '₱' + dailySales.toLocaleString('en-US', {minimumFractionDigits: 2}) + ' / day';
+
+            renderPLReport();
+        }
+
+        window.onload = function() {
+            updateLiveDateTime();
+            applyUserRolePermissions();
+            renderPOSGrid();
+            renderInventory();
+            renderPurchaser();
+            renderExpenses();
+            renderTransactions();
+            renderRecentSales();
+            renderDashboard();
+            renderUtang();
+            calcMarginFormula();
+            calcBreakEven();
+        }
+    </script>
+</body>
+</html>
+"""
+
+class StoreHandler(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == '/' or self.path == '/index.html':
+            self.send_response(200)
+            self.send_header("Content-type", "text/html; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(HTML_CONTENT.encode("utf-8"))
+        else:
+            self.send_response(404)
+            self.end_headers()
+
+    def log_message(self, format, *args):
+        pass
+
+def run_server():
+    with socketserver.TCPServer(("0.0.0.0", PORT), StoreHandler) as httpd:
+        httpd.serve_forever()
+
+if __name__ == '__main__':
+    server_thread = threading.Thread(target=run_server, daemon=True)
+    server_thread.start()
+    webbrowser.open(f"http://127.0.0.1:{PORT}")
+    print("\n=======================================================")
+    print(f"  Ibañez Vault Store App is running!")
+    print(f"  Local Device Link : http://127.0.0.1:{PORT}")
+    print(f"  Any Phone/Device Link: http://{LOCAL_IP}:{PORT}")
+    print("=======================================================\n")
+    try:
+        while True:
+            threading.Event().wait(1)
+    except KeyboardInterrupt:
+        pass
