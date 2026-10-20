@@ -366,7 +366,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
     <main class="flex-1 max-w-4xl w-full mx-auto p-4 space-y-5">
 
         <!-- DASHBOARD TAB -->
-        <section id="view-dashboard" class="space-y-5">
+        <section id="view-dashboard" class="space-y-4">
             <div class="flex justify-between items-start pt-1">
                 <div>
                     <h1 id="dash-greeting" class="text-xl font-black tracking-tight">Hi, Administrator</h1>
@@ -376,12 +376,46 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     </div>
                 </div>
                 <div class="text-right">
-                    <span class="text-[10px] uppercase font-black text-slate-400 tracking-wider">TODAY</span>
+                    <span class="text-[10px] uppercase font-black text-slate-400 tracking-wider">LIVE TODAY</span>
                     <div id="dash-today-sales" class="text-xl font-black text-emerald-400">₱0</div>
                     <span id="dash-today-count" class="text-[11px] text-slate-400 block font-bold">0 sales</span>
                 </div>
             </div>
 
+            <!-- DASHBOARD CATEGORY & TIME-PERIOD CONTROLLER -->
+            <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key">
+                <div class="flex justify-between items-center">
+                    <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider"><i class="fa-solid fa-calendar-days text-indigo-400 mr-1"></i> Dashboard View Period</span>
+                    <div class="flex bg-slate-100 dark:bg-[#12151C] p-1 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder">
+                        <button onclick="setDashPeriod('daily')" id="dash-tab-daily" class="px-3 py-1 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key">Daily</button>
+                        <button onclick="setDashPeriod('monthly')" id="dash-tab-monthly" class="px-3 py-1 rounded-xl text-xs font-bold text-slate-400">Monthly</button>
+                        <button onclick="setDashPeriod('yearly')" id="dash-tab-yearly" class="px-3 py-1 rounded-xl text-xs font-bold text-slate-400">Yearly</button>
+                    </div>
+                </div>
+
+                <!-- DYNAMIC PICKER INPUTS -->
+                <div class="pt-1 flex justify-between items-center bg-slate-100 dark:bg-[#12151C] p-3 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder">
+                    <label id="dash-picker-label" class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Select Date:</label>
+                    
+                    <div id="dash-picker-daily-container">
+                        <input type="date" id="dash-date-picker" onchange="renderDashboard()" class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 text-xs font-black text-indigo-400 focus:outline-none focus:border-indigo-500 shadow-inner">
+                    </div>
+
+                    <div id="dash-picker-monthly-container" class="hidden">
+                        <input type="month" id="dash-month-picker" onchange="renderDashboard()" class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 text-xs font-black text-indigo-400 focus:outline-none focus:border-indigo-500 shadow-inner">
+                    </div>
+
+                    <div id="dash-picker-yearly-container" class="hidden">
+                        <select id="dash-year-picker" onchange="renderDashboard()" class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 text-xs font-black text-indigo-400 focus:outline-none focus:border-indigo-500 shadow-inner">
+                            <option value="2026">2026</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DASHBOARD STAT CARDS GRID -->
             <div class="grid grid-cols-2 gap-3.5">
                 <div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl relative space-y-2 obsidian-key">
                     <div class="flex justify-between items-center">
@@ -391,7 +425,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         </button>
                     </div>
                     <div id="dash-revenue" class="text-2xl font-black text-emerald-400">₱0</div>
-                    <p class="text-[11px] text-slate-400 font-medium">All completed sales</p>
+                    <p class="text-[11px] text-slate-400 font-medium" id="dash-rev-lbl">Completed sales</p>
                 </div>
 
                 <div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl relative space-y-2 obsidian-key">
@@ -401,8 +435,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                             <i class="fa-solid fa-circle-question text-xs"></i>
                         </button>
                     </div>
-                    <div id="dash-expenses" class="text-2xl font-black text-rose-500">₱150</div>
-                    <p class="text-[11px] text-slate-400 font-medium">Costs + store purchases</p>
+                    <div id="dash-expenses" class="text-2xl font-black text-rose-500">₱0</div>
+                    <p class="text-[11px] text-slate-400 font-medium">Incurred costs</p>
                 </div>
 
                 <div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl relative space-y-2 obsidian-key">
@@ -421,7 +455,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
                 <div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl relative space-y-2 obsidian-key">
                     <div class="flex justify-between items-center">
-                        <span id="dash-winloss-label" class="text-[10px] font-black tracking-wider uppercase text-emerald-400">TODAY'S WIN (NET)</span>
+                        <span id="dash-winloss-label" class="text-[10px] font-black tracking-wider uppercase text-emerald-400">NET WIN / PROFIT</span>
                         <button onclick="showFormulaInfo('winloss')" id="dash-winloss-btn" class="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 hover:scale-105 transition-all">
                             <i class="fa-solid fa-circle-question text-xs"></i>
                         </button>
@@ -1229,6 +1263,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         let selectedQsProductId = '5';
         let utangFilter = 'balance';
 
+        let dashPeriod = 'daily'; // 'daily', 'monthly', 'yearly'
+
         let transactions = [
             { id: 'TX-1309', date: '2026-10-19 14:20:00', customer: 'Mina', items: 'Coca-Cola 1.5L Bottle x1, Jasmine Rice x1, Kopiko Brown Coffee x1', amount: 142, cogs: 115, cash: 500, change: 358, type: 'Paid' },
             { id: 'TX-1001', date: '2026-10-20 09:15:00', customer: 'Dikong', items: 'Jasmine Rice (20 kg) x1, Bear Brand 33g x21', amount: 1473, cogs: 1170, cash: 2000, change: 527, type: 'Paid' },
@@ -1245,6 +1281,25 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             if (el) el.textContent = `${dateStr} | ${timeStr}`;
         }
         setInterval(updateLiveDateTime, 1000);
+
+        function setDashPeriod(period) {
+            dashPeriod = period;
+            ['daily', 'monthly', 'yearly'].forEach(p => {
+                let btn = document.getElementById('dash-tab-' + p);
+                if (btn) btn.className = (p === period) ? "px-3 py-1 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key" : "px-3 py-1 rounded-xl text-xs font-bold text-slate-400";
+            });
+
+            document.getElementById('dash-picker-daily-container').classList.toggle('hidden', period !== 'daily');
+            document.getElementById('dash-picker-monthly-container').classList.toggle('hidden', period !== 'monthly');
+            document.getElementById('dash-picker-yearly-container').classList.toggle('hidden', period !== 'yearly');
+
+            let lbl = document.getElementById('dash-picker-label');
+            if (period === 'daily') lbl.textContent = "Select Date:";
+            else if (period === 'monthly') lbl.textContent = "Select Month:";
+            else lbl.textContent = "Select Year:";
+
+            renderDashboard();
+        }
 
         function togglePasswordVisibility() {
             let passInput = document.getElementById('login-pass');
@@ -1486,9 +1541,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 desc.textContent = "Gross Profit is your total sales minus the cost of goods sold (COGS).";
                 calc.textContent = "Gross Profit = Sales - COGS\nMargin % = (Gross Profit ÷ Sales) × 100%";
             } else if (type === 'winloss') {
-                title.innerHTML = '<i class="fa-solid fa-circle-question text-emerald-400"></i> Today\'s Net Win / Loss';
-                desc.textContent = "Net Win calculates your actual daily take-home earnings after paying off today's expenses.";
-                calc.textContent = "Net Win/Loss = Gross Profit - Today's Expenses";
+                title.innerHTML = '<i class="fa-solid fa-circle-question text-emerald-400"></i> Net Win / Loss';
+                desc.textContent = "Net Win calculates your actual take-home earnings after paying off expenses for the selected period.";
+                calc.textContent = "Net Win/Loss = Gross Profit - Expenses";
             }
             modal.classList.remove('hidden');
         }
@@ -1636,7 +1691,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         function renderExpenses() {
             let total = expenses.reduce((sum, e) => sum + e.amount, 0);
             document.getElementById('total-expenses-display').textContent = '₱' + total.toLocaleString();
-            document.getElementById('dash-expenses').textContent = '₱' + total.toLocaleString();
             let emptyState = document.getElementById('expenses-empty-state');
             let list = document.getElementById('expenses-list-container');
 
@@ -2376,23 +2430,57 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function renderDashboard() {
-            let todayDate = new Date().toISOString().split('T')[0];
-            let todaySales = transactions.filter(t => t.date.startsWith(todayDate) && t.type !== 'Expense');
-            let todayExpenses = expenses.filter(e => e.date === todayDate);
+            let todayStr = new Date().toISOString().split('T')[0];
+            
+            // 1. Calculate Live Today Badge Top Right
+            let liveTodaySales = transactions.filter(t => t.date.startsWith(todayStr) && t.type !== 'Expense');
+            let liveTodayRev = liveTodaySales.reduce((sum, s) => sum + s.amount, 0);
+            document.getElementById('dash-today-sales').textContent = '₱' + liveTodayRev.toLocaleString();
+            document.getElementById('dash-today-count').textContent = `${liveTodaySales.length} sales`;
 
-            let revToday = todaySales.reduce((sum, s) => sum + s.amount, 0);
-            let cogsToday = todaySales.reduce((sum, s) => sum + (s.cogs || 0), 0);
-            let grossProfitToday = revToday - cogsToday;
-            let grossProfitPctToday = revToday > 0 ? (grossProfitToday / revToday) * 100 : 0;
-            let expToday = todayExpenses.reduce((sum, e) => sum + e.amount, 0);
-            let netWinLoss = grossProfitToday - expToday;
+            // 2. Filter Transactions & Expenses based on Selected Period (Daily, Monthly, Yearly)
+            let filteredSales = [];
+            let filteredExpenses = [];
 
-            document.getElementById('dash-today-sales').textContent = '₱' + revToday.toLocaleString();
-            document.getElementById('dash-today-count').textContent = `${todaySales.length} sales`;
-            document.getElementById('dash-revenue').textContent = '₱' + revToday.toLocaleString();
-            document.getElementById('dash-profit').textContent = '₱' + grossProfitToday.toLocaleString();
-            document.getElementById('dash-profit-pct').textContent = `(${grossProfitPctToday.toFixed(1)}%)`;
-            document.getElementById('dash-net-winloss').textContent = '₱' + netWinLoss.toLocaleString();
+            if (dashPeriod === 'daily') {
+                let chosenDate = document.getElementById('dash-date-picker')?.value || todayStr;
+                filteredSales = transactions.filter(t => t.date.startsWith(chosenDate) && t.type !== 'Expense');
+                filteredExpenses = expenses.filter(e => e.date === chosenDate);
+                document.getElementById('dash-rev-lbl').textContent = `Sales on ${chosenDate}`;
+            } else if (dashPeriod === 'monthly') {
+                let currentMonthStr = todayStr.substring(0, 7);
+                let chosenMonth = document.getElementById('dash-month-picker')?.value || currentMonthStr;
+                filteredSales = transactions.filter(t => t.date.startsWith(chosenMonth) && t.type !== 'Expense');
+                filteredExpenses = expenses.filter(e => e.date.startsWith(chosenMonth));
+                document.getElementById('dash-rev-lbl').textContent = `Sales in ${chosenMonth}`;
+            } else if (dashPeriod === 'yearly') {
+                let currentYearStr = todayStr.substring(0, 4);
+                let chosenYear = document.getElementById('dash-year-picker')?.value || currentYearStr;
+                filteredSales = transactions.filter(t => t.date.startsWith(chosenYear) && t.type !== 'Expense');
+                filteredExpenses = expenses.filter(e => e.date.startsWith(chosenYear));
+                document.getElementById('dash-rev-lbl').textContent = `Sales in ${chosenYear}`;
+            }
+
+            // 3. Compute Metrics for Selected Period
+            let rev = filteredSales.reduce((sum, s) => sum + s.amount, 0);
+            let cogs = filteredSales.reduce((sum, s) => sum + (s.cogs || 0), 0);
+            let grossProfit = rev - cogs;
+            let grossProfitPct = rev > 0 ? (grossProfit / rev) * 100 : 0;
+            let exp = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
+            let netWinLoss = grossProfit - exp;
+
+            document.getElementById('dash-revenue').textContent = '₱' + rev.toLocaleString();
+            document.getElementById('dash-expenses').textContent = '₱' + exp.toLocaleString();
+            document.getElementById('dash-profit').textContent = '₱' + grossProfit.toLocaleString();
+            document.getElementById('dash-profit-pct').textContent = `(${grossProfitPct.toFixed(1)}%)`;
+            
+            let winLossEl = document.getElementById('dash-net-winloss');
+            winLossEl.textContent = (netWinLoss >= 0 ? '₱' : '-₱') + Math.abs(netWinLoss).toLocaleString();
+            if (netWinLoss < 0) {
+                winLossEl.className = "text-2xl font-black text-rose-500";
+            } else {
+                winLossEl.className = "text-2xl font-black text-emerald-400";
+            }
         }
 
         function renderPLReport() {
@@ -2616,6 +2704,16 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
         window.onload = function() {
             updateLiveDateTime();
+            
+            // Set default date pickers to current date
+            let todayStr = new Date().toISOString().split('T')[0];
+            let currentMonthStr = todayStr.substring(0, 7);
+            let currentYearStr = todayStr.substring(0, 4);
+
+            if (document.getElementById('dash-date-picker')) document.getElementById('dash-date-picker').value = todayStr;
+            if (document.getElementById('dash-month-picker')) document.getElementById('dash-month-picker').value = currentMonthStr;
+            if (document.getElementById('dash-year-picker')) document.getElementById('dash-year-picker').value = currentYearStr;
+
             applyUserRolePermissions();
             renderPOSGrid();
             renderInventory();
