@@ -100,8 +100,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 <div>
                     <label class="text-slate-600 dark:text-slate-400 text-[11px] font-bold block mb-1 uppercase tracking-wider">Username / Role</label>
                     <select id="login-role" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:border-indigo-500">
-                        <option value="Admin">Admin</option>
-                        <option value="Store Keeper">Store Keeper</option>
                     </select>
                 </div>
                 <div>
@@ -875,12 +873,32 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         <!-- USERS MANAGEMENT TAB (ADMIN ONLY) -->
         <section id="view-users" class="hidden space-y-4 admin-only">
             <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-5 space-y-4 obsidian-key">
-                <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
+                <!-- ADMIN EDIT OWN PROFILE CARD -->
+                <div class="p-4 bg-indigo-950/30 border-2 border-indigo-500/40 rounded-2xl space-y-3 obsidian-key">
+                    <h3 class="font-bold text-sm text-indigo-400 flex items-center gap-2">
+                        <i class="fa-solid fa-user-shield"></i> Change Admin Credentials
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div>
+                            <label class="block mb-1 font-bold text-slate-400">Admin Username</label>
+                            <input type="text" id="admin-new-username" value="Admin" class="w-full bg-white dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                        </div>
+                        <div>
+                            <label class="block mb-1 font-bold text-slate-400">New Password</label>
+                            <input type="password" id="admin-new-password" placeholder="Enter password" class="w-full bg-white dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                        </div>
+                    </div>
+                    <button onclick="updateAdminCredentials()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs obsidian-key shadow-lg">
+                        Update Admin Credentials
+                    </button>
+                </div>
+
+                <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder pt-2">
                     <div>
                         <h2 class="font-bold text-base flex items-center gap-2">
-                            <i class="fa-solid fa-users text-indigo-400"></i> User Accounts & Passwords
+                            <i class="fa-solid fa-users text-indigo-400"></i> Store Keeper Accounts & Passwords
                         </h2>
-                        <p class="text-xs text-slate-400 mt-1">Manage system logins, roles, and security keys.</p>
+                        <p class="text-xs text-slate-400 mt-1">Manage secondary logins and security keys.</p>
                     </div>
                     <button onclick="openAddUserModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3.5 py-2 rounded-xl text-xs obsidian-key flex items-center gap-1.5 shadow-lg">
                         <i class="fa-solid fa-user-plus"></i> Add User
@@ -1144,6 +1162,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
     </div>
 
     <script>
+        let adminUsername = 'Admin';
         let currentRole = 'Admin';
         let PASSWORDS = { 'Admin': 'admin123', 'Store Keeper': 'store123' };
 
@@ -1215,8 +1234,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let greeting = document.getElementById('dash-greeting');
             let pill = document.getElementById('dash-role-pill');
             
-            if (currentRole === 'Admin') {
-                greeting.textContent = 'Hi, Administrator';
+            if (currentRole === adminUsername) {
+                greeting.textContent = 'Hi, ' + adminUsername;
                 pill.textContent = 'Administrator';
             } else {
                 greeting.textContent = 'Hi, ' + currentRole;
@@ -1225,7 +1244,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
             let adminEls = document.querySelectorAll('.admin-only');
             adminEls.forEach(el => {
-                if (currentRole === 'Admin') {
+                if (currentRole === adminUsername) {
                     el.classList.remove('hidden');
                 } else {
                     el.classList.add('hidden');
@@ -1238,7 +1257,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderPurchaser();
             renderDashboard();
             renderPLReport();
-            if (currentRole === 'Admin') renderUsers();
+            if (currentRole === adminUsername) renderUsers();
         }
 
         function toggleTheme() {
@@ -1269,7 +1288,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             
             if (tab === 'pl') renderPLReport();
             if (tab === 'dashboard') renderDashboard();
-            if (tab === 'users' && currentRole === 'Admin') renderUsers();
+            if (tab === 'users' && currentRole === adminUsername) renderUsers();
         }
 
         function openQuickActionModal() { document.getElementById('quick-action-modal').classList.remove('hidden'); }
@@ -1277,10 +1296,14 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
         /* USER MANAGEMENT FUNCTIONS */
         function renderUsers() {
-            if (currentRole !== 'Admin') return;
+            if (currentRole !== adminUsername) return;
+            
+            document.getElementById('admin-new-username').value = adminUsername;
+            
             let container = document.getElementById('users-list-container');
-            let keys = Object.keys(PASSWORDS);
+            let keys = Object.keys(PASSWORDS).filter(k => k !== adminUsername);
             let html = '';
+            
             keys.forEach(role => {
                 let pass = PASSWORDS[role];
                 html += `
@@ -1291,18 +1314,38 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         </div>
                         <div class="flex gap-2">
                             <button onclick="openEditUserModal('${role}')" class="bg-indigo-500/10 text-indigo-400 font-bold px-3 py-1.5 rounded-xl text-xs obsidian-key">Edit</button>
-                            ${role !== 'Admin' ? `<button onclick="deleteUser('${role}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1.5 rounded-xl text-xs obsidian-key">Delete</button>` : ''}
+                            <button onclick="deleteUser('${role}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1.5 rounded-xl text-xs obsidian-key">Delete</button>
                         </div>
                     </div>`;
             });
-            container.innerHTML = html;
+            container.innerHTML = html || '<p class="text-xs text-slate-400 py-2">No secondary user accounts.</p>';
 
             let select = document.getElementById('login-role');
-            select.innerHTML = keys.map(r => `<option value="${r}">${r}</option>`).join('');
+            let allKeys = Object.keys(PASSWORDS);
+            select.innerHTML = allKeys.map(r => `<option value="${r}">${r}</option>`).join('');
+        }
+
+        function updateAdminCredentials() {
+            if (currentRole !== adminUsername) return showToast("Admin access required");
+            let newName = document.getElementById('admin-new-username').value.trim();
+            let newPass = document.getElementById('admin-new-password').value.trim();
+            if (!newName || !newPass) return showToast("Enter valid username and password");
+
+            let oldPass = PASSWORDS[adminUsername];
+            delete PASSWORDS[adminUsername];
+            
+            adminUsername = newName;
+            currentRole = newName;
+            PASSWORDS[adminUsername] = newPass;
+
+            document.getElementById('admin-new-password').value = '';
+            renderUsers();
+            applyUserRolePermissions();
+            showToast("Admin credentials updated successfully!");
         }
 
         function openAddUserModal() {
-            if (currentRole !== 'Admin') return showToast("Admin access required");
+            if (currentRole !== adminUsername) return showToast("Admin access required");
             document.getElementById('um-title').textContent = 'Add User Account';
             document.getElementById('um-original-role').value = '';
             document.getElementById('um-role').value = '';
@@ -1311,7 +1354,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function openEditUserModal(role) {
-            if (currentRole !== 'Admin') return showToast("Admin access required");
+            if (currentRole !== adminUsername) return showToast("Admin access required");
             document.getElementById('um-title').textContent = 'Edit User Account';
             document.getElementById('um-original-role').value = role;
             document.getElementById('um-role').value = role;
@@ -1324,11 +1367,13 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function saveUser() {
-            if (currentRole !== 'Admin') return showToast("Admin access required");
+            if (currentRole !== adminUsername) return showToast("Admin access required");
             let orig = document.getElementById('um-original-role').value;
             let role = document.getElementById('um-role').value.trim();
             let pass = document.getElementById('um-pass').value.trim();
             if (!role || !pass) return showToast("Enter valid username and password");
+
+            if (role === adminUsername) return showToast("Username reserved for Admin profile card");
 
             if (orig && orig !== role) {
                 delete PASSWORDS[orig];
@@ -1341,8 +1386,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function deleteUser(role) {
-            if (currentRole !== 'Admin') return showToast("Admin access required");
-            if (role === 'Admin') return showToast("Cannot delete primary Admin");
+            if (currentRole !== adminUsername) return showToast("Admin access required");
+            if (role === adminUsername) return showToast("Cannot delete primary Admin");
             if (confirm(`Delete user account '${role}'?`)) {
                 delete PASSWORDS[role];
                 renderUsers();
@@ -1513,7 +1558,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function openAddProductModal(id = null) {
-            if (currentRole !== 'Admin') return showToast("Admin access required");
+            if (currentRole !== adminUsername) return showToast("Admin access required");
             let modal = document.getElementById('add-product-modal');
             let title = document.getElementById('ap-title');
             if (id) {
@@ -1544,7 +1589,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         function closeAddProductModal() { document.getElementById('add-product-modal').classList.add('hidden'); }
 
         function deleteProduct(id) {
-            if (currentRole !== 'Admin') return showToast("Admin access required");
+            if (currentRole !== adminUsername) return showToast("Admin access required");
             if (confirm("Delete this product from inventory?")) {
                 products = products.filter(p => p.id !== id);
                 renderInventory();
@@ -1554,7 +1599,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function openAddExpenseModal(id = null) {
-            if (currentRole !== 'Admin') return showToast("Admin access required");
+            if (currentRole !== adminUsername) return showToast("Admin access required");
             let modal = document.getElementById('add-expense-modal');
             let title = document.getElementById('ae-title');
             if (id) {
@@ -1577,7 +1622,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         function closeAddExpenseModal() { document.getElementById('add-expense-modal').classList.add('hidden'); }
 
         function saveExpense() {
-            if (currentRole !== 'Admin') return showToast("Admin access required");
+            if (currentRole !== adminUsername) return showToast("Admin access required");
             let id = document.getElementById('ae-id').value;
             let desc = document.getElementById('ae-desc').value.trim();
             let amount = parseFloat(document.getElementById('ae-amount').value) || 0;
@@ -1606,7 +1651,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function deleteExpense(id) {
-            if (currentRole !== 'Admin') return showToast("Admin access required");
+            if (currentRole !== adminUsername) return showToast("Admin access required");
             if (confirm("Delete this expense?")) {
                 expenses = expenses.filter(e => e.id !== id);
                 transactions = transactions.filter(t => t.id !== id);
@@ -1728,7 +1773,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function saveProduct() {
-            if (currentRole !== 'Admin') return showToast("Admin access required");
+            if (currentRole !== adminUsername) return showToast("Admin access required");
             let id = document.getElementById('ap-id').value;
             let name = document.getElementById('ap-name').value.trim();
             let category = document.getElementById('ap-cat').value.trim() || 'General';
@@ -1868,7 +1913,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function openEditTxModal(id) {
-            if (currentRole !== 'Admin') return showToast("Admin access required");
+            if (currentRole !== adminUsername) return showToast("Admin access required");
             let tx = transactions.find(t => t.id === id);
             if (!tx) return;
             document.getElementById('etx-id').value = tx.id;
@@ -1885,7 +1930,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         function closeEditTxModal() { document.getElementById('edit-tx-modal').classList.add('hidden'); }
 
         function deleteTransaction(id) {
-            if (currentRole !== 'Admin') return showToast("Admin access required");
+            if (currentRole !== adminUsername) return showToast("Admin access required");
             if (confirm("Delete this transaction?")) {
                 transactions = transactions.filter(t => t.id !== id);
                 renderTransactions();
@@ -1897,7 +1942,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function saveTxEdit() {
-            if (currentRole !== 'Admin') return showToast("Admin access required");
+            if (currentRole !== adminUsername) return showToast("Admin access required");
             let id = document.getElementById('etx-id').value;
             let tx = transactions.find(t => t.id === id);
             if (tx) {
