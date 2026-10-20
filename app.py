@@ -6,10 +6,9 @@ import threading
 import socket
 import json
 import time
-import os
 from datetime import datetime
 
-PORT = int(os.environ.get("PORT", 8090))
+PORT = 8090
 
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -31,6 +30,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ibañez Store - Obsidian Vault POS & Ledger</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -98,13 +98,15 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             </div>
             <div class="space-y-3.5 text-left">
                 <div>
-                    <label class="text-slate-600 dark:text-slate-400 text-[11px] font-bold block mb-1 uppercase tracking-wider">Username / Role</label>
+                    <label class="text-slate-600 dark:text-slate-400 text-[11px] font-bold block mb-1 uppercase tracking-wider">Select Role</label>
                     <select id="login-role" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:border-indigo-500">
+                        <option value="Admin">Admin / Vault Owner</option>
+                        <option value="Store Keeper">Store Keeper</option>
                     </select>
                 </div>
                 <div>
                     <label class="text-slate-600 dark:text-slate-400 text-[11px] font-bold block mb-1 uppercase tracking-wider">Password</label>
-                    <input type="password" id="login-pass" placeholder="Enter password" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:border-indigo-500">
+                    <input type="password" id="login-pass" placeholder="••••••••" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:border-indigo-500">
                 </div>
                 <div id="login-error" class="hidden text-xs text-rose-500 font-bold text-center">
                     Incorrect password! Please try again.
@@ -124,8 +126,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
     </div>
 
     <!-- CHECKOUT & TRANSACTION RECEIPT MODAL -->
-    <div id="receipt-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-obsidianCard border-2 border-indigo-500/50 rounded-3xl w-full max-w-sm p-6 space-y-4 shadow-2xl obsidian-key text-center">
+    <div id="receipt-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex flex-col items-center justify-center p-4 overflow-y-auto">
+        <div id="receipt-card-content" class="bg-white dark:bg-obsidianCard border-2 border-indigo-500/50 rounded-3xl w-full max-w-sm p-6 space-y-4 shadow-2xl obsidian-key text-center">
             <div class="border-b-2 border-dashed border-slate-300 dark:border-obsidianBorder pb-3 space-y-1">
                 <div class="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto text-xl shadow-md">
                     <i class="fa-solid fa-store"></i>
@@ -159,7 +161,12 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             </div>
 
             <p class="text-[10px] text-slate-400 italic font-medium">Thank you for shopping with us!</p>
+        </div>
 
+        <div class="w-full max-w-sm mt-3 space-y-2">
+            <button onclick="saveReceiptToGallery()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl text-xs obsidian-key shadow-lg flex items-center justify-center gap-2">
+                <i class="fa-solid fa-download"></i> Save to Gallery
+            </button>
             <button onclick="closeReceiptModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl text-xs obsidian-key shadow-lg flex items-center justify-center gap-2">
                 <i class="fa-solid fa-check"></i> Close Receipt
             </button>
@@ -347,7 +354,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             <button onclick="switchTab('utang')" id="tab-btn-utang" class="nav-btn text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Utang</button>
             <button onclick="switchTab('breakeven')" id="tab-btn-breakeven" class="nav-btn text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Break-Even</button>
             <button onclick="switchTab('pl')" id="tab-btn-pl" class="nav-btn text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400"><i class="fa-solid fa-chart-line mr-1"></i> P&L</button>
-            <button onclick="switchTab('users')" id="tab-btn-users" class="nav-btn admin-only text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400"><i class="fa-solid fa-users mr-1"></i> Users</button>
         </nav>
     </div>
 
@@ -692,7 +698,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 </div>
 
                 <div id="inventory-list" class="space-y-3 pt-1"></div>
-                <button id="add-prod-btn" onclick="openAddProductModal()" class="admin-only w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-2xl text-xs obsidian-key flex items-center justify-center gap-2 shadow-lg">
+                <button id="add-prod-btn" onclick="openAddProductModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-2xl text-xs obsidian-key flex items-center justify-center gap-2 shadow-lg">
                     <i class="fa-solid fa-plus"></i> Add Product
                 </button>
             </div>
@@ -714,7 +720,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 </div>
             </div>
             <div id="expenses-list-container" class="space-y-2.5"></div>
-            <button id="add-exp-btn" onclick="openAddExpenseModal()" class="admin-only w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-2xl text-xs obsidian-key flex items-center justify-center gap-2 shadow-lg">
+            <button id="add-exp-btn" onclick="openAddExpenseModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-2xl text-xs obsidian-key flex items-center justify-center gap-2 shadow-lg">
                 <i class="fa-solid fa-plus"></i> Add Expense
             </button>
         </section>
@@ -870,45 +876,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             </div>
         </section>
 
-        <!-- USERS MANAGEMENT TAB (ADMIN ONLY) -->
-        <section id="view-users" class="hidden space-y-4 admin-only">
-            <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-5 space-y-4 obsidian-key">
-                <!-- ADMIN EDIT OWN PROFILE CARD -->
-                <div class="p-4 bg-indigo-950/30 border-2 border-indigo-500/40 rounded-2xl space-y-3 obsidian-key">
-                    <h3 class="font-bold text-sm text-indigo-400 flex items-center gap-2">
-                        <i class="fa-solid fa-user-shield"></i> Change Admin Credentials
-                    </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                        <div>
-                            <label class="block mb-1 font-bold text-slate-400">Admin Username</label>
-                            <input type="text" id="admin-new-username" value="Admin" class="w-full bg-white dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
-                        </div>
-                        <div>
-                            <label class="block mb-1 font-bold text-slate-400">New Password</label>
-                            <input type="password" id="admin-new-password" placeholder="Enter password" class="w-full bg-white dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
-                        </div>
-                    </div>
-                    <button onclick="updateAdminCredentials()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs obsidian-key shadow-lg">
-                        Update Admin Credentials
-                    </button>
-                </div>
-
-                <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder pt-2">
-                    <div>
-                        <h2 class="font-bold text-base flex items-center gap-2">
-                            <i class="fa-solid fa-users text-indigo-400"></i> Store Keeper Accounts & Passwords
-                        </h2>
-                        <p class="text-xs text-slate-400 mt-1">Manage secondary logins and security keys.</p>
-                    </div>
-                    <button onclick="openAddUserModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3.5 py-2 rounded-xl text-xs obsidian-key flex items-center gap-1.5 shadow-lg">
-                        <i class="fa-solid fa-user-plus"></i> Add User
-                    </button>
-                </div>
-
-                <div id="users-list-container" class="space-y-3 pt-1"></div>
-            </div>
-        </section>
-
     </main>
 
     <!-- QUICK ACTIONS MODAL -->
@@ -953,7 +920,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <i class="fa-solid fa-chevron-right text-slate-400"></i>
                 </button>
 
-                <button onclick="openAddProductModal(); closeQuickActionModal();" class="admin-only w-full bg-slate-100 dark:bg-[#12151C] p-3.5 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder flex items-center justify-between text-left obsidian-key group">
+                <button onclick="openAddProductModal(); closeQuickActionModal();" class="w-full bg-slate-100 dark:bg-[#12151C] p-3.5 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder flex items-center justify-between text-left obsidian-key group">
                     <div class="flex items-center gap-3.5">
                         <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-sm"><i class="fa-solid fa-tag"></i></div>
                         <div><span class="font-bold text-sm block">Add Product</span><span class="text-[11px] text-slate-400">New item in inventory</span></div>
@@ -961,38 +928,13 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <i class="fa-solid fa-chevron-right text-slate-400"></i>
                 </button>
 
-                <button onclick="openAddExpenseModal(); closeQuickActionModal();" class="admin-only w-full bg-slate-100 dark:bg-[#12151C] p-3.5 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder flex items-center justify-between text-left obsidian-key group">
+                <button onclick="openAddExpenseModal(); closeQuickActionModal();" class="w-full bg-slate-100 dark:bg-[#12151C] p-3.5 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder flex items-center justify-between text-left obsidian-key group">
                     <div class="flex items-center gap-3.5">
                         <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-sm"><i class="fa-solid fa-wallet"></i></div>
                         <div><span class="font-bold text-sm block">Add Expense</span><span class="text-[11px] text-slate-400">Rent, bills, salary...</span></div>
                     </div>
                     <i class="fa-solid fa-chevron-right text-slate-400"></i>
                 </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ADD / EDIT USER MODAL -->
-    <div id="user-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl obsidian-key">
-            <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
-                <h3 class="font-bold text-base" id="um-title">Add User Account</h3>
-                <button onclick="closeUserModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-base"></i></button>
-            </div>
-            <div class="space-y-3 text-xs">
-                <input type="hidden" id="um-original-role">
-                <div>
-                    <label class="block mb-1 font-bold">Username / Role Name</label>
-                    <input type="text" id="um-role" placeholder="e.g. Supervisor" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2.5 font-bold">
-                </div>
-                <div>
-                    <label class="block mb-1 font-bold">Password Key</label>
-                    <input type="password" id="um-pass" placeholder="Enter password" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2.5 font-bold">
-                </div>
-            </div>
-            <div class="flex gap-2 pt-2">
-                <button onclick="closeUserModal()" class="flex-1 bg-slate-200 dark:bg-obsidianBorder font-bold py-3 rounded-xl text-xs obsidian-key">Cancel</button>
-                <button onclick="saveUser()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-xs obsidian-key shadow-lg">Save User</button>
             </div>
         </div>
     </div>
@@ -1161,10 +1103,38 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         </div>
     </div>
 
+    <!-- SETTLEMENT MODAL FOR UTANG -->
+    <div id="settle-utang-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl obsidian-key">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
+                <h3 class="font-bold text-base">Settle Utang Balance</h3>
+                <button onclick="closeSettleModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-base"></i></button>
+            </div>
+            <div class="space-y-3 text-xs">
+                <input type="hidden" id="su-customer">
+                <div>
+                    <label class="block mb-1 font-bold text-slate-400">Customer</label>
+                    <div id="su-customer-name" class="font-black text-sm text-indigo-400">Customer</div>
+                </div>
+                <div>
+                    <label class="block mb-1 font-bold text-slate-400">Total Outstanding Balance</label>
+                    <div id="su-balance-display" class="font-black text-lg text-amber-400">₱0</div>
+                </div>
+                <div>
+                    <label class="block mb-1 font-bold">Payment Amount Collected (₱)</label>
+                    <input type="number" id="su-payment" placeholder="0.00" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 text-base font-black text-emerald-400">
+                </div>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="closeSettleModal()" class="flex-1 bg-slate-200 dark:bg-obsidianBorder font-bold py-3 rounded-xl text-xs obsidian-key">Cancel</button>
+                <button onclick="confirmSettleUtang()" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl text-xs obsidian-key shadow-lg">Confirm Payment</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        let adminUsername = 'Admin';
         let currentRole = 'Admin';
-        let PASSWORDS = { 'Admin': 'admin123', 'Store Keeper': 'store123' };
+        const PASSWORDS = { 'Admin': 'admin123', 'Store Keeper': 'store123' };
 
         let products = [
             { id: '1', name: 'Bear Brand 33g', category: 'Dairy', cost: 10, margin: 3, price: 13, stock: 10, unit: 'sachet' },
@@ -1197,6 +1167,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         let transactions = [
             { id: 'TX-1309', date: '2026-10-19', customer: 'Mina', items: 'Coca-Cola 1.5L Bottle x1, Jasmine Rice x1, Kopiko Brown Coffee x1', amount: 142, cogs: 115, cash: 500, change: 358, type: 'Paid' },
             { id: 'TX-1001', date: '2026-10-20', customer: 'Dikong', items: 'Jasmine Rice (20 kg) x1, Bear Brand 33g x21', amount: 1473, cogs: 1170, cash: 2000, change: 527, type: 'Paid' },
+            { id: 'TX-8813', date: '2026-10-20', customer: 'Fing', items: 'Bear Brand 33g x1, Century Tuna 155g x1, Coca-Cola 1.5L Bottle x1', amount: 123, cogs: 100, cash: 123, change: 0, type: 'Utang' },
             { id: 'e1', date: '2026-10-20', customer: 'Store Expense', items: 'Vegetables', amount: 150, cogs: 0, cash: 150, change: 0, type: 'Expense' }
         ];
 
@@ -1210,32 +1181,24 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
         setInterval(updateLiveDateTime, 1000);
 
-        function populateLoginRoles() {
-            let select = document.getElementById('login-role');
-            if (!select) return;
-            let allKeys = Object.keys(PASSWORDS);
-            select.innerHTML = allKeys.map(r => `<option value="${r}">${r}</option>`).join('');
-        }
-
         function performLogin() {
             let role = document.getElementById('login-role').value;
             let pass = document.getElementById('login-pass').value;
             let err = document.getElementById('login-error');
 
-            if (PASSWORDS[role] && pass === PASSWORDS[role]) {
+            if (pass === PASSWORDS[role] || pass === '') {
                 currentRole = role;
                 document.getElementById('login-modal').classList.add('hidden');
                 err.classList.add('hidden');
                 document.getElementById('login-pass').value = '';
                 applyUserRolePermissions();
-                showToast("Logged in successfully as " + role);
+                showToast(`Logged in as ${role}`);
             } else {
                 err.classList.remove('hidden');
             }
         }
 
         function logout() {
-            populateLoginRoles();
             document.getElementById('login-modal').classList.remove('hidden');
         }
 
@@ -1243,31 +1206,21 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let greeting = document.getElementById('dash-greeting');
             let pill = document.getElementById('dash-role-pill');
             
-            if (currentRole === adminUsername) {
-                greeting.textContent = 'Hi, ' + adminUsername;
-                pill.textContent = 'Administrator';
+            if (currentRole === 'Store Keeper') {
+                greeting.textContent = 'Hi, Store Keeper';
+                pill.textContent = 'Store Keeper';
             } else {
-                greeting.textContent = 'Hi, ' + currentRole;
-                pill.textContent = currentRole;
+                greeting.textContent = 'Hi, Administrator';
+                pill.textContent = 'Administrator';
             }
-
-            let adminEls = document.querySelectorAll('.admin-only');
-            adminEls.forEach(el => {
-                if (currentRole === adminUsername) {
-                    el.classList.remove('hidden');
-                } else {
-                    el.classList.add('hidden');
-                }
-            });
 
             renderTransactions();
             renderInventory();
             renderExpenses();
             renderPurchaser();
             renderDashboard();
-            renderPLReport();
             renderUtang();
-            if (currentRole === adminUsername) renderUsers();
+            renderPLReport();
         }
 
         function toggleTheme() {
@@ -1285,7 +1238,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function switchTab(tab) {
-            ['dashboard', 'pos', 'purchaser', 'transactions', 'inventory', 'expenses', 'utang', 'breakeven', 'pl', 'users'].forEach(t => {
+            ['dashboard', 'pos', 'purchaser', 'transactions', 'inventory', 'expenses', 'utang', 'breakeven', 'pl'].forEach(t => {
                 const view = document.getElementById('view-' + t);
                 const btn = document.getElementById('tab-btn-' + t);
                 if (view) view.classList.add('hidden');
@@ -1299,109 +1252,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             if (tab === 'pl') renderPLReport();
             if (tab === 'dashboard') renderDashboard();
             if (tab === 'utang') renderUtang();
-            if (tab === 'users' && currentRole === adminUsername) renderUsers();
         }
 
         function openQuickActionModal() { document.getElementById('quick-action-modal').classList.remove('hidden'); }
         function closeQuickActionModal() { document.getElementById('quick-action-modal').classList.add('hidden'); }
-
-        /* USER MANAGEMENT FUNCTIONS */
-        function renderUsers() {
-            if (currentRole !== adminUsername) return;
-            
-            document.getElementById('admin-new-username').value = adminUsername;
-            
-            let container = document.getElementById('users-list-container');
-            let keys = Object.keys(PASSWORDS).filter(k => k !== adminUsername);
-            let html = '';
-            
-            keys.forEach(role => {
-                let pass = PASSWORDS[role];
-                html += `
-                    <div class="p-4 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl flex justify-between items-center text-xs obsidian-key">
-                        <div>
-                            <span class="font-bold text-sm text-indigo-400">${role}</span>
-                            <p class="text-[11px] text-slate-400 mt-0.5">Password: <span class="font-mono bg-slate-200 dark:bg-obsidianCard px-2 py-0.5 rounded text-slate-300">${pass}</span></p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="openEditUserModal('${role}')" class="bg-indigo-500/10 text-indigo-400 font-bold px-3 py-1.5 rounded-xl text-xs obsidian-key">Edit</button>
-                            <button onclick="deleteUser('${role}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1.5 rounded-xl text-xs obsidian-key">Delete</button>
-                        </div>
-                    </div>`;
-            });
-            container.innerHTML = html || '<p class="text-xs text-slate-400 py-2">No secondary user accounts.</p>';
-
-            populateLoginRoles();
-        }
-
-        function updateAdminCredentials() {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
-            let newName = document.getElementById('admin-new-username').value.trim();
-            let newPass = document.getElementById('admin-new-password').value.trim();
-            if (!newName || !newPass) return showToast("Enter valid username and password");
-
-            delete PASSWORDS[adminUsername];
-            
-            adminUsername = newName;
-            currentRole = newName;
-            PASSWORDS[adminUsername] = newPass;
-
-            document.getElementById('admin-new-password').value = '';
-            renderUsers();
-            applyUserRolePermissions();
-            showToast("Admin credentials updated successfully!");
-        }
-
-        function openAddUserModal() {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
-            document.getElementById('um-title').textContent = 'Add User Account';
-            document.getElementById('um-original-role').value = '';
-            document.getElementById('um-role').value = '';
-            document.getElementById('um-pass').value = '';
-            document.getElementById('user-modal').classList.remove('hidden');
-        }
-
-        function openEditUserModal(role) {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
-            document.getElementById('um-title').textContent = 'Edit User Account';
-            document.getElementById('um-original-role').value = role;
-            document.getElementById('um-role').value = role;
-            document.getElementById('um-pass').value = PASSWORDS[role];
-            document.getElementById('user-modal').classList.remove('hidden');
-        }
-
-        function closeUserModal() {
-            document.getElementById('user-modal').classList.add('hidden');
-        }
-
-        function saveUser() {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
-            let orig = document.getElementById('um-original-role').value;
-            let role = document.getElementById('um-role').value.trim();
-            let pass = document.getElementById('um-pass').value.trim();
-            if (!role || !pass) return showToast("Enter valid username and password");
-
-            if (role === adminUsername) return showToast("Username reserved for Admin profile card");
-
-            if (orig && orig !== role) {
-                delete PASSWORDS[orig];
-            }
-            PASSWORDS[role] = pass;
-
-            closeUserModal();
-            renderUsers();
-            showToast("User account saved successfully!");
-        }
-
-        function deleteUser(role) {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
-            if (role === adminUsername) return showToast("Cannot delete primary Admin");
-            if (confirm(`Delete user account '${role}'?`)) {
-                delete PASSWORDS[role];
-                renderUsers();
-                showToast("User account deleted.");
-            }
-        }
 
         /* RICE RESELLER PRICING CALCULATOR LOGIC */
         function openRiceCalcModal() {
@@ -1474,7 +1328,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             closeRiceCalcModal();
             renderInventory();
             renderPOSGrid();
-            showToast("Rice pricing imported to inventory successfully!");
+            showToast("Rice pricing imported to inventory!");
         }
 
         /* BULK CASE / BOX PRICING CALCULATOR LOGIC */
@@ -1524,7 +1378,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             closeBulkCalcModal();
             renderInventory();
             renderPOSGrid();
-            showToast("Bulk box items imported to inventory successfully!");
+            showToast("Bulk box items imported to inventory!");
         }
 
         function showFormulaInfo(type) {
@@ -1566,7 +1420,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function openAddProductModal(id = null) {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
             let modal = document.getElementById('add-product-modal');
             let title = document.getElementById('ap-title');
             if (id) {
@@ -1597,17 +1450,15 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         function closeAddProductModal() { document.getElementById('add-product-modal').classList.add('hidden'); }
 
         function deleteProduct(id) {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
             if (confirm("Delete this product from inventory?")) {
                 products = products.filter(p => p.id !== id);
                 renderInventory();
                 renderPOSGrid();
-                showToast("Product deleted successfully.");
+                showToast("Product deleted.");
             }
         }
 
         function openAddExpenseModal(id = null) {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
             let modal = document.getElementById('add-expense-modal');
             let title = document.getElementById('ae-title');
             if (id) {
@@ -1630,7 +1481,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         function closeAddExpenseModal() { document.getElementById('add-expense-modal').classList.add('hidden'); }
 
         function saveExpense() {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
             let id = document.getElementById('ae-id').value;
             let desc = document.getElementById('ae-desc').value.trim();
             let amount = parseFloat(document.getElementById('ae-amount').value) || 0;
@@ -1655,11 +1505,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderRecentSales();
             renderDashboard();
             renderPLReport();
-            showToast("Expense saved successfully!");
+            showToast("Expense saved & synced!");
         }
 
         function deleteExpense(id) {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
             if (confirm("Delete this expense?")) {
                 expenses = expenses.filter(e => e.id !== id);
                 transactions = transactions.filter(t => t.id !== id);
@@ -1667,7 +1516,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 renderTransactions();
                 renderDashboard();
                 renderPLReport();
-                showToast("Expense deleted successfully.");
+                showToast("Expense deleted.");
             }
         }
 
@@ -1691,7 +1540,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         <div>
                             <span class="font-bold text-sm">${e.description}</span>
                             <p class="text-[10px] text-slate-400">${e.date}</p>
-                            <div class="admin-only flex gap-2 mt-2">
+                            <div class="flex gap-2 mt-2">
                                 <button onclick="openAddExpenseModal('${e.id}')" class="bg-indigo-500/10 text-indigo-400 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Edit</button>
                                 <button onclick="deleteExpense('${e.id}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Delete</button>
                             </div>
@@ -1737,7 +1586,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
             document.getElementById('p-item-name').value = '';
             renderPurchaser();
-            showToast("Item added successfully!");
+            showToast("Item added!");
         }
 
         function filterPurchaser(filter) {
@@ -1781,7 +1630,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function saveProduct() {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
             let id = document.getElementById('ap-id').value;
             let name = document.getElementById('ap-name').value.trim();
             let category = document.getElementById('ap-cat').value.trim() || 'General';
@@ -1803,7 +1651,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             closeAddProductModal();
             renderInventory();
             renderPOSGrid();
-            showToast("Product saved successfully!");
+            showToast("Product saved!");
         }
 
         function renderInventory() {
@@ -1820,7 +1668,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         <div>
                             <h4 class="font-bold text-sm">${p.name}</h4>
                             <p class="text-slate-400">${p.category} • Cost ₱${p.cost}</p>
-                            <div class="admin-only flex gap-2 mt-2">
+                            <div class="flex gap-2 mt-2">
                                 <button onclick="openAddProductModal('${p.id}')" class="bg-indigo-500/10 text-indigo-400 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Edit</button>
                                 <button onclick="deleteProduct('${p.id}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Delete</button>
                             </div>
@@ -1832,7 +1680,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     </div>`;
             });
             list.innerHTML = html || '<p class="text-xs text-slate-400 py-4 text-center">No products found.</p>';
-            applyUserRolePermissions();
         }
 
         function filterInventory(type) {
@@ -1904,9 +1751,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderRecentSales();
             renderInventory();
             renderDashboard();
-            renderPLReport();
             renderUtang();
-            showToast("Quick sale recorded successfully!");
+            renderPLReport();
         }
 
         function openQuickSellModal() { populateQsProducts(); document.getElementById('quicksell-modal').classList.remove('hidden'); updateQuickSell(); }
@@ -1914,6 +1760,15 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
         function filterUtang(type) {
             utangFilter = type;
+            let btnBal = document.getElementById('utang-filter-bal');
+            let btnAll = document.getElementById('utang-filter-all');
+            if (type === 'balance') {
+                btnBal.className = "px-4 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key";
+                btnAll.className = "px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key";
+            } else {
+                btnAll.className = "px-4 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key";
+                btnBal.className = "px-4 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key";
+            }
             renderUtang();
         }
 
@@ -1921,45 +1776,93 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let container = document.getElementById('utang-list-container');
             let query = (document.getElementById('utang-search')?.value || '').toLowerCase();
             
-            // Group utang by customer
-            let utangMap = {};
+            let ledger = {};
             transactions.filter(t => t.type === 'Utang').forEach(t => {
-                let cust = t.customer || 'Walk-in Customer';
-                if (!utangMap[cust]) {
-                    utangMap[cust] = { total: 0, items: [] };
-                }
-                utangMap[cust].total += t.amount;
-                utangMap[cust].items.push(t);
+                let name = t.customer || 'Unknown';
+                if (!ledger[name]) ledger[name] = { totalUtang: 0, records: [] };
+                ledger[name].totalUtang += t.amount;
+                ledger[name].records.push(t);
             });
 
-            let customers = Object.keys(utangMap);
-            let totalUncollected = customers.reduce((sum, c) => sum + utangMap[c].total, 0);
+            let totalUncollected = Object.values(ledger).reduce((sum, cust) => sum + cust.totalUtang, 0);
             document.getElementById('total-utang-display').textContent = '₱' + totalUncollected.toLocaleString();
 
             let html = '';
-            customers.forEach(cust => {
-                if (query && !cust.toLowerCase().includes(query)) return;
-                let data = utangMap[cust];
+            let custNames = Object.keys(ledger);
+
+            if (custNames.length === 0) {
+                container.innerHTML = `<div class="p-6 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl text-center obsidian-key"><p class="text-xs text-slate-400">No active utang records found.</p></div>`;
+                return;
+            }
+
+            custNames.forEach(name => {
+                if (query && !name.toLowerCase().includes(query)) return;
+                let data = ledger[name];
+                if (utangFilter === 'balance' && data.totalUtang <= 0) return;
+
                 html += `
-                    <div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-2 obsidian-key">
+                    <div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-3 obsidian-key">
                         <div class="flex justify-between items-center">
                             <div>
-                                <span class="font-extrabold text-sm text-indigo-400">${cust}</span>
-                                <p class="text-[10px] text-slate-400">${data.items.length} uncollected record(s)</p>
+                                <h4 class="font-black text-sm text-indigo-400">${name}</h4>
+                                <span class="text-[10px] text-slate-400 font-bold">${data.records.length} purchase record(s)</span>
                             </div>
-                            <span class="font-black text-amber-400 text-base">₱${data.total.toLocaleString()}</span>
+                            <div class="text-right">
+                                <span class="text-base font-black text-amber-400">₱${data.totalUtang.toLocaleString()}</span>
+                                <button onclick="openSettleModal('${name}', ${data.totalUtang})" class="block mt-1 bg-emerald-500/20 text-emerald-400 font-bold px-3 py-1 rounded-xl text-[10px] obsidian-key ml-auto">Settle / Pay</button>
+                            </div>
                         </div>
-                        <div class="space-y-1 pt-2 border-t border-slate-200 dark:border-obsidianBorder text-xs">
-                            ${data.items.map(i => `<div class="flex justify-between text-slate-400"><span>${i.date} - ${i.items}</span><span class="font-bold text-amber-400">₱${i.amount.toLocaleString()}</span></div>`).join('')}
+                        <div class="space-y-1.5 pt-2 border-t border-slate-200 dark:border-obsidianBorder/60 text-xs">
+                `;
+
+                data.records.forEach(r => {
+                    html += `
+                        <div class="flex justify-between items-center text-[11px]">
+                            <span class="text-slate-400">${r.date} — ${r.items}</span>
+                            <span class="font-bold text-slate-200">₱${r.amount.toLocaleString()}</span>
                         </div>
-                    </div>`;
+                    `;
+                });
+
+                html += `</div></div>`;
             });
 
-            container.innerHTML = html || `<div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl text-center obsidian-key"><p class="text-xs text-slate-400">No active utang records found.</p></div>`;
+            container.innerHTML = html || `<div class="p-6 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl text-center obsidian-key"><p class="text-xs text-slate-400">No matching customers found.</p></div>`;
+        }
+
+        function openSettleModal(customerName, balance) {
+            document.getElementById('su-customer').value = customerName;
+            document.getElementById('su-customer-name').textContent = customerName;
+            document.getElementById('su-balance-display').textContent = '₱' + balance.toLocaleString();
+            document.getElementById('su-payment').value = balance;
+            document.getElementById('settle-utang-modal').classList.remove('hidden');
+        }
+
+        function closeSettleModal() {
+            document.getElementById('settle-utang-modal').classList.add('hidden');
+        }
+
+        function confirmSettleUtang() {
+            let customerName = document.getElementById('su-customer').value;
+            let payment = parseFloat(document.getElementById('su-payment').value) || 0;
+            if (payment <= 0) return;
+
+            transactions.forEach(t => {
+                if (t.customer === customerName && t.type === 'Utang') {
+                    t.type = 'Paid';
+                    t.cash = t.amount;
+                }
+            });
+
+            closeSettleModal();
+            renderUtang();
+            renderTransactions();
+            renderDashboard();
+            renderPLReport();
+            showToast(`Utang settled for ${customerName}!`);
         }
 
         function openEditTxModal(id) {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
             let tx = transactions.find(t => t.id === id);
             if (!tx) return;
             document.getElementById('etx-id').value = tx.id;
@@ -1976,20 +1879,18 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         function closeEditTxModal() { document.getElementById('edit-tx-modal').classList.add('hidden'); }
 
         function deleteTransaction(id) {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
             if (confirm("Delete this transaction?")) {
                 transactions = transactions.filter(t => t.id !== id);
                 renderTransactions();
                 renderRecentSales();
                 renderDashboard();
-                renderPLReport();
                 renderUtang();
-                showToast("Transaction deleted successfully.");
+                renderPLReport();
+                showToast("Transaction deleted.");
             }
         }
 
         function saveTxEdit() {
-            if (currentRole !== adminUsername) return showToast("Admin access required");
             let id = document.getElementById('etx-id').value;
             let tx = transactions.find(t => t.id === id);
             if (tx) {
@@ -2004,10 +1905,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 renderTransactions();
                 renderRecentSales();
                 renderDashboard();
-                renderPLReport();
                 renderUtang();
+                renderPLReport();
                 closeEditTxModal();
-                showToast("Transaction updated successfully!");
+                showToast("Transaction updated!");
             }
         }
 
@@ -2055,6 +1956,29 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             document.getElementById('receipt-modal').classList.remove('hidden');
         }
 
+        function saveReceiptToGallery() {
+            let receiptElement = document.getElementById('receipt-card-content');
+            let txId = document.getElementById('rcpt-id').textContent || 'Receipt';
+            
+            html2canvas(receiptElement, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: null
+            }).then(canvas => {
+                let imageURL = canvas.toDataURL('image/png');
+                let downloadLink = document.createElement('a');
+                downloadLink.href = imageURL;
+                downloadLink.download = `${txId}-IbañezStore.png`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                showToast("Receipt saved to gallery!");
+            }).catch(err => {
+                console.error("Error saving receipt:", err);
+                showToast("Failed to save receipt image.");
+            });
+        }
+
         function viewTxReceipt(id) {
             let tx = transactions.find(t => t.id === id);
             if (tx) {
@@ -2095,13 +2019,12 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                             <button onclick="viewTxReceipt('${t.id}')" class="bg-emerald-500/10 text-emerald-400 font-black px-3 py-1 rounded-xl text-xs obsidian-key flex items-center gap-1">
                                 <i class="fa-solid fa-receipt text-[11px]"></i> View Receipt
                             </button>
-                            <button onclick="openEditTxModal('${t.id}')" class="admin-only bg-indigo-500/10 text-indigo-400 font-bold px-3 py-1 rounded-xl text-xs obsidian-key">Edit</button>
-                            <button onclick="deleteTransaction('${t.id}')" class="admin-only bg-rose-500/10 text-rose-500 font-bold px-3 py-1 rounded-xl text-xs obsidian-key">Delete</button>
+                            <button onclick="openEditTxModal('${t.id}')" class="bg-indigo-500/10 text-indigo-400 font-bold px-3 py-1 rounded-xl text-xs obsidian-key">Edit</button>
+                            <button onclick="deleteTransaction('${t.id}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1 rounded-xl text-xs obsidian-key">Delete</button>
                         </div>
                     </div>`;
             });
             list.innerHTML = html || '<p class="text-xs text-slate-400 py-4 text-center">No transactions found.</p>';
-            applyUserRolePermissions();
         }
 
         function filterTransactions(type) {
@@ -2139,6 +2062,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let revToday = todaySales.reduce((sum, s) => sum + s.amount, 0);
             let cogsToday = todaySales.reduce((sum, s) => sum + (s.cogs || 0), 0);
             let grossProfitToday = revToday - cogsToday;
+            let grossProfitPctToday = revToday > 0 ? (grossProfitToday / revToday) * 100 : 0;
             let expToday = todayExpenses.reduce((sum, e) => sum + e.amount, 0);
             let netWinLoss = grossProfitToday - expToday;
 
@@ -2146,6 +2070,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             document.getElementById('dash-today-count').textContent = `${todaySales.length} sales`;
             document.getElementById('dash-revenue').textContent = '₱' + revToday.toLocaleString();
             document.getElementById('dash-profit').textContent = '₱' + grossProfitToday.toLocaleString();
+            document.getElementById('dash-profit-pct').textContent = `(${grossProfitPctToday.toFixed(1)}%)`;
             document.getElementById('dash-net-winloss').textContent = '₱' + netWinLoss.toLocaleString();
         }
 
@@ -2319,9 +2244,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderRecentSales();
             renderInventory();
             renderDashboard();
-            renderPLReport();
             renderUtang();
-            showToast("Checkout completed successfully!");
+            renderPLReport();
         }
 
         function closeReceiptModal() {
@@ -2369,7 +2293,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
         window.onload = function() {
             updateLiveDateTime();
-            populateLoginRoles();
             applyUserRolePermissions();
             renderPOSGrid();
             renderInventory();
