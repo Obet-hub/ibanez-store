@@ -682,15 +682,31 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
         <!-- INVENTORY TAB -->
         <section id="view-inventory" class="hidden space-y-4">
+            <!-- EXPIRATION WARNING BANNER -->
+            <div id="inventory-alert-banner" class="hidden p-4 bg-amber-500/10 border-2 border-amber-500/40 rounded-3xl flex items-center justify-between obsidian-key">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-black text-lg shadow-md">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-black text-amber-400 text-xs uppercase tracking-wider">Expiration Warning Alert</h4>
+                        <p class="text-xs text-slate-300" id="inventory-alert-text">You have items that are near expiry or already expired.</p>
+                    </div>
+                </div>
+                <button onclick="filterInventory('expired_soon')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-3.5 py-2 rounded-xl text-[11px] obsidian-key shadow-lg">View Alerts</button>
+            </div>
+
             <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-5 space-y-4 obsidian-key">
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
                     <input type="text" id="inv-search" oninput="renderInventory()" placeholder="Search products" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl pl-9 pr-4 py-3 text-xs placeholder-slate-400 focus:outline-none focus:border-indigo-500">
                 </div>
-                <div class="flex justify-between items-center">
-                    <div class="flex gap-2">
-                        <button onclick="filterInventory('All')" id="inv-filter-All" class="px-4 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key">All</button>
-                        <button onclick="filterInventory('Low')" id="inv-filter-Low" class="px-4 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key">Low stock</button>
+                
+                <div class="flex flex-wrap justify-between items-center gap-2">
+                    <div class="flex gap-2 overflow-x-auto no-scrollbar">
+                        <button onclick="filterInventory('All')" id="inv-filter-All" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key">All</button>
+                        <button onclick="filterInventory('Low')" id="inv-filter-Low" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key">Low stock</button>
+                        <button onclick="filterInventory('expired_soon')" id="inv-filter-expired_soon" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key text-amber-400">⚠️ Expiry Alerts</button>
                     </div>
                     <div class="text-right">
                         <span class="text-[10px] text-slate-400 font-bold block uppercase">Stock value (at cost)</span>
@@ -1080,6 +1096,16 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         <input type="text" id="ap-unit" value="pcs" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2">
                     </div>
                 </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block mb-1 font-bold">Date Added</label>
+                        <input type="date" id="ap-date-added" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                    </div>
+                    <div>
+                        <label class="block mb-1 font-bold text-amber-400">Expiration Date (Optional)</label>
+                        <input type="date" id="ap-expiry" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-amber-400">
+                    </div>
+                </div>
             </div>
             <div class="flex gap-2 pt-2">
                 <button onclick="closeAddProductModal()" class="flex-1 bg-slate-200 dark:bg-obsidianBorder font-bold py-2.5 rounded-xl text-xs obsidian-key">Cancel</button>
@@ -1147,15 +1173,15 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         const PASSWORDS = { 'Admin': 'admin123', 'Store Keeper': 'store123' };
 
         let products = [
-            { id: '1', name: 'Bear Brand 33g', category: 'Dairy', cost: 10, margin: 3, price: 13, stock: 10, unit: 'sachet' },
-            { id: '2', name: 'Century Tuna 155g', category: 'Canned', cost: 30, margin: 8, price: 38, stock: 18, unit: 'can' },
-            { id: '3', name: 'Coca-Cola 1.5L Bottle', category: 'Drinks', cost: 60, margin: 12, price: 72, stock: 24, unit: 'bottle' },
-            { id: '4', name: 'Coco Pandan Rice', category: 'Grains', cost: 1050, margin: 300, price: 1350, stock: 6, unit: 'pcs' },
-            { id: '5', name: 'Jasmine Rice', category: 'Grains', cost: 48, margin: 12, price: 60, stock: 47, unit: 'kg' },
-            { id: '6', name: 'Kopiko Brown Coffee', category: 'Drinks', cost: 7, margin: 3, price: 10, stock: 57, unit: 'sachet' },
-            { id: '7', name: 'Lucky Me Instant Noodles', category: 'Noodles', cost: 10, margin: 3, price: 13, stock: 40, unit: 'pack' },
-            { id: '8', name: 'Piattos Cheese 85g', category: 'Snacks', cost: 30, margin: 8, price: 38, stock: 25, unit: 'pack' },
-            { id: '9', name: 'Red Bull Energy Drink', category: 'Beverages', cost: 45, margin: 10, price: 55, stock: 15, unit: 'can' }
+            { id: '1', name: 'Bear Brand 33g', category: 'Dairy', cost: 10, margin: 3, price: 13, stock: 10, unit: 'sachet', dateAdded: '2026-09-01', expiryDate: '2027-05-15' },
+            { id: '2', name: 'Century Tuna 155g', category: 'Canned', cost: 30, margin: 8, price: 38, stock: 18, unit: 'can', dateAdded: '2026-09-05', expiryDate: '2028-01-10' },
+            { id: '3', name: 'Coca-Cola 1.5L Bottle', category: 'Drinks', cost: 60, margin: 12, price: 72, stock: 24, unit: 'bottle', dateAdded: '2026-10-01', expiryDate: '2026-11-05' },
+            { id: '4', name: 'Coco Pandan Rice', category: 'Grains', cost: 1050, margin: 300, price: 1350, stock: 6, unit: 'pcs', dateAdded: '2026-09-10', expiryDate: '' },
+            { id: '5', name: 'Jasmine Rice', category: 'Grains', cost: 48, margin: 12, price: 60, stock: 47, unit: 'kg', dateAdded: '2026-09-15', expiryDate: '' },
+            { id: '6', name: 'Kopiko Brown Coffee', category: 'Drinks', cost: 7, margin: 3, price: 10, stock: 57, unit: 'sachet', dateAdded: '2026-09-20', expiryDate: '2027-08-20' },
+            { id: '7', name: 'Lucky Me Instant Noodles', category: 'Noodles', cost: 10, margin: 3, price: 13, stock: 40, unit: 'pack', dateAdded: '2026-09-25', expiryDate: '2026-10-25' },
+            { id: '8', name: 'Piattos Cheese 85g', category: 'Snacks', cost: 30, margin: 8, price: 38, stock: 25, unit: 'pack', dateAdded: '2026-10-02', expiryDate: '2026-11-12' },
+            { id: '9', name: 'Red Bull Energy Drink', category: 'Beverages', cost: 45, margin: 10, price: 55, stock: 15, unit: 'can', dateAdded: '2026-10-05', expiryDate: '2026-10-18' }
         ];
 
         let cart = {};
@@ -1170,6 +1196,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         let currentPurchaserFilter = 'All';
         let currentTxFilter = 'All';
         let currentPosCategory = 'All';
+        let currentInvFilter = 'All';
         let qsMode = 'kilo';
         let selectedQsProductId = '5';
         let utangFilter = 'balance';
@@ -1262,6 +1289,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             if (tab === 'pl') renderPLReport();
             if (tab === 'dashboard') renderDashboard();
             if (tab === 'utang') renderUtang();
+            if (tab === 'inventory') renderInventory();
         }
 
         function openQuickActionModal() { document.getElementById('quick-action-modal').classList.remove('hidden'); }
@@ -1306,6 +1334,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let totalCapital = sackCost + transport + (netWeight * packaging);
             let actualCostPerKg = totalCapital / netWeight;
             let recPricePerKg = actualCostPerKg * (1 + (margin / 100));
+            let todayStr = new Date().toISOString().split('T')[0];
 
             let opt = document.getElementById('rc-import-opt').value;
 
@@ -1318,7 +1347,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     margin: Math.round(recPricePerKg - actualCostPerKg),
                     price: Math.round(recPricePerKg),
                     stock: netWeight,
-                    unit: 'kg'
+                    unit: 'kg',
+                    dateAdded: todayStr,
+                    expiryDate: ''
                 });
             }
 
@@ -1331,7 +1362,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     margin: Math.round(totalCapital * (margin / 100)),
                     price: Math.round(totalCapital * (1 + (margin / 100))),
                     stock: 1,
-                    unit: 'sack'
+                    unit: 'sack',
+                    dateAdded: todayStr,
+                    expiryDate: ''
                 });
             }
 
@@ -1373,6 +1406,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let totalBoxCost = boxCost + freight;
             let unitCost = totalBoxCost / Math.max(1, units);
             let recSellingPrice = unitCost * (1 + (margin / 100));
+            let todayStr = new Date().toISOString().split('T')[0];
 
             products.push({
                 id: Date.now().toString(),
@@ -1382,7 +1416,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 margin: Math.round(recSellingPrice - unitCost),
                 price: Math.round(recSellingPrice),
                 stock: units,
-                unit: 'pcs'
+                unit: 'pcs',
+                dateAdded: todayStr,
+                expiryDate: ''
             });
 
             closeBulkCalcModal();
@@ -1436,6 +1472,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             }
             let modal = document.getElementById('add-product-modal');
             let title = document.getElementById('ap-title');
+            let todayStr = new Date().toISOString().split('T')[0];
+
             if (id) {
                 let p = products.find(prod => prod.id === id);
                 if (p) {
@@ -1447,6 +1485,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     document.getElementById('ap-margin').value = p.margin;
                     document.getElementById('ap-stock').value = p.stock;
                     document.getElementById('ap-unit').value = p.unit;
+                    document.getElementById('ap-date-added').value = p.dateAdded || todayStr;
+                    document.getElementById('ap-expiry').value = p.expiryDate || '';
                 }
             } else {
                 title.textContent = 'Add Product';
@@ -1457,6 +1497,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 document.getElementById('ap-margin').value = 3;
                 document.getElementById('ap-stock').value = 10;
                 document.getElementById('ap-unit').value = 'pcs';
+                document.getElementById('ap-date-added').value = todayStr;
+                document.getElementById('ap-expiry').value = '';
             }
             modal.classList.remove('hidden');
         }
@@ -1691,6 +1733,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let unitCost = item.qty > 0 ? (item.amount / item.qty) : item.amount;
             let marginVal = unitCost * (item.margin / 100);
             let sellingPrice = unitCost + marginVal;
+            let todayStr = new Date().toISOString().split('T')[0];
 
             products.push({
                 id: Date.now().toString(),
@@ -1700,7 +1743,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 margin: Math.round(marginVal),
                 price: Math.round(sellingPrice),
                 stock: item.qty || 1,
-                unit: item.unit || 'pcs'
+                unit: item.unit || 'pcs',
+                dateAdded: todayStr,
+                expiryDate: ''
             });
 
             renderInventory();
@@ -1775,15 +1820,17 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let margin = parseFloat(document.getElementById('ap-margin').value) || 0;
             let stock = parseFloat(document.getElementById('ap-stock').value) || 0;
             let unit = document.getElementById('ap-unit').value.trim() || 'pcs';
+            let dateAdded = document.getElementById('ap-date-added').value || new Date().toISOString().split('T')[0];
+            let expiryDate = document.getElementById('ap-expiry').value || '';
 
             if (!name) return;
             let price = cost + margin;
 
             if (id) {
                 let p = products.find(prod => prod.id === id);
-                if (p) { p.name = name; p.category = category; p.cost = cost; p.margin = margin; p.price = price; p.stock = stock; p.unit = unit; }
+                if (p) { p.name = name; p.category = category; p.cost = cost; p.margin = margin; p.price = price; p.stock = stock; p.unit = unit; p.dateAdded = dateAdded; p.expiryDate = expiryDate; }
             } else {
-                products.push({ id: Date.now().toString(), name, category, cost, margin, price, stock, unit });
+                products.push({ id: Date.now().toString(), name, category, cost, margin, price, stock, unit, dateAdded, expiryDate });
             }
 
             closeAddProductModal();
@@ -1792,29 +1839,82 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             showToast("Product saved!");
         }
 
+        function getExpiryStatus(expiryStr) {
+            if (!expiryStr) return { status: 'none', label: '', badgeClass: '' };
+            let today = new Date();
+            today.setHours(0,0,0,0);
+            let exp = new Date(expiryStr);
+            exp.setHours(0,0,0,0);
+
+            let diffDays = Math.ceil((exp - today) / (1000 * 60 * 60 * 24));
+
+            if (diffDays < 0) {
+                return { status: 'expired', label: `Expired (${Math.abs(diffDays)}d ago)`, badgeClass: 'bg-rose-500/20 text-rose-400 border border-rose-500/40' };
+            } else if (diffDays <= 30) {
+                return { status: 'warning', label: `Expiring in ${diffDays}d`, badgeClass: 'bg-amber-500/20 text-amber-400 border border-amber-500/40' };
+            } else {
+                return { status: 'good', label: `Expires: ${expiryStr}`, badgeClass: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' };
+            }
+        }
+
         function renderInventory() {
             let list = document.getElementById('inventory-list');
             let query = (document.getElementById('inv-search')?.value || '').toLowerCase();
             let totalVal = products.reduce((sum, p) => sum + (p.cost * p.stock), 0);
             document.getElementById('inv-stock-value').textContent = '₱' + Math.round(totalVal).toLocaleString();
 
+            // Check warning alerts count
+            let today = new Date();
+            today.setHours(0,0,0,0);
+            let alertCount = 0;
+            products.forEach(p => {
+                if (p.expiryDate) {
+                    let exp = new Date(p.expiryDate);
+                    exp.setHours(0,0,0,0);
+                    let diffDays = Math.ceil((exp - today) / (1000 * 60 * 60 * 24));
+                    if (diffDays <= 30) alertCount++;
+                }
+            });
+
+            let banner = document.getElementById('inventory-alert-banner');
+            let alertText = document.getElementById('inventory-alert-text');
+            if (alertCount > 0) {
+                banner.classList.remove('hidden');
+                alertText.textContent = `You have ${alertCount} product(s) that are expired or expiring within 30 days.`;
+            } else {
+                banner.classList.add('hidden');
+            }
+
             let html = '';
             products.forEach(p => {
                 if (query && !p.name.toLowerCase().includes(query)) return;
+                
+                let expInfo = getExpiryStatus(p.expiryDate);
+                if (currentInvFilter === 'Low' && p.stock > 5) return;
+                if (currentInvFilter === 'expired_soon' && expInfo.status !== 'warning' && expInfo.status !== 'expired') return;
+
+                let cardBorder = 'border-slate-300 dark:border-obsidianBorder';
+                if (expInfo.status === 'expired') cardBorder = 'border-rose-500';
+                else if (expInfo.status === 'warning') cardBorder = 'border-amber-500';
+
                 html += `
-                    <div class="p-4 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl flex justify-between items-center text-xs obsidian-key">
-                        <div>
+                    <div class="p-4 bg-slate-100 dark:bg-[#12151C] border-2 ${cardBorder} rounded-2xl flex justify-between items-center text-xs obsidian-key">
+                        <div class="space-y-1">
                             <h4 class="font-bold text-sm">${p.name}</h4>
                             <p class="text-slate-400">${p.category} • Cost ₱${p.cost}</p>
+                            <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Added: ${p.dateAdded || 'N/A'}</span>
+                                ${p.expiryDate ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold ${expInfo.badgeClass}">${expInfo.label}</span>` : ''}
+                            </div>
                             ${currentRole === 'Admin' ? `
-                            <div class="flex gap-2 mt-2">
+                            <div class="flex gap-2 pt-2">
                                 <button onclick="openAddProductModal('${p.id}')" class="bg-indigo-500/10 text-indigo-400 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Edit</button>
                                 <button onclick="deleteProduct('${p.id}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Delete</button>
                             </div>` : ''}
                         </div>
                         <div class="text-right">
                             <div class="font-black text-emerald-400 text-sm">₱${p.price}</div>
-                            <span class="text-slate-400 font-medium">${p.stock} ${p.unit}</span>
+                            <span class="text-slate-400 font-medium block mt-1">${p.stock} ${p.unit}</span>
                         </div>
                     </div>`;
             });
@@ -1822,6 +1922,17 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function filterInventory(type) {
+            currentInvFilter = type;
+            ['All', 'Low', 'expired_soon'].forEach(f => {
+                let btn = document.getElementById('inv-filter-' + f);
+                if (btn) {
+                    if (f === type) {
+                        btn.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key";
+                    } else {
+                        btn.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key";
+                    }
+                }
+            });
             renderInventory();
         }
 
