@@ -1210,6 +1210,13 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
         setInterval(updateLiveDateTime, 1000);
 
+        function populateLoginRoles() {
+            let select = document.getElementById('login-role');
+            if (!select) return;
+            let allKeys = Object.keys(PASSWORDS);
+            select.innerHTML = allKeys.map(r => `<option value="${r}">${r}</option>`).join('');
+        }
+
         function performLogin() {
             let role = document.getElementById('login-role').value;
             let pass = document.getElementById('login-pass').value;
@@ -1227,6 +1234,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function logout() {
+            populateLoginRoles();
             document.getElementById('login-modal').classList.remove('hidden');
         }
 
@@ -1320,9 +1328,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             });
             container.innerHTML = html || '<p class="text-xs text-slate-400 py-2">No secondary user accounts.</p>';
 
-            let select = document.getElementById('login-role');
-            let allKeys = Object.keys(PASSWORDS);
-            select.innerHTML = allKeys.map(r => `<option value="${r}">${r}</option>`).join('');
+            populateLoginRoles();
         }
 
         function updateAdminCredentials() {
@@ -2319,6 +2325,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
         window.onload = function() {
             updateLiveDateTime();
+            populateLoginRoles();
             applyUserRolePermissions();
             renderPOSGrid();
             renderInventory();
