@@ -336,6 +336,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             </div>
 
             <div class="flex items-center gap-2">
+                <!-- SAVE / PERSIST DATA BUTTON -->
+                <button onclick="saveChangesToVault()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-2 rounded-xl obsidian-key flex items-center gap-1.5 active:scale-95 shadow-md" title="Save changes permanently">
+                    <i class="fa-solid fa-floppy-disk text-xs"></i> Save
+                </button>
                 <button onclick="openQuickActionModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl obsidian-key flex items-center gap-1.5 active:scale-95">
                     <i class="fa-solid fa-plus text-xs"></i> Add
                 </button>
@@ -1228,7 +1232,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         let currentRole = 'Admin';
         const PASSWORDS = { 'Admin': '12345bert', 'Store Keeper': 'store123' };
 
-        let products = [
+        const DEFAULT_PRODUCTS = [
             { id: '1', name: 'Bear Brand 33g', category: 'Dairy', cost: 10, margin: 3, price: 13, stock: 10, unit: 'sachet', dateAdded: '2026-09-01', expiryDate: '2027-05-15' },
             { id: '2', name: 'Century Tuna 155g', category: 'Canned', cost: 30, margin: 8, price: 38, stock: 18, unit: 'can', dateAdded: '2026-09-05', expiryDate: '2028-01-10' },
             { id: '3', name: 'Coca-Cola 1.5L Bottle', category: 'Drinks', cost: 60, margin: 12, price: 72, stock: 24, unit: 'bottle', dateAdded: '2026-10-01', expiryDate: '2026-11-05' },
@@ -1243,14 +1247,29 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             { id: '12', name: 'Special Tuyo 100g', category: 'Pantry', cost: 35, margin: 10, price: 45, stock: 12, unit: 'pack', dateAdded: '2026-10-12', expiryDate: '2027-01-30' }
         ];
 
-        let cart = {};
-        let purchaserItems = [
+        const DEFAULT_PURCHASER = [
             { id: 'p1', name: 'Itlog', status: 'To buy', amount: 0, qty: 0, unit: 'tray', margin: 20 },
             { id: 'p2', name: 'Shampoo', status: 'Bought', amount: 150, qty: 10, unit: 'sachet', margin: 25 }
         ];
-        let expenses = [
+
+        const DEFAULT_EXPENSES = [
             { id: 'e1', description: 'Vegetables', amount: 150, date: '2026-10-20' }
         ];
+
+        const DEFAULT_TRANSACTIONS = [
+            { id: 'TX-1309', date: '2026-10-19 14:20:00', customer: 'Mina', items: 'Coca-Cola 1.5L Bottle x1, Jasmine Rice x1, Kopiko Brown Coffee x1', amount: 142, cogs: 115, cash: 500, change: 358, type: 'Paid' },
+            { id: 'TX-1001', date: '2026-10-20 09:15:00', customer: 'Dikong', items: 'Jasmine Rice (20 kg) x1, Bear Brand 33g x21', amount: 1473, cogs: 1170, cash: 2000, change: 527, type: 'Paid' },
+            { id: 'TX-8813', date: '2026-10-20 11:45:00', customer: 'Fing', items: 'Bear Brand 33g x1, Century Tuna 155g x1, Coca-Cola 1.5L Bottle x1', amount: 123, cogs: 100, cash: 123, change: 0, type: 'Utang' },
+            { id: 'e1', date: '2026-10-20 12:00:00', customer: 'Store Expense', items: 'Vegetables', amount: 150, cogs: 0, cash: 150, change: 0, type: 'Expense' }
+        ];
+
+        // Load data from localStorage or fallback to defaults
+        let products = JSON.parse(localStorage.getItem('ibanez_products')) || JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+        let purchaserItems = JSON.parse(localStorage.getItem('ibanez_purchaser')) || JSON.parse(JSON.stringify(DEFAULT_PURCHASER));
+        let expenses = JSON.parse(localStorage.getItem('ibanez_expenses')) || JSON.parse(JSON.stringify(DEFAULT_EXPENSES));
+        let transactions = JSON.parse(localStorage.getItem('ibanez_transactions')) || JSON.parse(JSON.stringify(DEFAULT_TRANSACTIONS));
+
+        let cart = {};
         let purchaserMode = 'plan';
         let currentPurchaserFilter = 'All';
         let currentTxFilter = 'All';
@@ -1258,17 +1277,18 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         let currentInvCategory = 'All';
         let currentInvFilter = 'All';
         let qsMode = 'kilo';
-        let selectedQsProductId = '5';
+        let selectedQsProductId = products.length > 0 ? products[0].id : '';
         let utangFilter = 'balance';
+        let dashPeriod = 'daily';
 
-        let dashPeriod = 'daily'; // 'daily', 'monthly', 'yearly'
-
-        let transactions = [
-            { id: 'TX-1309', date: '2026-10-19 14:20:00', customer: 'Mina', items: 'Coca-Cola 1.5L Bottle x1, Jasmine Rice x1, Kopiko Brown Coffee x1', amount: 142, cogs: 115, cash: 500, change: 358, type: 'Paid' },
-            { id: 'TX-1001', date: '2026-10-20 09:15:00', customer: 'Dikong', items: 'Jasmine Rice (20 kg) x1, Bear Brand 33g x21', amount: 1473, cogs: 1170, cash: 2000, change: 527, type: 'Paid' },
-            { id: 'TX-8813', date: '2026-10-20 11:45:00', customer: 'Fing', items: 'Bear Brand 33g x1, Century Tuna 155g x1, Coca-Cola 1.5L Bottle x1', amount: 123, cogs: 100, cash: 123, change: 0, type: 'Utang' },
-            { id: 'e1', date: '2026-10-20 12:00:00', customer: 'Store Expense', items: 'Vegetables', amount: 150, cogs: 0, cash: 150, change: 0, type: 'Expense' }
-        ];
+        // PERSISTENCE FUNCTION: Save all current data permanently to localStorage
+        function saveChangesToVault() {
+            localStorage.setItem('ibanez_products', JSON.stringify(products));
+            localStorage.setItem('ibanez_purchaser', JSON.stringify(purchaserItems));
+            localStorage.setItem('ibanez_expenses', JSON.stringify(expenses));
+            localStorage.setItem('ibanez_transactions', JSON.stringify(transactions));
+            showToast("All changes saved permanently to Vault!");
+        }
 
         function updateLiveDateTime() {
             const now = new Date();
@@ -1284,7 +1304,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let yearSelect = document.getElementById('dash-year-picker');
             if (!yearSelect) return;
             
-            // Gather all years present in transactions & expenses + current year + future years up to current year + 5
             let currentYear = new Date().getFullYear();
             let yearsSet = new Set([currentYear, 2024, 2025, 2026]);
 
@@ -1302,12 +1321,11 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 }
             });
 
-            // Include range up to current year + 5 for future readiness
             for (let y = 2024; y <= currentYear + 5; y++) {
                 yearsSet.add(y);
             }
 
-            let sortedYears = Array.from(yearsSet).sort((a, b) => b - a); // Descending order
+            let sortedYears = Array.from(yearsSet).sort((a, b) => b - a);
             let existingVal = yearSelect.value || currentYear.toString();
 
             yearSelect.innerHTML = sortedYears.map(y => `<option value="${y}" ${y.toString() === existingVal ? 'selected' : ''}>${y}</option>`).join('');
@@ -1504,7 +1522,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             closeRiceCalcModal();
             renderInventory();
             renderPOSGrid();
-            showToast("Rice pricing imported to inventory!");
+            saveChangesToVault();
+            showToast("Rice pricing imported & saved to inventory!");
         }
 
         /* BULK CASE / BOX PRICING CALCULATOR LOGIC */
@@ -1557,7 +1576,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             closeBulkCalcModal();
             renderInventory();
             renderPOSGrid();
-            showToast("Bulk box items imported to inventory!");
+            saveChangesToVault();
+            showToast("Bulk box items imported & saved to inventory!");
         }
 
         function showFormulaInfo(type) {
@@ -1647,7 +1667,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 products = products.filter(p => p.id !== id);
                 renderInventory();
                 renderPOSGrid();
-                showToast("Product deleted.");
+                saveChangesToVault();
+                showToast("Product deleted & saved.");
             }
         }
 
@@ -1708,7 +1729,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             populateYearPicker();
             renderDashboard();
             renderPLReport();
-            showToast("Expense saved & synced!");
+            saveChangesToVault();
+            showToast("Expense saved & saved to Vault!");
         }
 
         function deleteExpense(id) {
@@ -1724,7 +1746,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 populateYearPicker();
                 renderDashboard();
                 renderPLReport();
-                showToast("Expense deleted.");
+                saveChangesToVault();
+                showToast("Expense deleted & saved.");
             }
         }
 
@@ -1812,6 +1835,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
             document.getElementById('p-item-name').value = '';
             renderPurchaser();
+            saveChangesToVault();
         }
 
         function editPurchaserItem(id) {
@@ -1856,6 +1880,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             if (confirm("Delete this purchaser item?")) {
                 purchaserItems = purchaserItems.filter(i => i.id !== id);
                 renderPurchaser();
+                saveChangesToVault();
                 showToast("Purchaser item deleted.");
             }
         }
@@ -1884,7 +1909,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
             renderInventory();
             renderPOSGrid();
-            showToast(`Imported ${item.name} to inventory!`);
+            saveChangesToVault();
+            showToast(`Imported ${item.name} & saved to inventory!`);
         }
 
         function filterPurchaser(filter) {
@@ -1970,7 +1996,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             closeAddProductModal();
             renderInventory();
             renderPOSGrid();
-            showToast("Product saved!");
+            saveChangesToVault();
+            showToast("Product saved & saved to Vault!");
         }
 
         function getExpiryStatus(expiryStr) {
@@ -2109,6 +2136,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
         function updateQuickSell() {
             let prod = products.find(p => p.id === selectedQsProductId) || products[0];
+            if (!prod) return;
             let val = parseFloat(document.getElementById('qs-value-input').value) || 0;
             document.getElementById('qs-stock-display').textContent = `Stock: ${prod.stock} ${prod.unit}`;
 
@@ -2121,6 +2149,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
         function executeQuickSell(type) {
             let prod = products.find(p => p.id === selectedQsProductId) || products[0];
+            if (!prod) return;
             let val = parseFloat(document.getElementById('qs-value-input').value) || 0;
             if (val <= 0) return;
 
@@ -2148,6 +2177,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderDashboard();
             renderUtang();
             renderPLReport();
+            saveChangesToVault();
         }
 
         function openQuickSellModal() { populateQsProducts(); document.getElementById('quicksell-modal').classList.remove('hidden'); updateQuickSell(); }
@@ -2254,7 +2284,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderTransactions();
             renderDashboard();
             renderPLReport();
-            showToast(`Utang settled for ${customerName}!`);
+            saveChangesToVault();
+            showToast(`Utang settled & saved for ${customerName}!`);
         }
 
         function openEditTxModal(id) {
@@ -2290,7 +2321,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 renderDashboard();
                 renderUtang();
                 renderPLReport();
-                showToast("Transaction deleted.");
+                saveChangesToVault();
+                showToast("Transaction deleted & saved.");
             }
         }
 
@@ -2317,7 +2349,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 renderUtang();
                 renderPLReport();
                 closeEditTxModal();
-                showToast("Transaction updated!");
+                saveChangesToVault();
+                showToast("Transaction updated & saved!");
             }
         }
 
@@ -2475,13 +2508,11 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         function renderDashboard() {
             let todayStr = new Date().toISOString().split('T')[0];
             
-            // 1. Calculate Live Today Badge Top Right
             let liveTodaySales = transactions.filter(t => t.date.startsWith(todayStr) && t.type !== 'Expense');
             let liveTodayRev = liveTodaySales.reduce((sum, s) => sum + s.amount, 0);
             document.getElementById('dash-today-sales').textContent = '₱' + liveTodayRev.toLocaleString();
             document.getElementById('dash-today-count').textContent = `${liveTodaySales.length} sales`;
 
-            // 2. Filter Transactions & Expenses based on Selected Period (Daily, Monthly, Yearly)
             let filteredSales = [];
             let filteredExpenses = [];
 
@@ -2504,7 +2535,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 document.getElementById('dash-rev-lbl').textContent = `Sales in ${chosenYear}`;
             }
 
-            // 3. Compute Metrics for Selected Period
             let rev = filteredSales.reduce((sum, s) => sum + s.amount, 0);
             let cogs = filteredSales.reduce((sum, s) => sum + (s.cogs || 0), 0);
             let grossProfit = rev - cogs;
@@ -2701,6 +2731,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderDashboard();
             renderUtang();
             renderPLReport();
+            saveChangesToVault();
         }
 
         function closeReceiptModal() {
