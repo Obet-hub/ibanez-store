@@ -2067,24 +2067,49 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 if (expInfo.status === 'expired') cardBorder = 'border-rose-500';
                 else if (expInfo.status === 'warning') cardBorder = 'border-amber-500';
 
+                // CALCULATIONS FOR METRICS REQUESTED
+                let marginPesos = p.price - p.cost;
+                let marginPct = p.price > 0 ? ((marginPesos / p.price) * 100).toFixed(1) : 0;
+                let potentialEarnings = marginPesos * p.stock;
+
                 html += `
-                    <div class="p-4 bg-slate-100 dark:bg-[#12151C] border-2 ${cardBorder} rounded-2xl flex justify-between items-center text-xs obsidian-key">
-                        <div class="space-y-1">
-                            <h4 class="font-bold text-sm">${p.name}</h4>
-                            <p class="text-slate-400">${p.category} • Cost ₱${p.cost}</p>
-                            <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                    <div class="p-4 bg-slate-100 dark:bg-[#12151C] border-2 ${cardBorder} rounded-3xl space-y-3 obsidian-key">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-sm text-indigo-400">${p.name}</h4>
+                                <p class="text-[11px] text-slate-400">${p.category} • ${p.stock} ${p.unit} in stock</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs text-slate-400 block uppercase font-bold">Selling Price</span>
+                                <span class="font-black text-emerald-400 text-base">₱${p.price.toLocaleString()}</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 bg-white dark:bg-obsidianCard p-2.5 rounded-2xl border border-slate-300 dark:border-obsidianBorder text-center text-[11px]">
+                            <div>
+                                <span class="text-slate-400 block font-bold">Cost</span>
+                                <span class="font-black text-slate-200">₱${p.cost.toLocaleString()}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block font-bold">Margin</span>
+                                <span class="font-black text-indigo-400">₱${marginPesos} (${marginPct}%)</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block font-bold">Potential Earn</span>
+                                <span class="font-black text-emerald-400">₱${potentialEarnings.toLocaleString()}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center pt-1 border-t border-slate-200 dark:border-obsidianBorder/60">
+                            <div class="flex flex-wrap items-center gap-1.5">
                                 <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Added: ${p.dateAdded || 'N/A'}</span>
                                 ${p.expiryDate ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold ${expInfo.badgeClass}">${expInfo.label}</span>` : ''}
                             </div>
                             ${currentRole === 'Admin' ? `
-                            <div class="flex gap-2 pt-2">
+                            <div class="flex gap-2">
                                 <button onclick="openAddProductModal('${p.id}')" class="bg-indigo-500/10 text-indigo-400 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Edit</button>
                                 <button onclick="deleteProduct('${p.id}')" class="bg-rose-500/10 text-rose-500 font-bold px-3 py-1 rounded-xl text-[11px] obsidian-key">Delete</button>
                             </div>` : ''}
-                        </div>
-                        <div class="text-right">
-                            <div class="font-black text-emerald-400 text-sm">₱${p.price}</div>
-                            <span class="text-slate-400 font-medium block mt-1">${p.stock} ${p.unit}</span>
                         </div>
                     </div>`;
             });
