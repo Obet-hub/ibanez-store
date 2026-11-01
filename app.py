@@ -211,7 +211,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         <input type="number" id="rc-spill" value="1.0" step="0.1" oninput="calcRiceFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
                     </div>
                     <div>
-                        <label class="block mb-1 font-bold text-slate-400">Transport Cost (₱)</label>
+                        <label class="block mb-1 font-bold text-slate-400">Transport / Shipping Cost (₱)</label>
                         <input type="number" id="rc-transport" value="50" oninput="calcRiceFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
                     </div>
                 </div>
@@ -280,7 +280,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block mb-1 font-bold text-slate-400">Freight / Delivery (₱)</label>
+                        <label class="block mb-1 font-bold text-slate-400">Freight / Shipping (₱)</label>
                         <input type="number" id="bc-freight" value="30" oninput="calcBulkFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
                     </div>
                     <div>
@@ -740,6 +740,25 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             </div>
 
             <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-5 space-y-4 obsidian-key">
+                
+                <!-- SHIPPING FITTING AND SUMMARY TRACKER CONTAINER -->
+                <div class="p-4 bg-indigo-950/20 border-2 border-indigo-500/40 rounded-2xl space-y-3 obsidian-key">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-black text-indigo-400 uppercase tracking-wider"><i class="fa-solid fa-truck-fast mr-1"></i> Inventory Shipping Fee Summary</span>
+                        <span class="text-lg font-black text-amber-400" id="inv-filtered-shipping-sum">₱0</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">From Date Added</label>
+                            <input type="date" id="inv-ship-from" onchange="renderInventory()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-indigo-400 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">To Date Added</label>
+                            <input type="date" id="inv-ship-to" onchange="renderInventory()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-indigo-400 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
                     <input type="text" id="inv-search" oninput="renderInventory()" placeholder="Search products" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl pl-9 pr-4 py-3 text-xs placeholder-slate-400 focus:outline-none focus:border-indigo-500">
@@ -769,7 +788,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         <button onclick="filterInventory('expired_soon')" id="inv-filter-expired_soon" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key text-amber-400">⚠️ Expiry Alerts</button>
                     </div>
                     <div class="text-right">
-                        <span class="text-[10px] text-slate-400 font-bold block uppercase">Stock value (at cost)</span>
+                        <span class="text-[10px] text-slate-400 font-bold block uppercase">Stock value (cost + shipping)</span>
                         <span class="text-lg font-black" id="inv-stock-value">₱0</span>
                     </div>
                 </div>
@@ -1119,7 +1138,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- ADD / EDIT PRODUCT MODAL -->
+    <!-- ADD / EDIT PRODUCT MODAL (Includes Shipping Fee Field) -->
     <div id="add-product-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-md p-5 space-y-4 shadow-2xl obsidian-key">
             <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
@@ -1136,26 +1155,40 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <label class="block mb-1 font-bold">Category</label>
                     <input type="text" id="ap-cat" placeholder="e.g. Condiments, Pantry, Dairy" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2">
                 </div>
+                
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block mb-1 font-bold">Cost (₱)</label>
-                        <input type="number" id="ap-cost" value="10" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2">
+                        <label class="block mb-1 font-bold">Base Cost (₱)</label>
+                        <input type="number" id="ap-cost" value="10" oninput="updateModalCalculatedPrice()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
                     </div>
                     <div>
-                        <label class="block mb-1 font-bold">Margin (₱)</label>
-                        <input type="number" id="ap-margin" value="3" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2">
+                        <label class="block mb-1 font-bold text-amber-400">Shipping Fee / Charge (₱)</label>
+                        <input type="number" id="ap-shipping" value="0" placeholder="0.00" oninput="updateModalCalculatedPrice()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-amber-400">
                     </div>
                 </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block mb-1 font-bold">Margin (₱)</label>
+                        <input type="number" id="ap-margin" value="3" oninput="updateModalCalculatedPrice()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                    </div>
+                    <div>
+                        <label class="block mb-1 font-bold text-emerald-400">Total Selling Price (₱)</label>
+                        <input type="number" id="ap-price-display" readonly class="w-full bg-slate-200 dark:bg-obsidianBorder border-2 border-emerald-500/40 rounded-xl px-3 py-2 font-black text-emerald-400 cursor-not-allowed">
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block mb-1 font-bold">Stock Qty</label>
-                        <input type="number" id="ap-stock" value="10" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2">
+                        <input type="number" id="ap-stock" value="10" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
                     </div>
                     <div>
                         <label class="block mb-1 font-bold">Unit Metric</label>
-                        <input type="text" id="ap-unit" value="pcs" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2">
+                        <input type="text" id="ap-unit" value="pcs" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
                     </div>
                 </div>
+
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block mb-1 font-bold">Date Added</label>
@@ -1233,18 +1266,18 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         const PASSWORDS = { 'Admin': '12345bert', 'Store Keeper': 'store123' };
 
         const DEFAULT_PRODUCTS = [
-            { id: '1', name: 'Bear Brand 33g', category: 'Dairy', cost: 10, margin: 3, price: 13, stock: 10, unit: 'sachet', dateAdded: '2026-09-01', expiryDate: '2027-05-15' },
-            { id: '2', name: 'Century Tuna 155g', category: 'Canned', cost: 30, margin: 8, price: 38, stock: 18, unit: 'can', dateAdded: '2026-09-05', expiryDate: '2028-01-10' },
-            { id: '3', name: 'Coca-Cola 1.5L Bottle', category: 'Drinks', cost: 60, margin: 12, price: 72, stock: 24, unit: 'bottle', dateAdded: '2026-10-01', expiryDate: '2026-11-05' },
-            { id: '4', name: 'Coco Pandan Rice', category: 'Grains', cost: 1050, margin: 300, price: 1350, stock: 6, unit: 'pcs', dateAdded: '2026-09-10', expiryDate: '' },
-            { id: '5', name: 'Jasmine Rice', category: 'Grains', cost: 48, margin: 12, price: 60, stock: 47, unit: 'kg', dateAdded: '2026-09-15', expiryDate: '' },
-            { id: '6', name: 'Kopiko Brown Coffee', category: 'Drinks', cost: 7, margin: 3, price: 10, stock: 57, unit: 'sachet', dateAdded: '2026-09-20', expiryDate: '2027-08-20' },
-            { id: '7', name: 'Lucky Me Instant Noodles', category: 'Noodles', cost: 10, margin: 3, price: 13, stock: 40, unit: 'pack', dateAdded: '2026-09-25', expiryDate: '2026-10-25' },
-            { id: '8', name: 'Piattos Cheese 85g', category: 'Snacks', cost: 30, margin: 8, price: 38, stock: 25, unit: 'pack', dateAdded: '2026-10-02', expiryDate: '2026-11-12' },
-            { id: '9', name: 'Red Bull Energy Drink', category: 'Beverages', cost: 45, margin: 10, price: 55, stock: 15, unit: 'can', dateAdded: '2026-10-05', expiryDate: '2026-10-18' },
-            { id: '10', name: 'Silver Swan Vinegar 200ml', category: 'Condiments', cost: 12, margin: 3, price: 15, stock: 20, unit: 'pouch', dateAdded: '2026-10-08', expiryDate: '2027-12-01' },
-            { id: '11', name: 'Datu Puti Patis 350ml', category: 'Condiments', cost: 22, margin: 5, price: 27, stock: 15, unit: 'bottle', dateAdded: '2026-10-10', expiryDate: '2028-02-15' },
-            { id: '12', name: 'Special Tuyo 100g', category: 'Pantry', cost: 35, margin: 10, price: 45, stock: 12, unit: 'pack', dateAdded: '2026-10-12', expiryDate: '2027-01-30' }
+            { id: '1', name: 'Bear Brand 33g', category: 'Dairy', cost: 10, shippingFee: 0, margin: 3, price: 13, stock: 10, unit: 'sachet', dateAdded: '2026-09-01', expiryDate: '2027-05-15' },
+            { id: '2', name: 'Century Tuna 155g', category: 'Canned', cost: 30, shippingFee: 2, margin: 8, price: 40, stock: 18, unit: 'can', dateAdded: '2026-09-05', expiryDate: '2028-01-10' },
+            { id: '3', name: 'Coca-Cola 1.5L Bottle', category: 'Drinks', cost: 60, shippingFee: 5, margin: 12, price: 77, stock: 24, unit: 'bottle', dateAdded: '2026-10-01', expiryDate: '2026-11-05' },
+            { id: '4', name: 'Coco Pandan Rice', category: 'Grains', cost: 1050, shippingFee: 50, margin: 300, price: 1400, stock: 6, unit: 'pcs', dateAdded: '2026-09-10', expiryDate: '' },
+            { id: '5', name: 'Jasmine Rice', category: 'Grains', cost: 48, shippingFee: 2, margin: 12, price: 62, stock: 47, unit: 'kg', dateAdded: '2026-09-15', expiryDate: '' },
+            { id: '6', name: 'Kopiko Brown Coffee', category: 'Drinks', cost: 7, shippingFee: 0, margin: 3, price: 10, stock: 57, unit: 'sachet', dateAdded: '2026-09-20', expiryDate: '2027-08-20' },
+            { id: '7', name: 'Lucky Me Instant Noodles', category: 'Noodles', cost: 10, shippingFee: 1, margin: 3, price: 14, stock: 40, unit: 'pack', dateAdded: '2026-09-25', expiryDate: '2026-10-25' },
+            { id: '8', name: 'Piattos Cheese 85g', category: 'Snacks', cost: 30, shippingFee: 2, margin: 8, price: 40, stock: 25, unit: 'pack', dateAdded: '2026-10-02', expiryDate: '2026-11-12' },
+            { id: '9', name: 'Red Bull Energy Drink', category: 'Beverages', cost: 45, shippingFee: 3, margin: 10, price: 58, stock: 15, unit: 'can', dateAdded: '2026-10-05', expiryDate: '2026-10-18' },
+            { id: '10', name: 'Silver Swan Vinegar 200ml', category: 'Condiments', cost: 12, shippingFee: 1, margin: 3, price: 16, stock: 20, unit: 'pouch', dateAdded: '2026-10-08', expiryDate: '2027-12-01' },
+            { id: '11', name: 'Datu Puti Patis 350ml', category: 'Condiments', cost: 22, shippingFee: 2, margin: 5, price: 29, stock: 15, unit: 'bottle', dateAdded: '2026-10-10', expiryDate: '2028-02-15' },
+            { id: '12', name: 'Special Tuyo 100g', category: 'Pantry', cost: 35, shippingFee: 3, margin: 10, price: 48, stock: 12, unit: 'pack', dateAdded: '2026-10-12', expiryDate: '2027-01-30' }
         ];
 
         const DEFAULT_PURCHASER = [
@@ -1280,6 +1313,11 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         let selectedQsProductId = products.length > 0 ? products[0].id : '';
         let utangFilter = 'balance';
         let dashPeriod = 'daily';
+
+        // Ensure legacy products missing shippingFee get 0 by default
+        products.forEach(p => {
+            if (p.shippingFee === undefined) p.shippingFee = 0;
+        });
 
         // PERSISTENCE FUNCTION: Save all current data permanently to localStorage
         function saveChangesToVault() {
@@ -1482,8 +1520,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let margin = parseFloat(document.getElementById('rc-margin').value) || 20;
 
             let netWeight = Math.max(0.1, weight - spill);
-            let totalCapital = sackCost + transport + (netWeight * packaging);
-            let actualCostPerKg = totalCapital / netWeight;
+            let shippingPerKg = transport / netWeight;
+            let baseCostPerKg = (sackCost / netWeight) + packaging;
+            let actualCostPerKg = baseCostPerKg + shippingPerKg;
             let recPricePerKg = actualCostPerKg * (1 + (margin / 100));
             let todayStr = new Date().toISOString().split('T')[0];
 
@@ -1494,7 +1533,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     id: Date.now().toString(),
                     name: name + ' (Per KG)',
                     category: 'Grains',
-                    cost: Math.round(actualCostPerKg),
+                    cost: Math.round(baseCostPerKg),
+                    shippingFee: Math.round(shippingPerKg),
                     margin: Math.round(recPricePerKg - actualCostPerKg),
                     price: Math.round(recPricePerKg),
                     stock: netWeight,
@@ -1509,9 +1549,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     id: (Date.now() + 1).toString(),
                     name: name + ' (Whole Sack)',
                     category: 'Grains',
-                    cost: Math.round(totalCapital),
-                    margin: Math.round(totalCapital * (margin / 100)),
-                    price: Math.round(totalCapital * (1 + (margin / 100))),
+                    cost: Math.round(sackCost),
+                    shippingFee: Math.round(transport),
+                    margin: Math.round((sackCost + transport) * (margin / 100)),
+                    price: Math.round((sackCost + transport) * (1 + (margin / 100))),
                     stock: 1,
                     unit: 'sack',
                     dateAdded: todayStr,
@@ -1555,17 +1596,19 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let freight = parseFloat(document.getElementById('bc-freight').value) || 0;
             let margin = parseFloat(document.getElementById('bc-margin').value) || 25;
 
-            let totalBoxCost = boxCost + freight;
-            let unitCost = totalBoxCost / Math.max(1, units);
-            let recSellingPrice = unitCost * (1 + (margin / 100));
+            let baseUnitCost = boxCost / Math.max(1, units);
+            let shippingPerUnit = freight / Math.max(1, units);
+            let totalUnitCost = baseUnitCost + shippingPerUnit;
+            let recSellingPrice = totalUnitCost * (1 + (margin / 100));
             let todayStr = new Date().toISOString().split('T')[0];
 
             products.push({
                 id: Date.now().toString(),
                 name: name,
                 category: 'General',
-                cost: Math.round(unitCost),
-                margin: Math.round(recSellingPrice - unitCost),
+                cost: Math.round(baseUnitCost),
+                shippingFee: Math.round(shippingPerUnit),
+                margin: Math.round(recSellingPrice - totalUnitCost),
                 price: Math.round(recSellingPrice),
                 stock: units,
                 unit: 'pcs',
@@ -1618,6 +1661,14 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             updatePOSCalculations();
         }
 
+        function updateModalCalculatedPrice() {
+            let cost = parseFloat(document.getElementById('ap-cost').value) || 0;
+            let shipping = parseFloat(document.getElementById('ap-shipping').value) || 0;
+            let margin = parseFloat(document.getElementById('ap-margin').value) || 0;
+            let totalPrice = cost + shipping + margin;
+            document.getElementById('ap-price-display').value = totalPrice.toFixed(2);
+        }
+
         function openAddProductModal(id = null) {
             if (currentRole !== 'Admin') {
                 showToast("Access Denied: Admin authorization required.");
@@ -1635,6 +1686,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     document.getElementById('ap-name').value = p.name;
                     document.getElementById('ap-cat').value = p.category;
                     document.getElementById('ap-cost').value = p.cost;
+                    document.getElementById('ap-shipping').value = p.shippingFee || 0;
                     document.getElementById('ap-margin').value = p.margin;
                     document.getElementById('ap-stock').value = p.stock;
                     document.getElementById('ap-unit').value = p.unit;
@@ -1647,12 +1699,14 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 document.getElementById('ap-name').value = '';
                 document.getElementById('ap-cat').value = 'General';
                 document.getElementById('ap-cost').value = 10;
+                document.getElementById('ap-shipping').value = 0;
                 document.getElementById('ap-margin').value = 3;
                 document.getElementById('ap-stock').value = 10;
                 document.getElementById('ap-unit').value = 'pcs';
                 document.getElementById('ap-date-added').value = todayStr;
                 document.getElementById('ap-expiry').value = '';
             }
+            updateModalCalculatedPrice();
             modal.classList.remove('hidden');
         }
 
@@ -1899,6 +1953,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 name: item.name,
                 category: 'General',
                 cost: Math.round(unitCost),
+                shippingFee: 0,
                 margin: Math.round(marginVal),
                 price: Math.round(sellingPrice),
                 stock: item.qty || 1,
@@ -1977,6 +2032,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let name = document.getElementById('ap-name').value.trim();
             let category = document.getElementById('ap-cat').value.trim() || 'General';
             let cost = parseFloat(document.getElementById('ap-cost').value) || 0;
+            let shippingFee = parseFloat(document.getElementById('ap-shipping').value) || 0;
             let margin = parseFloat(document.getElementById('ap-margin').value) || 0;
             let stock = parseFloat(document.getElementById('ap-stock').value) || 0;
             let unit = document.getElementById('ap-unit').value.trim() || 'pcs';
@@ -1984,13 +2040,24 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let expiryDate = document.getElementById('ap-expiry').value || '';
 
             if (!name) return;
-            let price = cost + margin;
+            let price = cost + shippingFee + margin;
 
             if (id) {
                 let p = products.find(prod => prod.id === id);
-                if (p) { p.name = name; p.category = category; p.cost = cost; p.margin = margin; p.price = price; p.stock = stock; p.unit = unit; p.dateAdded = dateAdded; p.expiryDate = expiryDate; }
+                if (p) { 
+                    p.name = name; 
+                    p.category = category; 
+                    p.cost = cost; 
+                    p.shippingFee = shippingFee;
+                    p.margin = margin; 
+                    p.price = price; 
+                    p.stock = stock; 
+                    p.unit = unit; 
+                    p.dateAdded = dateAdded; 
+                    p.expiryDate = expiryDate; 
+                }
             } else {
-                products.push({ id: Date.now().toString(), name, category, cost, margin, price, stock, unit, dateAdded, expiryDate });
+                products.push({ id: Date.now().toString(), name, category, cost, shippingFee, margin, price, stock, unit, dateAdded, expiryDate });
             }
 
             closeAddProductModal();
@@ -2030,7 +2097,11 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         function renderInventory() {
             let list = document.getElementById('inventory-list');
             let query = (document.getElementById('inv-search')?.value || '').toLowerCase();
-            let totalVal = products.reduce((sum, p) => sum + (p.cost * p.stock), 0);
+            let dateFrom = document.getElementById('inv-ship-from')?.value || '';
+            let dateTo = document.getElementById('inv-ship-to')?.value || '';
+
+            // Total stock value calculating cost + shipping
+            let totalVal = products.reduce((sum, p) => sum + ((p.cost + (p.shippingFee || 0)) * p.stock), 0);
             document.getElementById('inv-stock-value').textContent = '₱' + Math.round(totalVal).toLocaleString();
 
             let today = new Date();
@@ -2054,8 +2125,19 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 banner.classList.add('hidden');
             }
 
+            let filteredShippingSum = 0;
             let html = '';
+
             products.forEach(p => {
+                let pDate = p.dateAdded || '';
+                let matchesDate = true;
+                if (dateFrom && pDate < dateFrom) matchesDate = false;
+                if (dateTo && pDate > dateTo) matchesDate = false;
+
+                if (matchesDate) {
+                    filteredShippingSum += (p.shippingFee || 0) * (p.stock || 1);
+                }
+
                 if (currentInvCategory !== 'All' && p.category !== currentInvCategory) return;
                 if (query && !p.name.toLowerCase().includes(query)) return;
                 
@@ -2068,7 +2150,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 else if (expInfo.status === 'warning') cardBorder = 'border-amber-500';
 
                 // CALCULATIONS FOR METRICS REQUESTED
-                let marginPesos = p.price - p.cost;
+                let ship = p.shippingFee || 0;
+                let effectiveCost = p.cost + ship;
+                let marginPesos = p.price - effectiveCost;
                 let marginPct = p.price > 0 ? ((marginPesos / p.price) * 100).toFixed(1) : 0;
                 let potentialEarnings = marginPesos * p.stock;
 
@@ -2085,10 +2169,14 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-3 gap-2 bg-white dark:bg-obsidianCard p-2.5 rounded-2xl border border-slate-300 dark:border-obsidianBorder text-center text-[11px]">
+                        <div class="grid grid-cols-4 gap-2 bg-white dark:bg-obsidianCard p-2.5 rounded-2xl border border-slate-300 dark:border-obsidianBorder text-center text-[11px]">
                             <div>
-                                <span class="text-slate-400 block font-bold">Cost</span>
+                                <span class="text-slate-400 block font-bold">Base Cost</span>
                                 <span class="font-black text-slate-200">₱${p.cost.toLocaleString()}</span>
+                            </div>
+                            <div>
+                                <span class="text-amber-400 block font-bold">Shipping</span>
+                                <span class="font-black text-amber-400">₱${ship.toLocaleString()}</span>
                             </div>
                             <div>
                                 <span class="text-slate-400 block font-bold">Margin</span>
@@ -2113,6 +2201,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         </div>
                     </div>`;
             });
+
+            document.getElementById('inv-filtered-shipping-sum').textContent = '₱' + filteredShippingSum.toLocaleString();
             list.innerHTML = html || '<p class="text-xs text-slate-400 py-4 text-center">No products found.</p>';
         }
 
@@ -2189,7 +2279,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let itemDesc = `${prod.name} (${kilos.toFixed(2)} ${prod.unit})`;
 
             transactions.unshift({
-                id: txId, date: todayDate, customer, items: itemDesc, amount: totalAmount, cogs: prod.cost * kilos, cash: totalAmount, change: 0, type
+                id: txId, date: todayDate, customer, items: itemDesc, amount: totalAmount, cogs: (prod.cost + (prod.shippingFee || 0)) * kilos, cash: totalAmount, change: 0, type
             });
 
             openReceiptModal(txId, customer, itemDesc, totalAmount, totalAmount, 0, type, todayDate);
@@ -2647,7 +2737,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
         function addToCart(id) {
             let p = products.find(prod => prod.id === id);
-            if (!cart[id]) cart[id] = { name: p.name, price: p.price, cost: p.cost, qty: 1 };
+            let unitCost = p.cost + (p.shippingFee || 0);
+            if (!cart[id]) cart[id] = { name: p.name, price: p.price, cost: unitCost, qty: 1 };
             else cart[id].qty += 1;
             renderPOSGrid();
             renderCart();
@@ -2728,7 +2819,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 let prod = products.find(p => p.id === k);
                 if (prod) {
                     total += prod.price * cart[k].qty;
-                    totalCogs += prod.cost * cart[k].qty;
+                    let unitCost = prod.cost + (prod.shippingFee || 0);
+                    totalCogs += unitCost * cart[k].qty;
                     prod.stock = Math.max(0, prod.stock - cart[k].qty);
                 }
             });
