@@ -2149,10 +2149,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 if (expInfo.status === 'expired') cardBorder = 'border-rose-500';
                 else if (expInfo.status === 'warning') cardBorder = 'border-amber-500';
 
-                // CALCULATIONS FOR METRICS REQUESTED
+                // CALCULATIONS FOR METRICS REQUESTED (Actual Cost = Base Cost + Shipping Fee)
                 let ship = p.shippingFee || 0;
-                let effectiveCost = p.cost + ship;
-                let marginPesos = p.price - effectiveCost;
+                let actualCost = p.cost + ship;
+                let marginPesos = p.price - actualCost;
                 let marginPct = p.price > 0 ? ((marginPesos / p.price) * 100).toFixed(1) : 0;
                 let potentialEarnings = marginPesos * p.stock;
 
@@ -2169,10 +2169,11 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                             </div>
                         </div>
 
+                        <!-- UPDATED 4-GRID TO SHOW ACTUAL COST CLEARLY -->
                         <div class="grid grid-cols-4 gap-2 bg-white dark:bg-obsidianCard p-2.5 rounded-2xl border border-slate-300 dark:border-obsidianBorder text-center text-[11px]">
                             <div>
-                                <span class="text-slate-400 block font-bold">Base Cost</span>
-                                <span class="font-black text-slate-200">₱${p.cost.toLocaleString()}</span>
+                                <span class="text-slate-400 block font-bold">Actual Cost</span>
+                                <span class="font-black text-rose-400">₱${actualCost.toLocaleString()}</span>
                             </div>
                             <div>
                                 <span class="text-amber-400 block font-bold">Shipping</span>
@@ -2953,5 +2954,5 @@ if __name__ == '__main__':
     try:
         while True:
             threading.Event().wait(1)
-    except KeyboardInterrupt:
+    for KeyboardInterrupt:
         pass
