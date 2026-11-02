@@ -1138,7 +1138,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- ADD / EDIT PRODUCT MODAL (Includes Shipping Fee Field) -->
+    <!-- ADD / EDIT PRODUCT MODAL (With Smart Auto-Category Dropdown) -->
     <div id="add-product-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-md p-5 space-y-4 shadow-2xl obsidian-key">
             <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
@@ -1149,11 +1149,22 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 <input type="hidden" id="ap-id">
                 <div>
                     <label class="block mb-1 font-bold">Product Name</label>
-                    <input type="text" id="ap-name" placeholder="e.g. Silver Swan Vinegar" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2">
+                    <input type="text" id="ap-name" oninput="detectCategoryFromName()" placeholder="e.g. Silver Swan Vinegar, Coca-Cola" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2">
                 </div>
                 <div>
-                    <label class="block mb-1 font-bold">Category</label>
-                    <input type="text" id="ap-cat" placeholder="e.g. Condiments, Pantry, Dairy" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2">
+                    <label class="block mb-1 font-bold">Category <span class="text-indigo-400 font-normal">(Auto-detected)</span></label>
+                    <select id="ap-cat" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-indigo-500/40 rounded-xl px-3 py-2 font-bold text-indigo-400 focus:outline-none">
+                        <option value="General">General</option>
+                        <option value="Dairy">Dairy</option>
+                        <option value="Canned">Canned</option>
+                        <option value="Drinks">Drinks</option>
+                        <option value="Grains">Grains</option>
+                        <option value="Noodles">Noodles</option>
+                        <option value="Snacks">Snacks</option>
+                        <option value="Beverages">Beverages</option>
+                        <option value="Condiments">Condiments</option>
+                        <option value="Pantry">Pantry</option>
+                    </select>
                 </div>
                 
                 <div class="grid grid-cols-2 gap-3">
@@ -1669,6 +1680,36 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             document.getElementById('ap-price-display').value = totalPrice.toFixed(2);
         }
 
+        /* SMART CATEGORY AUTO-DETECTOR LOGIC */
+        function detectCategoryFromName() {
+            let nameVal = document.getElementById('ap-name').value.toLowerCase();
+            let catSelect = document.getElementById('ap-cat');
+            if (!nameVal) return;
+
+            let detected = 'General';
+            if (nameVal.includes('bear brand') || nameVal.includes('milk') || nameVal.includes('cheese') || nameVal.includes('butter') || nameVal.includes('cream')) {
+                detected = 'Dairy';
+            } else if (nameVal.includes('tuna')|| nameVal.includes('sardines') || nameVal.includes('canned') || nameVal.includes('spam') || nameVal.includes('beef loaf')) {
+                detected = 'Canned';
+            } else if (nameVal.includes('coke') || nameVal.includes('coca-cola') || nameVal.includes('sprite') || nameVal.includes('royal') || nameVal.includes('coffee') || nameVal.includes('tea') || nameVal.includes('juice')) {
+                detected = 'Drinks';
+            } else if (nameVal.includes('rice') || nameVal.includes('bigas') || nameVal.includes('corn') || nameVal.includes('oat')) {
+                detected = 'Grains';
+            } else if (nameVal.includes('noodles') || nameVal.includes('lucky me') || nameVal.includes('pancit canton') || nameVal.includes('payless')) {
+                detected = 'Noodles';
+            } else if (nameVal.includes('piattos') || nameVal.includes('chippy') || nameVal.includes('nova') || nameVal.includes('chips') || nameVal.includes('candy') || nameVal.includes('biscuit') || nameVal.includes('skyflakes')) {
+                detected = 'Snacks';
+            } else if (nameVal.includes('red bull') || nameVal.includes('sting') || nameval.includes('energy') || nameVal.includes('beer') || nameVal.includes('gatorade')) {
+                detected = 'Beverages';
+            } else if (nameVal.includes('vinegar') || nameVal.includes('soy sauce') || nameVal.includes('patis') || nameVal.includes('sukal') || nameVal.includes('bagoong') || nameVal.includes('silver swan') || nameVal.includes('datu puti')) {
+                detected = 'Condiments';
+            } else if (nameVal.includes('tuyo') || nameVal.includes('daing') || nameVal.includes('salt') || nameVal.includes('sugar') || nameVal.includes('flour') || nameVal.includes('oil')) {
+                detected = 'Pantry';
+            }
+
+            catSelect.value = detected;
+        }
+
         function openAddProductModal(id = null) {
             if (currentRole !== 'Admin') {
                 showToast("Access Denied: Admin authorization required.");
@@ -2030,7 +2071,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             }
             let id = document.getElementById('ap-id').value;
             let name = document.getElementById('ap-name').value.trim();
-            let category = document.getElementById('ap-cat').value.trim() || 'General';
+            let category = document.getElementById('ap-cat').value;
             let cost = parseFloat(document.getElementById('ap-cost').value) || 0;
             let shippingFee = parseFloat(document.getElementById('ap-shipping').value) || 0;
             let margin = parseFloat(document.getElementById('ap-margin').value) || 0;
@@ -2064,7 +2105,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             renderInventory();
             renderPOSGrid();
             saveChangesToVault();
-            showToast("Product saved & saved to Vault!");
+            showToast("Product saved & segregated by category!");
         }
 
         function getExpiryStatus(expiryStr) {
@@ -2100,7 +2141,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let dateFrom = document.getElementById('inv-ship-from')?.value || '';
             let dateTo = document.getElementById('inv-ship-to')?.value || '';
 
-            // Total stock value calculating cost + shipping
             let totalVal = products.reduce((sum, p) => sum + ((p.cost + (p.shippingFee || 0)) * p.stock), 0);
             document.getElementById('inv-stock-value').textContent = '₱' + Math.round(totalVal).toLocaleString();
 
@@ -2149,13 +2189,12 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 if (expInfo.status === 'expired') cardBorder = 'border-rose-500';
                 else if (expInfo.status === 'warning') cardBorder = 'border-amber-500';
 
-                // CALCULATIONS FOR METRICS REQUESTED (Actual Cost = Base Cost + Shipping Fee)
                 let ship = p.shippingFee || 0;
                 let actualCost = p.cost + ship;
                 let marginPesos = p.price - actualCost;
                 let marginPct = p.price > 0 ? ((marginPesos / p.price) * 100).toFixed(1) : 0;
                 let potentialEarnings = marginPesos * p.stock;
-                let totalItemValue = p.price * p.stock; // Total Inventory Selling Price calculation
+                let totalItemValue = p.price * p.stock;
 
                 html += `
                     <div class="p-4 bg-slate-100 dark:bg-[#12151C] border-2 ${cardBorder} rounded-3xl space-y-3 obsidian-key">
@@ -2163,7 +2202,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                             <div>
                                 <h4 class="font-bold text-sm text-indigo-400">${p.name}</h4>
                                 <p class="text-[11px] text-slate-400">
-                                    ${p.category} • ${p.stock} ${p.unit} in stock 
+                                    <span class="text-amber-400 font-bold">[${p.category}]</span> • ${p.stock} ${p.unit} in stock 
                                     <span class="font-bold text-emerald-400">• Total: ₱${totalItemValue.toLocaleString()}</span>
                                 </p>
                             </div>
@@ -2173,7 +2212,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                             </div>
                         </div>
 
-                        <!-- UPDATED 4-GRID TO SHOW ACTUAL COST CLEARLY -->
                         <div class="grid grid-cols-4 gap-2 bg-white dark:bg-obsidianCard p-2.5 rounded-2xl border border-slate-300 dark:border-obsidianBorder text-center text-[11px]">
                             <div>
                                 <span class="text-slate-400 block font-bold">Actual Cost</span>
