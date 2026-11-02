@@ -2155,13 +2155,17 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 let marginPesos = p.price - actualCost;
                 let marginPct = p.price > 0 ? ((marginPesos / p.price) * 100).toFixed(1) : 0;
                 let potentialEarnings = marginPesos * p.stock;
+                let totalItemValue = p.price * p.stock; // Total Inventory Selling Price calculation
 
                 html += `
                     <div class="p-4 bg-slate-100 dark:bg-[#12151C] border-2 ${cardBorder} rounded-3xl space-y-3 obsidian-key">
                         <div class="flex justify-between items-start">
                             <div>
                                 <h4 class="font-bold text-sm text-indigo-400">${p.name}</h4>
-                                <p class="text-[11px] text-slate-400">${p.category} • ${p.stock} ${p.unit} in stock</p>
+                                <p class="text-[11px] text-slate-400">
+                                    ${p.category} • ${p.stock} ${p.unit} in stock 
+                                    <span class="font-bold text-emerald-400">• Total: ₱${totalItemValue.toLocaleString()}</span>
+                                </p>
                             </div>
                             <div class="text-right">
                                 <span class="text-xs text-slate-400 block uppercase font-bold">Selling Price</span>
@@ -2954,5 +2958,5 @@ if __name__ == '__main__':
     try:
         while True:
             threading.Event().wait(1)
-    for KeyboardInterrupt:
+    except KeyboardInterrupt:
         pass
