@@ -2202,8 +2202,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                             <div>
                                 <h4 class="font-bold text-sm text-indigo-400">${p.name}</h4>
                                 <p class="text-[11px] text-slate-400">
-                                    <span class="text-amber-400 font-bold">[${p.category}]</span> • ${p.stock} ${p.unit} in stock 
-                                    <span class="font-bold text-emerald-400">• Total: ₱${totalItemValue.toLocaleString()}</span>
+                                    <span class="text-amber-400 font-bold">[${p.category}]</span> • <span class="font-black text-indigo-300">${p.stock} ${p.unit}</span> in stock 
+                                    <span class="font-bold text-emerald-400">• Total Value: ₱${totalItemValue.toLocaleString()}</span>
                                 </p>
                             </div>
                             <div class="text-right">
@@ -2218,15 +2218,15 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                                 <span class="font-black text-rose-400">₱${actualCost.toLocaleString()}</span>
                             </div>
                             <div>
-                                <span class="text-amber-400 block font-bold">Shipping</span>
-                                <span class="font-black text-amber-400">₱${ship.toLocaleString()}</span>
+                                <span class="text-amber-400 block font-bold">Stacks</span>
+                                <span class="font-black text-amber-400">${p.stock} ${p.unit}</span>
                             </div>
                             <div>
                                 <span class="text-slate-400 block font-bold">Margin</span>
                                 <span class="font-black text-indigo-400">₱${marginPesos} (${marginPct}%)</span>
                             </div>
                             <div>
-                                <span class="text-slate-400 block font-bold">Potential Earn</span>
+                                <span class="text-slate-400 block font-bold">Estimated Earn</span>
                                 <span class="font-black text-emerald-400">₱${potentialEarnings.toLocaleString()}</span>
                             </div>
                         </div>
