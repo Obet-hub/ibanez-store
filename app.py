@@ -130,6 +130,32 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         </div>
     </div>
 
+    <!-- EXPORT / IMPORT VAULT SYNC MODAL -->
+    <div id="sync-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-lg p-5 space-y-4 shadow-2xl obsidian-key">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
+                <h3 class="font-extrabold text-base flex items-center gap-2 text-indigo-400">
+                    <i class="fa-solid fa-share-nodes"></i> Export / Import Vault Data (Messenger Share)
+                </h3>
+                <button onclick="closeSyncModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-base"></i></button>
+            </div>
+            <p class="text-xs text-slate-400">Copy your store vault code below to send via Messenger/Notes to another device, or paste a backup code to sync.</p>
+            
+            <div class="space-y-2">
+                <textarea id="sync-payload-box" rows="6" placeholder="Paste or copy vault JSON data here..." class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl p-3 text-[10px] font-mono focus:outline-none focus:border-indigo-500"></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="copyVaultDataToClipboard()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl text-xs obsidian-key shadow-lg flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-copy"></i> Copy Vault Code
+                </button>
+                <button onclick="importVaultDataFromBox()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl text-xs obsidian-key shadow-lg flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-file-import"></i> Load / Import Code
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- CHECKOUT & TRANSACTION RECEIPT MODAL -->
     <div id="receipt-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex flex-col items-center justify-center p-4 overflow-y-auto">
         <div id="receipt-card-content" class="bg-white dark:bg-obsidianCard border-2 border-indigo-500/50 rounded-3xl w-full max-w-sm p-6 space-y-4 shadow-2xl obsidian-key text-center">
@@ -339,6 +365,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 <!-- SAVE / PERSIST DATA BUTTON -->
                 <button onclick="saveChangesToVault()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-2 rounded-xl obsidian-key flex items-center gap-1.5 active:scale-95 shadow-md" title="Save changes permanently">
                     <i class="fa-solid fa-floppy-disk text-xs"></i> Save
+                </button>
+                <button onclick="openSyncModal()" class="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-3 py-2 rounded-xl obsidian-key flex items-center gap-1.5 active:scale-95 shadow-md" title="Export/Import Vault Data">
+                    <i class="fa-solid fa-share-nodes text-xs"></i> Sync
                 </button>
                 <button onclick="openQuickActionModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl obsidian-key flex items-center gap-1.5 active:scale-95">
                     <i class="fa-solid fa-plus text-xs"></i> Add
@@ -1025,6 +1054,14 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <i class="fa-solid fa-chevron-right text-slate-400"></i>
                 </button>
 
+                <button onclick="openSyncModal(); closeQuickActionModal();" class="w-full bg-slate-100 dark:bg-[#12151C] p-3.5 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder flex items-center justify-between text-left obsidian-key group">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-sm"><i class="fa-solid fa-share-nodes"></i></div>
+                        <div><span class="font-bold text-sm block">Export / Import Vault</span><span class="text-[11px] text-slate-400">Copy data code for Messenger / Sync</span></div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-400"></i>
+                </button>
+
                 <button onclick="openAddProductModal(); closeQuickActionModal();" class="w-full bg-slate-100 dark:bg-[#12151C] p-3.5 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder flex items-center justify-between text-left obsidian-key group">
                     <div class="flex items-center gap-3.5">
                         <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-sm"><i class="fa-solid fa-tag"></i></div>
@@ -1337,6 +1374,64 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             localStorage.setItem('ibanez_expenses', JSON.stringify(expenses));
             localStorage.setItem('ibanez_transactions', JSON.stringify(transactions));
             showToast("All changes saved permanently to Vault!");
+        }
+
+        /* EXPORT / IMPORT SYNC FUNCTIONS */
+        function openSyncModal() {
+            let payload = {
+                products: products,
+                purchaser: purchaserItems,
+                expenses: expenses,
+                transactions: transactions
+            };
+            document.getElementById('sync-payload-box').value = JSON.stringify(payload, null, 2);
+            document.getElementById('sync-modal').classList.remove('hidden');
+        }
+
+        function closeSyncModal() {
+            document.getElementById('sync-modal').classList.add('hidden');
+        }
+
+        function copyVaultDataToClipboard() {
+            let box = document.getElementById('sync-payload-box');
+            box.select();
+            box.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(box.value).then(() => {
+                showToast("Vault data copied! You can paste it into Messenger.");
+            }).catch(err => {
+                showToast("Failed to copy data.");
+            });
+        }
+
+        function importVaultDataFromBox() {
+            let rawText = document.getElementById('sync-payload-box').value.trim();
+            if (!rawText) {
+                showToast("Please paste vault data code first.");
+                return;
+            }
+            try {
+                let parsed = JSON.parse(rawText);
+                if (parsed.products) products = parsed.products;
+                if (parsed.purchaser) purchaserItems = parsed.purchaser;
+                if (parsed.expenses) expenses = parsed.expenses;
+                if (parsed.transactions) transactions = parsed.transactions;
+
+                saveChangesToVault();
+                closeSyncModal();
+                
+                // Refresh all views
+                renderInventory();
+                renderPOSGrid();
+                renderPurchaser();
+                renderExpenses();
+                renderTransactions();
+                renderDashboard();
+                renderUtang();
+                renderPLReport();
+                showToast("Vault successfully imported & synced!");
+            } catch (e) {
+                showToast("Invalid vault format code. Please check.");
+            }
         }
 
         function updateLiveDateTime() {
@@ -2166,9 +2261,14 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             }
 
             let filteredShippingSum = 0;
-            let html = '';
 
-            products.forEach(p => {
+            // Sort products alphabetically by name
+            let sortedProducts = [...products].sort((a, b) => a.name.localeCompare(b.name));
+
+            let html = '';
+            let indexCount = 1;
+
+            sortedProducts.forEach(p => {
                 let pDate = p.dateAdded || '';
                 let matchesDate = true;
                 if (dateFrom && pDate < dateFrom) matchesDate = false;
@@ -2200,7 +2300,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <div class="p-4 bg-slate-100 dark:bg-[#12151C] border-2 ${cardBorder} rounded-3xl space-y-3 obsidian-key">
                         <div class="flex justify-between items-start">
                             <div>
-                                <h4 class="font-bold text-sm text-indigo-400">${p.name}</h4>
+                                <h4 class="font-bold text-sm text-indigo-400">${indexCount}. ${p.name}</h4>
                                 <p class="text-[11px] text-slate-400">
                                     <span class="text-amber-400 font-bold">[${p.category}]</span> • <span class="font-black text-indigo-300">${p.stock} ${p.unit}</span> in stock 
                                     <span class="font-bold text-emerald-400">• Total Value: ₱${totalItemValue.toLocaleString()}</span>
@@ -2243,6 +2343,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                             </div>` : ''}
                         </div>
                     </div>`;
+                indexCount++;
             });
 
             document.getElementById('inv-filtered-shipping-sum').textContent = '₱' + filteredShippingSum.toLocaleString();
@@ -2266,7 +2367,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
         function populateQsProducts() {
             let select = document.getElementById('qs-product-select');
-            select.innerHTML = products.map(p => `<option value="${p.id}" ${p.id === selectedQsProductId ? 'selected' : ''}>${p.name} ₱${p.price}/${p.unit}</option>`).join('');
+            let sortedProducts = [...products].sort((a, b) => a.name.localeCompare(b.name));
+            select.innerHTML = sortedProducts.map(p => `<option value="${p.id}" ${p.id === selectedQsProductId ? 'selected' : ''}>${p.name} ₱${p.price}/${p.unit}</option>`).join('');
         }
 
         function onQsProductChange() {
@@ -2764,6 +2866,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 if (searchQuery && !p.name.toLowerCase().includes(searchQuery)) return false;
                 return true;
             });
+
+            // Sort POS items alphabetically as well
+            filtered.sort((a, b) => a.name.localeCompare(b.name));
 
             filtered.forEach(p => {
                 let cartQty = cart[p.id] ? cart[p.id].qty : 0;
