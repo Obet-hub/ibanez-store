@@ -89,7 +89,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-obsidianDark text-slate-900 dark:text-obsidianLight min-h-screen flex flex-col font-sans relative pb-36 transition-colors duration-300">
+<body class="bg-slate-100 dark:bg-obsidianDark text-slate-900 dark:text-obsidianLight min-h-screen flex flex-col items-center font-sans relative pb-36 transition-colors duration-300">
 
     <!-- LOGIN MODAL -->
     <div id="login-modal" class="fixed inset-0 z-50 bg-slate-950/90 dark:bg-[#12151C]/95 flex items-center justify-center p-4">
@@ -103,16 +103,16 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             </div>
             <div class="space-y-3.5 text-left">
                 <div>
-                    <label class="text-slate-600 dark:text-slate-400 text-[11px] font-bold block mb-1 uppercase tracking-wider">Select Role</label>
-                    <select id="login-role" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:border-indigo-500">
+                    <label class="text-slate-600 dark:text-slate-400 text-[11px] font-bold block mb-1 uppercase tracking-wider text-center">Select Role</label>
+                    <select id="login-role" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:border-indigo-500 text-center">
                         <option value="Admin">Admin / Vault Owner</option>
                         <option value="Store Keeper">Store Keeper</option>
                     </select>
                 </div>
                 <div>
-                    <label class="text-slate-600 dark:text-slate-400 text-[11px] font-bold block mb-1 uppercase tracking-wider">Password</label>
+                    <label class="text-slate-600 dark:text-slate-400 text-[11px] font-bold block mb-1 uppercase tracking-wider text-center">Password</label>
                     <div class="relative flex items-center">
-                        <input type="password" id="login-pass" autocomplete="new-password" placeholder="Enter password" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl pl-3.5 pr-10 py-2.5 text-sm font-medium focus:outline-none focus:border-indigo-500">
+                        <input type="password" id="login-pass" autocomplete="new-password" placeholder="Enter password" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl pl-3.5 pr-10 py-2.5 text-sm font-medium focus:outline-none focus:border-indigo-500 text-center">
                         <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 text-slate-400 hover:text-slate-200 focus:outline-none">
                             <i id="pass-toggle-icon" class="fa-solid fa-eye"></i>
                         </button>
@@ -137,10 +137,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
     <!-- EXPORT / IMPORT VAULT SYNC MODAL -->
     <div id="sync-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-lg p-5 space-y-4 shadow-2xl obsidian-key">
+        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-lg p-5 space-y-4 shadow-2xl obsidian-key text-center">
             <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
-                <h3 class="font-extrabold text-base flex items-center gap-2 text-indigo-400">
-                    <i class="fa-solid fa-share-nodes"></i> Export / Import Vault Data (Messenger Share)
+                <h3 class="font-extrabold text-base flex items-center gap-2 text-indigo-400 mx-auto">
+                    <i class="fa-solid fa-share-nodes"></i> Export / Import Vault Data
                 </h3>
                 <button onclick="closeSyncModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
@@ -163,7 +163,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
     <!-- CHECKOUT & TRANSACTION RECEIPT MODAL -->
     <div id="receipt-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex flex-col items-center justify-center p-4 overflow-y-auto">
-        <div id="receipt-card-content" class="bg-white dark:bg-obsidianCard border-2 border-indigo-500/50 rounded-3xl w-full max-w-sm p-6 space-y-4 shadow-2xl obsidian-key text-center">
+        <div id="receipt-card-content" class="bg-white dark:bg-obsidianCard border-2 border-indigo-500/50 rounded-3xl w-full max-w-sm p-6 space-y-4 shadow-2xl obsidian-key text-center mx-auto">
             <div class="border-b-2 border-dashed border-slate-300 dark:border-obsidianBorder pb-3 space-y-1">
                 <div class="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto text-xl shadow-md">
                     <i class="fa-solid fa-store"></i>
@@ -172,7 +172,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 <p class="text-[10px] text-slate-400 font-medium">Official Transaction Receipt</p>
                 <div class="text-[10px] text-slate-400 font-bold pt-1 flex justify-between">
                     <span id="rcpt-id">TX-000</span>
-                    <span id="rcpt-date">2026-10-20 | 00:00:00</span>
+                    <span id="rcpt-date">2026-11-06 | 00:00:00</span>
                 </div>
             </div>
 
@@ -199,7 +199,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             <p class="text-[10px] text-slate-400 italic font-medium">Thank you for shopping with us!</p>
         </div>
 
-        <div class="w-full max-w-sm mt-3 grid grid-cols-2 gap-2">
+        <div class="w-full max-w-sm mt-3 grid grid-cols-2 gap-2 mx-auto">
             <button onclick="saveReceiptToGallery()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 px-2 rounded-xl text-[11px] obsidian-key shadow-lg flex items-center justify-center gap-1.5">
                 <i class="fa-solid fa-download"></i> Save Gallery
             </button>
@@ -211,50 +211,50 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
     <!-- RICE RESELLER PRICING CALCULATOR MODAL -->
     <div id="rice-calc-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-md p-5 space-y-4 shadow-2xl obsidian-key">
+        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-md p-5 space-y-4 shadow-2xl obsidian-key text-center">
             <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
-                <h3 class="font-extrabold text-base flex items-center gap-2 text-amber-400">
+                <h3 class="font-extrabold text-base flex items-center gap-2 text-amber-400 mx-auto">
                     <i class="fa-solid fa-wheat-awn"></i> Rice Reseller Pricing Calculator
                 </h3>
                 <button onclick="closeRiceCalcModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
             
-            <div class="space-y-3 text-xs">
+            <div class="space-y-3 text-xs text-left">
                 <div>
                     <label class="block mb-1 font-bold text-slate-400">Rice Variety / Name</label>
-                    <input type="text" id="rc-name" value="JASMINE SPECIAL" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2 font-bold">
+                    <input type="text" id="rc-name" value="JASMINE SPECIAL" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2 font-bold text-center">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block mb-1 font-bold text-slate-400">Sack Cost (₱)</label>
-                        <input type="number" id="rc-sack-cost" value="2300" oninput="calcRiceFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                        <label class="block mb-1 font-bold text-slate-400 text-center">Sack Cost (₱)</label>
+                        <input type="number" id="rc-sack-cost" value="2300" oninput="calcRiceFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
                     </div>
                     <div>
-                        <label class="block mb-1 font-bold text-slate-400">Weight (KG)</label>
-                        <input type="number" id="rc-weight" value="50" oninput="calcRiceFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block mb-1 font-bold text-slate-400">Spill / Loss (KG)</label>
-                        <input type="number" id="rc-spill" value="1.0" step="0.1" oninput="calcRiceFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
-                    </div>
-                    <div>
-                        <label class="block mb-1 font-bold text-slate-400">Transport / Shipping Cost (₱)</label>
-                        <input type="number" id="rc-transport" value="50" oninput="calcRiceFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                        <label class="block mb-1 font-bold text-slate-400 text-center">Weight (KG)</label>
+                        <input type="number" id="rc-weight" value="50" oninput="calcRiceFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block mb-1 font-bold text-slate-400">Plastic Packaging/KG (₱)</label>
-                        <input type="number" id="rc-packaging" value="0.5" step="0.1" oninput="calcRiceFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                        <label class="block mb-1 font-bold text-slate-400 text-center">Spill / Loss (KG)</label>
+                        <input type="number" id="rc-spill" value="1.0" step="0.1" oninput="calcRiceFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
                     </div>
                     <div>
-                        <label class="block mb-1 font-bold text-slate-400">Target Margin (%)</label>
-                        <input type="number" id="rc-margin" value="20" oninput="calcRiceFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                        <label class="block mb-1 font-bold text-slate-400 text-center">Transport / Shipping (₱)</label>
+                        <input type="number" id="rc-transport" value="50" oninput="calcRiceFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block mb-1 font-bold text-slate-400 text-center">Plastic Packaging/KG (₱)</label>
+                        <input type="number" id="rc-packaging" value="0.5" step="0.1" oninput="calcRiceFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
+                    </div>
+                    <div>
+                        <label class="block mb-1 font-bold text-slate-400 text-center">Target Margin (%)</label>
+                        <input type="number" id="rc-margin" value="20" oninput="calcRiceFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
                     </div>
                 </div>
 
@@ -266,8 +266,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 </div>
 
                 <div>
-                    <label class="block mb-1 font-bold text-slate-400 uppercase text-[10px]">Import Option</label>
-                    <select id="rc-import-opt" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 font-bold">
+                    <label class="block mb-1 font-bold text-slate-400 uppercase text-[10px] text-center">Import Option</label>
+                    <select id="rc-import-opt" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 font-bold text-center">
                         <option value="both">Import Both (Per KG & Whole Sack)</option>
                         <option value="kg">Import Per KG Only</option>
                         <option value="sack">Import Whole Sack Only</option>
@@ -284,39 +284,39 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
     <!-- BULK CASE / BOX PRICING CALCULATOR MODAL -->
     <div id="bulk-calc-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-md p-5 space-y-4 shadow-2xl obsidian-key">
+        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-md p-5 space-y-4 shadow-2xl obsidian-key text-center">
             <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
-                <h3 class="font-extrabold text-base flex items-center gap-2 text-indigo-400">
+                <h3 class="font-extrabold text-base flex items-center gap-2 text-indigo-400 mx-auto">
                     <i class="fa-solid fa-boxes-packing"></i> Bulk Case / Box Pricing Calculator
                 </h3>
                 <button onclick="closeBulkCalcModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
 
-            <div class="space-y-3 text-xs">
+            <div class="space-y-3 text-xs text-left">
                 <div>
                     <label class="block mb-1 font-bold text-slate-400">Item Name</label>
-                    <input type="text" id="bc-name" value="Coca-Cola 1.5L (Case of 12)" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2 font-bold">
+                    <input type="text" id="bc-name" value="Coca-Cola 1.5L (Case of 12)" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2 font-bold text-center">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block mb-1 font-bold text-slate-400">Case / Box Cost (₱)</label>
-                        <input type="number" id="bc-box-cost" value="650" oninput="calcBulkFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                        <label class="block mb-1 font-bold text-slate-400 text-center">Case / Box Cost (₱)</label>
+                        <input type="number" id="bc-box-cost" value="650" oninput="calcBulkFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
                     </div>
                     <div>
-                        <label class="block mb-1 font-bold text-slate-400">Units per Box</label>
-                        <input type="number" id="bc-units" value="12" oninput="calcBulkFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                        <label class="block mb-1 font-bold text-slate-400 text-center">Units per Box</label>
+                        <input type="number" id="bc-units" value="12" oninput="calcBulkFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block mb-1 font-bold text-slate-400">Freight / Shipping (₱)</label>
-                        <input type="number" id="bc-freight" value="30" oninput="calcBulkFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                        <label class="block mb-1 font-bold text-slate-400 text-center">Freight / Shipping (₱)</label>
+                        <input type="number" id="bc-freight" value="30" oninput="calcBulkFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
                     </div>
                     <div>
-                        <label class="block mb-1 font-bold text-slate-400">Target Margin (%)</label>
-                        <input type="number" id="bc-margin" value="25" oninput="calcBulkFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                        <label class="block mb-1 font-bold text-slate-400 text-center">Target Margin (%)</label>
+                        <input type="number" id="bc-margin" value="25" oninput="calcBulkFormula()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
                     </div>
                 </div>
 
@@ -336,16 +336,16 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
     <!-- FORMULA INFO MODAL -->
     <div id="formula-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl obsidian-key">
+        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl obsidian-key text-center">
             <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
-                <h3 class="font-bold text-base flex items-center gap-2" id="formula-modal-title">
+                <h3 class="font-bold text-base flex items-center gap-2 mx-auto" id="formula-modal-title">
                     <i class="fa-solid fa-circle-info text-indigo-500"></i> Formula Info
                 </h3>
                 <button onclick="closeFormulaModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
             <div class="space-y-3 text-xs">
                 <p class="text-slate-600 dark:text-slate-300 font-medium leading-relaxed" id="formula-modal-desc">Formula breakdown details.</p>
-                <div class="p-3 bg-slate-100 dark:bg-[#12151C] rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder font-mono text-indigo-400" id="formula-modal-calc">
+                <div class="p-3 bg-slate-100 dark:bg-[#12151C] rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder font-mono text-indigo-400 text-center" id="formula-modal-calc">
                     Calculation formula here
                 </div>
             </div>
@@ -353,27 +353,27 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- FIXED TOP NAVIGATION HEADER CONTAINER (STICKY & SMOOTH) -->
-    <div class="sticky top-0 z-40 bg-white/95 dark:bg-obsidianCard/95 backdrop-blur-md border-b-2 border-slate-300 dark:border-obsidianBorder shadow-xl transition-colors duration-300">
-        <header class="px-3 py-2.5 flex justify-between items-center">
-            <div class="flex items-center space-x-2.5">
+    <!-- FIXED TOP NAVIGATION HEADER CONTAINER (STICKY & SMOOTH & CENTERED) -->
+    <div class="sticky top-0 z-40 bg-white/95 dark:bg-obsidianCard/95 backdrop-blur-md border-b-2 border-slate-300 dark:border-obsidianBorder shadow-xl transition-colors duration-300 w-full flex flex-col items-center">
+        <header class="max-w-4xl w-full px-3 py-2.5 flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center space-x-2.5 mx-auto sm:mx-0">
                 <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-base shadow-lg obsidian-key">
                     <i class="fa-solid fa-vault"></i>
                 </div>
-                <div>
+                <div class="text-center sm:text-left">
                     <h1 class="font-black text-sm leading-tight">Ibañez Vault</h1>
                     <p class="text-[9px] text-indigo-400 font-bold tracking-wide">POS & Ledger</p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-1.5">
-                <button onclick="saveChangesToVault()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-2.5 py-1.5 rounded-xl obsidian-key flex items-center gap-1 active:scale-95 shadow-md" title="Save changes">
+            <div class="flex items-center justify-center gap-1.5 flex-wrap mx-auto sm:mx-0">
+                <button onclick="saveChangesToVault()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-xl obsidian-key flex items-center gap-1 active:scale-95 shadow-md" title="Save changes">
                     <i class="fa-solid fa-floppy-disk text-xs"></i> Save
                 </button>
-                <button onclick="openSyncModal()" class="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-2.5 py-1.5 rounded-xl obsidian-key flex items-center gap-1 active:scale-95 shadow-md" title="Sync Vault">
+                <button onclick="openSyncModal()" class="bg-purple-600 hover:bg-purple-500 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-xl obsidian-key flex items-center gap-1 active:scale-95 shadow-md" title="Sync Vault">
                     <i class="fa-solid fa-share-nodes text-xs"></i> Sync
                 </button>
-                <button onclick="openQuickActionModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl obsidian-key flex items-center gap-1 active:scale-95 shadow-md">
+                <button onclick="openQuickActionModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl obsidian-key flex items-center gap-1 active:scale-95 shadow-md">
                     <i class="fa-solid fa-plus text-xs"></i> Add
                 </button>
                 <button onclick="toggleTheme()" class="w-8 h-8 bg-slate-100 dark:bg-[#12151C] hover:bg-slate-200 text-amber-500 border-2 border-slate-300 dark:border-obsidianBorder rounded-xl obsidian-key flex items-center justify-center">
@@ -385,45 +385,47 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             </div>
         </header>
 
-        <!-- Navigation Tabs Ribbon (Smooth Horizontal Scroll) -->
-        <nav class="flex space-x-1.5 px-3 py-2 overflow-x-auto no-scrollbar border-t border-slate-200 dark:border-obsidianBorder/40">
-            <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl whitespace-nowrap obsidian-key bg-indigo-600 text-white">Dashboard</button>
-            <button onclick="switchTab('pos')" id="tab-btn-pos" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl whitespace-nowrap obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">POS</button>
-            <button onclick="switchTab('purchaser')" id="tab-btn-purchaser" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl whitespace-nowrap obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Purchaser</button>
-            <button onclick="switchTab('transactions')" id="tab-btn-transactions" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl whitespace-nowrap obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Transactions</button>
-            <button onclick="switchTab('inventory')" id="tab-btn-inventory" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl whitespace-nowrap obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Inventory</button>
-            <button onclick="switchTab('expenses')" id="tab-btn-expenses" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl whitespace-nowrap obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Expenses</button>
-            <button onclick="switchTab('utang')" id="tab-btn-utang" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl whitespace-nowrap obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Utang</button>
-            <button onclick="switchTab('breakeven')" id="tab-btn-breakeven" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl whitespace-nowrap obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Break-Even</button>
-            <button onclick="switchTab('pl')" id="tab-btn-pl" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl whitespace-nowrap obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400"><i class="fa-solid fa-chart-line mr-1"></i> P&L</button>
-        </nav>
+        <!-- Navigation Tabs Ribbon (Smooth Horizontal Scroll & Centered wrapper) -->
+        <div class="max-w-4xl w-full px-3 py-1.5 border-t border-slate-200 dark:border-obsidianBorder/40 overflow-x-auto no-scrollbar flex justify-start sm:justify-center">
+            <nav class="flex space-x-1.5 whitespace-nowrap">
+                <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl obsidian-key bg-indigo-600 text-white">Dashboard</button>
+                <button onclick="switchTab('pos')" id="tab-btn-pos" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">POS</button>
+                <button onclick="switchTab('purchaser')" id="tab-btn-purchaser" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Purchaser</button>
+                <button onclick="switchTab('transactions')" id="tab-btn-transactions" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Transactions</button>
+                <button onclick="switchTab('inventory')" id="tab-btn-inventory" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Inventory</button>
+                <button onclick="switchTab('expenses')" id="tab-btn-expenses" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Expenses</button>
+                <button onclick="switchTab('utang')" id="tab-btn-utang" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Utang</button>
+                <button onclick="switchTab('breakeven')" id="tab-btn-breakeven" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Break-Even</button>
+                <button onclick="switchTab('pl')" id="tab-btn-pl" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400"><i class="fa-solid fa-chart-line mr-1"></i> P&L</button>
+            </nav>
+        </div>
     </div>
 
     <!-- MAIN WORKSPACE -->
-    <main class="flex-1 max-w-4xl w-full mx-auto p-3 space-y-4">
+    <main class="flex-1 max-w-4xl w-full mx-auto p-3 space-y-4 text-center">
 
         <!-- DASHBOARD TAB -->
         <section id="view-dashboard" class="space-y-4">
-            <div class="flex justify-between items-start pt-1">
-                <div>
+            <div class="flex flex-col sm:flex-row justify-between items-center pt-1 gap-2">
+                <div class="text-center sm:text-left">
                     <h1 id="dash-greeting" class="text-xl font-black tracking-tight">Hi, Administrator</h1>
-                    <div class="flex items-center gap-2 mt-1">
+                    <div class="flex items-center justify-center sm:justify-start gap-2 mt-1">
                         <span id="dash-role-pill" class="inline-block px-2.5 py-0.5 rounded-md text-[10px] font-black bg-indigo-600/20 text-indigo-400 border border-indigo-500/30">Administrator</span>
-                        <span id="live-date-timestamp" class="text-[10px] font-bold text-slate-400 bg-white dark:bg-obsidianCard px-2 py-0.5 rounded-md border-2 border-slate-300 dark:border-obsidianBorder">October 20, 2026 | 00:00:00</span>
+                        <span id="live-date-timestamp" class="text-[10px] font-bold text-slate-400 bg-white dark:bg-obsidianCard px-2 py-0.5 rounded-md border-2 border-slate-300 dark:border-obsidianBorder">November 06, 2026 | 00:00:00</span>
                     </div>
                 </div>
-                <div class="text-right">
-                    <span class="text-[9px] uppercase font-black text-slate-400 tracking-wider">LIVE TODAY</span>
+                <div class="text-center sm:text-right bg-white dark:bg-obsidianCard px-3 py-2 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder obsidian-key w-full sm:w-auto">
+                    <span class="text-[9px] uppercase font-black text-slate-400 tracking-wider block">LIVE TODAY</span>
                     <div id="dash-today-sales" class="text-lg font-black text-emerald-400">₱0</div>
                     <span id="dash-today-count" class="text-[10px] text-slate-400 block font-bold">0 sales</span>
                 </div>
             </div>
 
             <!-- DASHBOARD CATEGORY & TIME-PERIOD CONTROLLER -->
-            <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key">
-                <div class="flex justify-between items-center">
+            <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key text-center">
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
                     <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider"><i class="fa-solid fa-calendar-days text-indigo-400 mr-1"></i> Dashboard View Period</span>
-                    <div class="flex bg-slate-100 dark:bg-[#12151C] p-1 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder">
+                    <div class="flex bg-slate-100 dark:bg-[#12151C] p-1 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder mx-auto sm:mx-0">
                         <button onclick="setDashPeriod('daily')" id="dash-tab-daily" class="px-3 py-1 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key">Daily</button>
                         <button onclick="setDashPeriod('monthly')" id="dash-tab-monthly" class="px-3 py-1 rounded-xl text-xs font-bold text-slate-400">Monthly</button>
                         <button onclick="setDashPeriod('yearly')" id="dash-tab-yearly" class="px-3 py-1 rounded-xl text-xs font-bold text-slate-400">Yearly</button>
@@ -431,28 +433,28 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 </div>
 
                 <!-- DYNAMIC PICKER INPUTS -->
-                <div class="pt-1 flex justify-between items-center bg-slate-100 dark:bg-[#12151C] p-3 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder">
+                <div class="pt-1 flex flex-col sm:flex-row justify-between items-center bg-slate-100 dark:bg-[#12151C] p-3 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder gap-2">
                     <label id="dash-picker-label" class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Select Date:</label>
                     
-                    <div id="dash-picker-daily-container">
-                        <input type="date" id="dash-date-picker" onchange="renderDashboard()" class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 text-xs font-black text-indigo-400 focus:outline-none focus:border-indigo-500 shadow-inner">
+                    <div id="dash-picker-daily-container" class="w-full sm:w-auto">
+                        <input type="date" id="dash-date-picker" onchange="renderDashboard()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 text-xs font-black text-indigo-400 focus:outline-none focus:border-indigo-500 shadow-inner text-center">
                     </div>
 
-                    <div id="dash-picker-monthly-container" class="hidden">
-                        <input type="month" id="dash-month-picker" onchange="renderDashboard()" class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 text-xs font-black text-indigo-400 focus:outline-none focus:border-indigo-500 shadow-inner">
+                    <div id="dash-picker-monthly-container" class="hidden w-full sm:w-auto">
+                        <input type="month" id="dash-month-picker" onchange="renderDashboard()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 text-xs font-black text-indigo-400 focus:outline-none focus:border-indigo-500 shadow-inner text-center">
                     </div>
 
-                    <div id="dash-picker-yearly-container" class="hidden">
-                        <select id="dash-year-picker" onchange="renderDashboard()" class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 text-xs font-black text-indigo-400 focus:outline-none focus:border-indigo-500 shadow-inner">
+                    <div id="dash-picker-yearly-container" class="hidden w-full sm:w-auto">
+                        <select id="dash-year-picker" onchange="renderDashboard()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 text-xs font-black text-indigo-400 focus:outline-none focus:border-indigo-500 shadow-inner text-center">
                         </select>
                     </div>
                 </div>
             </div>
 
             <!-- DASHBOARD STAT CARDS GRID -->
-            <div class="grid grid-cols-2 gap-3">
-                <div class="p-3.5 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl relative space-y-1.5 obsidian-key">
-                    <div class="flex justify-between items-center">
+            <div class="grid grid-cols-2 gap-3 text-center">
+                <div class="p-3.5 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl relative space-y-1.5 obsidian-key flex flex-col items-center">
+                    <div class="flex justify-between items-center w-full">
                         <span class="text-[9px] font-black text-slate-400 tracking-wider uppercase">REVENUE</span>
                         <button onclick="showFormulaInfo('revenue')" class="w-7 h-7 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
                             <i class="fa-solid fa-circle-question text-[10px]"></i>
@@ -462,8 +464,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <p class="text-[10px] text-slate-400 font-medium" id="dash-rev-lbl">Completed sales</p>
                 </div>
 
-                <div class="p-3.5 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl relative space-y-1.5 obsidian-key">
-                    <div class="flex justify-between items-center">
+                <div class="p-3.5 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl relative space-y-1.5 obsidian-key flex flex-col items-center">
+                    <div class="flex justify-between items-center w-full">
                         <span class="text-[9px] font-black text-slate-400 tracking-wider uppercase">EXPENSES</span>
                         <button onclick="showFormulaInfo('expenses')" class="w-7 h-7 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
                             <i class="fa-solid fa-circle-question text-[10px]"></i>
@@ -473,22 +475,22 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <p class="text-[10px] text-slate-400 font-medium">Incurred costs</p>
                 </div>
 
-                <div class="p-3.5 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl relative space-y-1.5 obsidian-key">
-                    <div class="flex justify-between items-center">
+                <div class="p-3.5 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl relative space-y-1.5 obsidian-key flex flex-col items-center">
+                    <div class="flex justify-between items-center w-full">
                         <span class="text-[9px] font-black text-slate-400 tracking-wider uppercase">GROSS PROFIT</span>
                         <button onclick="showFormulaInfo('profit')" class="w-7 h-7 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
                             <i class="fa-solid fa-circle-question text-[10px]"></i>
                         </button>
                     </div>
-                    <div class="flex items-baseline gap-1">
+                    <div class="flex items-baseline justify-center gap-1">
                         <div id="dash-profit" class="text-xl font-black text-indigo-400">₱0</div>
                         <span id="dash-profit-pct" class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">(0%)</span>
                     </div>
                     <p class="text-[10px] text-slate-400 font-medium">Sales minus COGS</p>
                 </div>
 
-                <div class="p-3.5 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl relative space-y-1.5 obsidian-key">
-                    <div class="flex justify-between items-center">
+                <div class="p-3.5 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl relative space-y-1.5 obsidian-key flex flex-col items-center">
+                    <div class="flex justify-between items-center w-full">
                         <span id="dash-winloss-label" class="text-[9px] font-black tracking-wider uppercase text-emerald-400">NET WIN</span>
                         <button onclick="showFormulaInfo('winloss')" id="dash-winloss-btn" class="w-7 h-7 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
                             <i class="fa-solid fa-circle-question text-[10px]"></i>
@@ -501,27 +503,27 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
             <!-- Quick Actions Grid -->
             <div class="space-y-2">
-                <span class="text-[10px] font-black text-slate-400 tracking-wider uppercase block">QUICK ACTIONS</span>
+                <span class="text-[10px] font-black text-slate-400 tracking-wider uppercase block text-center">QUICK ACTIONS</span>
                 <div class="grid grid-cols-4 gap-2">
-                    <button onclick="switchTab('pos')" class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder p-3 rounded-2xl text-center space-y-1.5 obsidian-key group">
+                    <button onclick="switchTab('pos')" class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder p-3 rounded-2xl text-center space-y-1.5 obsidian-key group flex flex-col items-center justify-center">
                         <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center mx-auto">
                             <i class="fa-solid fa-cart-shopping text-xs"></i>
                         </div>
                         <span class="text-[10px] font-bold block">New Sale</span>
                     </button>
-                    <button onclick="switchTab('purchaser')" class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder p-3 rounded-2xl text-center space-y-1.5 obsidian-key group">
+                    <button onclick="switchTab('purchaser')" class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder p-3 rounded-2xl text-center space-y-1.5 obsidian-key group flex flex-col items-center justify-center">
                         <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center mx-auto">
                             <i class="fa-solid fa-basket-shopping text-xs"></i>
                         </div>
                         <span class="text-[10px] font-bold block">Shopping</span>
                     </button>
-                    <button onclick="switchTab('expenses')" class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder p-3 rounded-2xl text-center space-y-1.5 obsidian-key group">
+                    <button onclick="switchTab('expenses')" class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder p-3 rounded-2xl text-center space-y-1.5 obsidian-key group flex flex-col items-center justify-center">
                         <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center mx-auto">
                             <i class="fa-solid fa-wallet text-xs"></i>
                         </div>
                         <span class="text-[10px] font-bold block">Expense</span>
                     </button>
-                    <button onclick="switchTab('pl')" class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder p-3 rounded-2xl text-center space-y-1.5 obsidian-key group">
+                    <button onclick="switchTab('pl')" class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder p-3 rounded-2xl text-center space-y-1.5 obsidian-key group flex flex-col items-center justify-center">
                         <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center mx-auto">
                             <i class="fa-solid fa-chart-line text-xs"></i>
                         </div>
@@ -531,7 +533,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             </div>
 
             <!-- Recent Sales Section -->
-            <div class="space-y-2">
+            <div class="space-y-2 text-left">
                 <div class="flex justify-between items-center">
                     <span class="text-[10px] font-black text-slate-400 tracking-wider uppercase">RECENT SALES</span>
                     <button onclick="switchTab('transactions')" class="text-xs font-bold text-indigo-400 hover:underline">See all</button>
@@ -541,19 +543,19 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         </section>
 
         <!-- POS TERMINAL TAB -->
-        <section id="view-pos" class="hidden space-y-3 relative pb-28">
+        <section id="view-pos" class="hidden space-y-3 relative pb-28 text-center">
             <!-- STICKY CONTROL BAR CONTAINER FOR POS -->
             <div class="sticky top-[102px] z-30 bg-slate-100/95 dark:bg-obsidianDark/95 backdrop-blur-md py-2 space-y-2 transition-colors">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-base font-black tracking-wide">POS Terminal</h2>
+                    <h2 class="text-base font-black tracking-wide mx-auto sm:mx-0">POS Terminal</h2>
                 </div>
 
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
-                    <input type="text" id="pos-search" oninput="renderPOSGrid()" placeholder="Search products" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl pl-9 pr-4 py-2.5 text-xs placeholder-slate-400 focus:outline-none focus:border-indigo-500 shadow-inner obsidian-key">
+                    <input type="text" id="pos-search" oninput="renderPOSGrid()" placeholder="Search products" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl pl-9 pr-4 py-2.5 text-xs placeholder-slate-400 focus:outline-none focus:border-indigo-500 shadow-inner obsidian-key text-center sm:text-left">
                 </div>
 
-                <div class="flex space-x-2 overflow-x-auto no-scrollbar py-1">
+                <div class="flex space-x-2 overflow-x-auto no-scrollbar py-1 justify-start sm:justify-center">
                     <button onclick="filterPOSCategory('All')" id="pos-cat-All" class="pos-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white whitespace-nowrap obsidian-key">All</button>
                     <button onclick="filterPOSCategory('Dairy')" id="pos-cat-Dairy" class="pos-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Dairy</button>
                     <button onclick="filterPOSCategory('Canned')" id="pos-cat-Canned" class="pos-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Canned</button>
@@ -567,9 +569,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 </div>
             </div>
 
-            <div id="pos-products-grid" class="grid grid-cols-2 gap-2.5 pt-1"></div>
+            <div id="pos-products-grid" class="grid grid-cols-2 gap-2.5 pt-1 text-left"></div>
 
-            <div class="bg-white dark:bg-obsidianCard border-2 border-indigo-500/50 rounded-3xl p-4 space-y-3 shadow-2xl relative obsidian-key">
+            <div class="bg-white dark:bg-obsidianCard border-2 border-indigo-500/50 rounded-3xl p-4 space-y-3 shadow-2xl relative obsidian-key text-left">
                 <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
                     <div class="flex items-center gap-2">
                         <div class="w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-[10px] shadow-md">
@@ -583,7 +585,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 </div>
 
                 <div id="pos-cart-list" class="space-y-2.5 max-h-48 overflow-y-auto pr-1">
-                    <p class="text-xs text-slate-400 py-1">No items in cart yet.</p>
+                    <p class="text-xs text-slate-400 py-1 text-center">No items in cart yet.</p>
                 </div>
 
                 <div class="pt-2 border-t border-slate-200 dark:border-obsidianBorder space-y-2 bg-slate-100 dark:bg-[#12151C] p-3 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder">
@@ -597,7 +599,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-end gap-1 pt-0.5">
+                    <div class="flex items-center justify-end gap-1 pt-0.5 flex-wrap">
                         <span class="text-[9px] font-bold text-slate-400 uppercase mr-1">Quick:</span>
                         <button onclick="setQuickCash('exact')" class="px-2 py-0.5 rounded-lg text-[9px] font-black bg-indigo-600 text-white obsidian-key">Exact</button>
                         <button onclick="setQuickCash(50)" class="px-2 py-0.5 rounded-lg text-[9px] font-black bg-slate-200 dark:bg-obsidianBorder text-slate-300 obsidian-key">₱50</button>
@@ -613,13 +615,13 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 </div>
             </div>
 
-            <!-- FIXED BOTTOM CHECKOUT BAR (STICKY) -->
-            <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-obsidianCard/95 backdrop-blur-md border-t-2 border-slate-300 dark:border-obsidianBorder p-2.5 shadow-2xl transition-colors duration-300">
-                <div class="max-w-4xl mx-auto space-y-2">
-                    <input type="text" id="pos-customer-input" placeholder="Customer Name (Optional for Cash, Required for Utang)" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2 text-xs placeholder-slate-400 focus:outline-none focus:border-indigo-500 shadow-inner">
+            <!-- FIXED BOTTOM CHECKOUT BAR (STICKY & CENTERED) -->
+            <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-obsidianCard/95 backdrop-blur-md border-t-2 border-slate-300 dark:border-obsidianBorder p-2.5 shadow-2xl transition-colors duration-300 flex justify-center">
+                <div class="max-w-4xl w-full mx-auto space-y-2 px-3">
+                    <input type="text" id="pos-customer-input" placeholder="Customer Name (Optional for Cash, Required for Utang)" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2 text-xs placeholder-slate-400 focus:outline-none focus:border-indigo-500 shadow-inner text-center sm:text-left">
                     
                     <div class="flex justify-between items-center">
-                        <div>
+                        <div class="text-left">
                             <span class="text-[9px] text-slate-400 font-bold block uppercase tracking-wider">Total:</span>
                             <div id="pos-total-display" class="text-xl font-black text-emerald-400">₱0</div>
                         </div>
@@ -637,20 +639,20 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         </section>
 
         <!-- STORE PURCHASER TAB -->
-        <section id="view-purchaser" class="hidden space-y-4">
+        <section id="view-purchaser" class="hidden space-y-4 text-center">
             <div class="grid grid-cols-2 gap-3">
-                <div class="p-3.5 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-1 obsidian-key">
+                <div class="p-3.5 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-1 obsidian-key flex flex-col items-center">
                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">RUNNING TOTAL</span>
                     <div id="p-running-total" class="text-xl font-black text-emerald-400">₱0</div>
                 </div>
-                <div class="p-3.5 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-1 obsidian-key">
+                <div class="p-3.5 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-1 obsidian-key flex flex-col items-center">
                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">BOUGHT / TOTAL</span>
                     <div id="p-ratio" class="text-xl font-black">0 / 0</div>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key">
-                <h3 class="font-bold text-xs" id="p-form-title">Add Item</h3>
+            <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key text-left">
+                <h3 class="font-bold text-xs text-center" id="p-form-title">Add Item</h3>
                 <input type="hidden" id="p-edit-id">
                 <div class="flex bg-slate-100 dark:bg-[#12151C] p-1 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder">
                     <button onclick="setPurchaserMode('plan')" id="btn-p-plan" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key">Plan Item List</button>
@@ -659,25 +661,25 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 
                 <div class="space-y-2.5 text-xs">
                     <div>
-                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">ITEM NAME / DESCRIPTION</label>
-                        <input type="text" id="p-item-name" placeholder="e.g. Itlog, Shampoo, Colgate" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl px-3.5 py-2.5">
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1 text-center">ITEM NAME / DESCRIPTION</label>
+                        <input type="text" id="p-item-name" placeholder="e.g. Itlog, Shampoo, Colgate" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl px-3.5 py-2.5 text-center sm:text-left">
                     </div>
 
                     <div id="p-log-details" class="space-y-2.5">
                         <div class="grid grid-cols-2 gap-2.5">
                             <div>
-                                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">TOTAL COST (₱)</label>
-                                <input type="number" id="p-cost" value="150" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1 text-center">TOTAL COST (₱)</label>
+                                <input type="number" id="p-cost" value="150" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
                             </div>
                             <div>
-                                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">QUANTITY</label>
-                                <input type="number" id="p-qty" value="1" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1 text-center">QUANTITY</label>
+                                <input type="number" id="p-qty" value="1" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-2.5">
                             <div>
-                                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">UNIT METRIC</label>
-                                <select id="p-unit" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1 text-center">UNIT METRIC</label>
+                                <select id="p-unit" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
                                     <option value="pcs">pcs</option>
                                     <option value="box">box</option>
                                     <option value="kg">kg</option>
@@ -687,8 +689,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                                 </select>
                             </div>
                             <div>
-                                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">MARGIN (%)</label>
-                                <input type="number" id="p-margin" value="20" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1 text-center">MARGIN (%)</label>
+                                <input type="number" id="p-margin" value="20" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
                             </div>
                         </div>
                     </div>
@@ -702,9 +704,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key">
-                <h3 class="font-bold text-xs">Shopping List & Log</h3>
-                <div class="flex gap-2">
+            <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key text-left">
+                <h3 class="font-bold text-xs text-center">Shopping List & Log</h3>
+                <div class="flex gap-2 justify-center">
                     <button onclick="filterPurchaser('All')" id="p-filter-All" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key">All (0)</button>
                     <button onclick="filterPurchaser('To buy')" id="p-filter-Tobuy" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key">To buy (0)</button>
                     <button onclick="filterPurchaser('Bought')" id="p-filter-Bought" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key">Bought (0)</button>
@@ -714,9 +716,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         </section>
 
         <!-- TRANSACTIONS TAB -->
-        <section id="view-transactions" class="hidden space-y-4">
-            <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key">
-                <h2 class="font-bold text-sm flex items-center gap-2">
+        <section id="view-transactions" class="hidden space-y-4 text-center">
+            <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key text-left">
+                <h2 class="font-bold text-sm flex items-center gap-2 justify-center sm:justify-start">
                     <i class="fa-solid fa-receipt text-indigo-400"></i> Transactions Log
                 </h2>
 
@@ -728,23 +730,23 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <div id="tx-summary-val" class="text-xl font-black text-emerald-400">₱0</div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2.5 bg-slate-100 dark:bg-[#12151C] p-2.5 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder text-xs">
+                <div class="grid grid-cols-2 gap-2.5 bg-slate-100 dark:bg-[#12151C] p-2.5 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder text-xs text-center">
                     <div>
                         <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">From Date</label>
-                        <input type="date" id="tx-date-from" onchange="renderTransactions()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-2.5 py-1.5 font-bold focus:outline-none">
+                        <input type="date" id="tx-date-from" onchange="renderTransactions()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-2.5 py-1.5 font-bold focus:outline-none text-center">
                     </div>
                     <div>
                         <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">To Date</label>
-                        <input type="date" id="tx-date-to" onchange="renderTransactions()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-2.5 py-1.5 font-bold focus:outline-none">
+                        <input type="date" id="tx-date-to" onchange="renderTransactions()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-2.5 py-1.5 font-bold focus:outline-none text-center">
                     </div>
                 </div>
 
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
-                    <input type="text" id="tx-search" oninput="renderTransactions()" placeholder="Search name or item" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl pl-9 pr-4 py-2.5 text-xs placeholder-slate-400 focus:outline-none">
+                    <input type="text" id="tx-search" oninput="renderTransactions()" placeholder="Search name or item" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl pl-9 pr-4 py-2.5 text-xs placeholder-slate-400 focus:outline-none text-center sm:text-left">
                 </div>
 
-                <div class="flex gap-2 overflow-x-auto no-scrollbar">
+                <div class="flex gap-2 overflow-x-auto no-scrollbar justify-start sm:justify-center">
                     <button onclick="filterTransactions('All')" id="tx-filter-All" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white whitespace-nowrap obsidian-key">All</button>
                     <button onclick="filterTransactions('Sales')" id="tx-filter-Sales" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Sales</button>
                     <button onclick="filterTransactions('Utang')" id="tx-filter-Utang" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Utang</button>
@@ -756,13 +758,13 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         </section>
 
         <!-- INVENTORY TAB -->
-        <section id="view-inventory" class="hidden space-y-4">
+        <section id="view-inventory" class="hidden space-y-4 text-center">
             <div id="inventory-alert-banner" class="hidden p-3.5 bg-amber-500/10 border-2 border-amber-500/40 rounded-3xl flex items-center justify-between obsidian-key">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-black text-base shadow-md">
                         <i class="fa-solid fa-triangle-exclamation"></i>
                     </div>
-                    <div>
+                    <div class="text-left">
                         <h4 class="font-black text-amber-400 text-xs uppercase tracking-wider">Expiration Warning</h4>
                         <p class="text-[11px] text-slate-300" id="inventory-alert-text">Items near expiry.</p>
                     </div>
@@ -770,33 +772,33 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 <button onclick="filterInventory('expired_soon')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-3 py-1.5 rounded-xl text-[10px] obsidian-key shadow-lg">View</button>
             </div>
 
-            <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key">
+            <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key text-left">
                 
-                <div class="p-3 bg-indigo-950/20 border-2 border-indigo-500/40 rounded-2xl space-y-2.5 obsidian-key">
-                    <div class="flex justify-between items-center text-xs">
+                <div class="p-3 bg-indigo-950/20 border-2 border-indigo-500/40 rounded-2xl space-y-2.5 obsidian-key text-center sm:text-left">
+                    <div class="flex flex-col sm:flex-row justify-between items-center text-xs gap-1">
                         <span class="font-black text-indigo-400 uppercase tracking-wider"><i class="fa-solid fa-truck-fast mr-1"></i> Shipping Summary</span>
                         <span class="text-base font-black text-amber-400" id="inv-filtered-shipping-sum">₱0</span>
                     </div>
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <div>
-                            <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">From Date</label>
-                            <input type="date" id="inv-ship-from" onchange="renderInventory()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-2.5 py-1.5 font-bold text-indigo-400 focus:outline-none">
+                            <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1 text-center">From Date</label>
+                            <input type="date" id="inv-ship-from" onchange="renderInventory()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-2.5 py-1.5 font-bold text-indigo-400 focus:outline-none text-center">
                         </div>
                         <div>
-                            <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">To Date</label>
-                            <input type="date" id="inv-ship-to" onchange="renderInventory()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-2.5 py-1.5 font-bold text-indigo-400 focus:outline-none">
+                            <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1 text-center">To Date</label>
+                            <input type="date" id="inv-ship-to" onchange="renderInventory()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-2.5 py-1.5 font-bold text-indigo-400 focus:outline-none text-center">
                         </div>
                     </div>
                 </div>
 
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
-                    <input type="text" id="inv-search" oninput="renderInventory()" placeholder="Search products" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl pl-9 pr-4 py-2.5 text-xs placeholder-slate-400 focus:outline-none">
+                    <input type="text" id="inv-search" oninput="renderInventory()" placeholder="Search products" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl pl-9 pr-4 py-2.5 text-xs placeholder-slate-400 focus:outline-none text-center sm:text-left">
                 </div>
 
                 <div class="space-y-1">
-                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Item Category</span>
-                    <div class="flex space-x-1.5 overflow-x-auto no-scrollbar py-1">
+                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider block text-center sm:text-left">Item Category</span>
+                    <div class="flex space-x-1.5 overflow-x-auto no-scrollbar py-1 justify-start sm:justify-center">
                         <button onclick="filterInventoryCategory('All')" id="inv-cat-All" class="inv-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white whitespace-nowrap obsidian-key">All</button>
                         <button onclick="filterInventoryCategory('Dairy')" id="inv-cat-Dairy" class="inv-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Dairy</button>
                         <button onclick="filterInventoryCategory('Canned')" id="inv-cat-Canned" class="inv-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder whitespace-nowrap obsidian-key">Canned</button>
@@ -816,7 +818,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         <button onclick="filterInventory('Low')" id="inv-filter-Low" class="px-3 py-1.5 rounded-xl font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key">Low stock</button>
                         <button onclick="filterInventory('expired_soon')" id="inv-filter-expired_soon" class="px-3 py-1.5 rounded-xl font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key text-amber-400">⚠️ Expiry</button>
                     </div>
-                    <div class="text-right">
+                    <div class="text-right mx-auto sm:mx-0">
                         <span class="text-[9px] text-slate-400 font-bold block uppercase">Stock Value</span>
                         <span class="text-base font-black" id="inv-stock-value">₱0</span>
                     </div>
@@ -839,8 +841,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         </section>
 
         <!-- EXPENSES TAB -->
-        <section id="view-expenses" class="hidden space-y-4">
-            <div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-1 obsidian-key">
+        <section id="view-expenses" class="hidden space-y-4 text-center">
+            <div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-1 obsidian-key flex flex-col items-center">
                 <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">TOTAL EXPENSES</span>
                 <div id="total-expenses-display" class="text-2xl font-black text-rose-500">₱0</div>
             </div>
@@ -853,57 +855,57 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <p class="text-[11px] text-slate-400 mt-0.5">Record rent, bills, and salaries.</p>
                 </div>
             </div>
-            <div id="expenses-list-container" class="space-y-2"></div>
+            <div id="expenses-list-container" class="space-y-2 text-left"></div>
             <button id="add-exp-btn" onclick="openAddExpenseModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-2xl text-xs obsidian-key flex items-center justify-center gap-2 shadow-lg">
                 <i class="fa-solid fa-plus"></i> Add Expense
             </button>
         </section>
 
         <!-- UTANG TAB -->
-        <section id="view-utang" class="hidden space-y-4">
-            <div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-1 obsidian-key">
+        <section id="view-utang" class="hidden space-y-4 text-center">
+            <div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-1 obsidian-key flex flex-col items-center">
                 <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">TOTAL UNCOLLECTED</span>
                 <div id="total-utang-display" class="text-2xl font-black text-amber-400">₱0</div>
             </div>
             <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
-                <input type="text" id="utang-search" oninput="renderUtang()" placeholder="Search customer" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl pl-9 pr-4 py-2.5 text-xs placeholder-slate-400 focus:outline-none">
+                <input type="text" id="utang-search" oninput="renderUtang()" placeholder="Search customer" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl pl-9 pr-4 py-2.5 text-xs placeholder-slate-400 focus:outline-none text-center sm:text-left">
             </div>
-            <div class="flex gap-2">
+            <div class="flex gap-2 justify-center">
                 <button onclick="filterUtang('balance')" id="utang-filter-bal" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key">With balance</button>
                 <button onclick="filterUtang('all')" id="utang-filter-all" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-obsidianCard text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key">All customers</button>
             </div>
-            <div id="utang-list-container" class="space-y-2.5"></div>
+            <div id="utang-list-container" class="space-y-2.5 text-left"></div>
         </section>
 
         <!-- BREAK-EVEN CALC TAB -->
-        <section id="view-breakeven" class="hidden space-y-4">
-            <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key">
-                <div>
-                    <h2 class="font-bold text-sm flex items-center gap-2">
+        <section id="view-breakeven" class="hidden space-y-4 text-center">
+            <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key text-left">
+                <div class="text-center sm:text-left">
+                    <h2 class="font-bold text-sm flex items-center gap-2 justify-center sm:justify-start">
                         <i class="fa-solid fa-scale-balanced text-indigo-400"></i> Break-Even & Profit Margin Calculator
                     </h2>
                     <p class="text-[11px] text-slate-400 mt-0.5">Calculate store revenue needed to cover overhead costs.</p>
                 </div>
 
                 <div class="bg-indigo-950/20 border-2 border-indigo-500/40 rounded-2xl p-3.5 space-y-2.5 obsidian-key text-xs">
-                    <h3 class="font-bold text-indigo-400 uppercase tracking-wider text-[10px]"><i class="fa-solid fa-calculator mr-1"></i> Gross Profit Margin Formula</h3>
-                    <div class="grid grid-cols-2 gap-2">
+                    <h3 class="font-bold text-indigo-400 uppercase tracking-wider text-[10px] text-center sm:text-left"><i class="fa-solid fa-calculator mr-1"></i> Gross Profit Margin Formula</h3>
+                    <div class="grid grid-cols-2 gap-2 text-center">
                         <div>
                             <label class="text-slate-400 text-[9px] font-bold block mb-1 uppercase">Sample Selling Price (₱)</label>
-                            <input type="number" id="bm-sell" value="100" oninput="calcMarginFormula()" class="w-full bg-white dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 font-bold">
+                            <input type="number" id="bm-sell" value="100" oninput="calcMarginFormula()" class="w-full bg-white dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 font-bold text-center">
                         </div>
                         <div>
                             <label class="text-slate-400 text-[9px] font-bold block mb-1 uppercase">Sample Item Cost (₱)</label>
-                            <input type="number" id="bm-cost" value="80" oninput="calcMarginFormula()" class="w-full bg-white dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 font-bold">
+                            <input type="number" id="bm-cost" value="80" oninput="calcMarginFormula()" class="w-full bg-white dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 font-bold text-center">
                         </div>
                     </div>
-                    <div class="flex justify-between items-center bg-slate-900/60 p-2.5 rounded-xl border border-indigo-500/30">
+                    <div class="flex flex-col sm:flex-row justify-between items-center bg-slate-900/60 p-2.5 rounded-xl border border-indigo-500/30 gap-2 text-center sm:text-left">
                         <div>
                             <span class="text-[9px] text-slate-400 block">Formula: (Sell - Cost) ÷ Sell × 100%</span>
                             <span class="text-[11px] text-indigo-300 font-mono" id="bm-formula-txt">(100 - 80) ÷ 100 × 100%</span>
                         </div>
-                        <div class="text-right">
+                        <div class="text-center sm:text-right">
                             <span class="text-[9px] text-slate-400 uppercase block font-bold">Margin</span>
                             <span class="text-base font-black text-emerald-400" id="bm-margin-val">20%</span>
                         </div>
@@ -911,29 +913,29 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 </div>
 
                 <div class="bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl p-3.5 space-y-2.5 obsidian-key text-xs">
-                    <h3 class="font-bold text-indigo-400 uppercase tracking-wider text-[10px]"><i class="fa-solid fa-file-invoice-dollar mr-1"></i> Monthly Fixed Overhead Costs</h3>
+                    <h3 class="font-bold text-indigo-400 uppercase tracking-wider text-[10px] text-center sm:text-left"><i class="fa-solid fa-file-invoice-dollar mr-1"></i> Monthly Fixed Overhead Costs</h3>
                     <div class="space-y-2">
-                        <div><label class="block mb-0.5 font-bold">Store Rent (₱)</label><input type="number" id="be-rent" value="11000" oninput="calcBreakEven()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 font-bold"></div>
-                        <div><label class="block mb-0.5 font-bold">Staff Salary (₱)</label><input type="number" id="be-salary" value="15000" oninput="calcBreakEven()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 font-bold"></div>
-                        <div><label class="block mb-0.5 font-bold">Electricity / Meralco (₱)</label><input type="number" id="be-electricity" value="5000" oninput="calcBreakEven()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 font-bold"></div>
-                        <div><label class="block mb-0.5 font-bold">Water Bill (₱)</label><input type="number" id="be-water" value="600" oninput="calcBreakEven()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 font-bold"></div>
-                        <div><label class="block mb-0.5 font-bold">Permits & Taxes (₱)</label><input type="number" id="be-permits" value="1000" oninput="calcBreakEven()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 font-bold"></div>
-                        <div><label class="block mb-0.5 font-bold">Delivery / Transpo (₱)</label><input type="number" id="be-delivery" value="0" oninput="calcBreakEven()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 font-bold"></div>
-                        <div><label class="block mb-0.5 font-bold text-emerald-400">Target Gross Margin %</label><input type="number" id="be-margin-pct" value="20" oninput="calcBreakEven()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 font-bold text-emerald-400"></div>
+                        <div><label class="block mb-0.5 font-bold text-center sm:text-left">Store Rent (₱)</label><input type="number" id="be-rent" value="11000" oninput="calcBreakEven()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 font-bold text-center sm:text-left"></div>
+                        <div><label class="block mb-0.5 font-bold text-center sm:text-left">Staff Salary (₱)</label><input type="number" id="be-salary" value="15000" oninput="calcBreakEven()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 font-bold text-center sm:text-left"></div>
+                        <div><label class="block mb-0.5 font-bold text-center sm:text-left">Electricity / Meralco (₱)</label><input type="number" id="be-electricity" value="5000" oninput="calcBreakEven()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 font-bold text-center sm:text-left"></div>
+                        <div><label class="block mb-0.5 font-bold text-center sm:text-left">Water Bill (₱)</label><input type="number" id="be-water" value="600" oninput="calcBreakEven()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 font-bold text-center sm:text-left"></div>
+                        <div><label class="block mb-0.5 font-bold text-center sm:text-left">Permits & Taxes (₱)</label><input type="number" id="be-permits" value="1000" oninput="calcBreakEven()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 font-bold text-center sm:text-left"></div>
+                        <div><label class="block mb-0.5 font-bold text-center sm:text-left">Delivery / Transpo (₱)</label><input type="number" id="be-delivery" value="0" oninput="calcBreakEven()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 font-bold text-center sm:text-left"></div>
+                        <div><label class="block mb-0.5 font-bold text-emerald-400 text-center sm:text-left">Target Gross Margin %</label><input type="number" id="be-margin-pct" value="20" oninput="calcBreakEven()" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 font-bold text-emerald-400 text-center sm:text-left"></div>
                     </div>
                 </div>
 
-                <div class="bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl p-4 space-y-3 obsidian-key text-xs">
+                <div class="bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl p-4 space-y-3 obsidian-key text-xs text-center">
                     <div>
-                        <span class="text-[9px] text-slate-400 uppercase font-black tracking-wider">TOTAL FIXED OVERHEAD</span>
+                        <span class="text-[9px] text-slate-400 uppercase font-black tracking-wider block">TOTAL FIXED OVERHEAD</span>
                         <div id="be-out-total" class="text-xl font-black mt-0.5">₱32,600.00</div>
                     </div>
                     <div class="pt-2 border-t border-slate-300 dark:border-obsidianBorder">
-                        <span class="text-[9px] text-slate-400 uppercase font-black tracking-wider">MONTHLY BREAK-EVEN SALES</span>
+                        <span class="text-[9px] text-slate-400 uppercase font-black tracking-wider block">MONTHLY BREAK-EVEN SALES</span>
                         <div id="be-out-monthly" class="text-xl font-black text-amber-400 mt-0.5">₱163,000.00</div>
                     </div>
                     <div class="pt-2 border-t border-slate-300 dark:border-obsidianBorder">
-                        <span class="text-[9px] text-slate-400 uppercase font-black tracking-wider">DAILY TARGET SALES (30 DAYS)</span>
+                        <span class="text-[9px] text-slate-400 uppercase font-black tracking-wider block">DAILY TARGET SALES (30 DAYS)</span>
                         <div id="be-out-daily" class="text-xl font-black text-emerald-400 mt-0.5">₱5,433.33 / day</div>
                     </div>
                 </div>
@@ -941,21 +943,21 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         </section>
 
         <!-- P&L / WIN-LOSS REPORT TAB -->
-        <section id="view-pl" class="hidden space-y-4">
-            <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key">
-                <div>
-                    <h2 class="font-bold text-sm flex items-center gap-2">
+        <section id="view-pl" class="hidden space-y-4 text-center">
+            <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key text-left">
+                <div class="text-center sm:text-left">
+                    <h2 class="font-bold text-sm flex items-center gap-2 justify-center sm:justify-start">
                         <i class="fa-solid fa-chart-line text-indigo-400"></i> Profit & Loss (P&L) Win-Loss Summary
                     </h2>
                     <p class="text-[11px] text-slate-400 mt-0.5">Daily and monthly store wins or losses.</p>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2.5">
-                    <div class="p-3 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl space-y-1 obsidian-key">
+                <div class="grid grid-cols-2 gap-2.5 text-center">
+                    <div class="p-3 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl space-y-1 obsidian-key flex flex-col items-center">
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">MONTHLY GROSS PROFIT</span>
                         <div id="pl-monthly-profit" class="text-lg font-black text-emerald-400">₱0</div>
                     </div>
-                    <div class="p-3 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl space-y-1 obsidian-key">
+                    <div class="p-3 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl space-y-1 obsidian-key flex flex-col items-center">
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">MONTHLY NET WIN / LOSS</span>
                         <div id="pl-monthly-net" class="text-lg font-black text-indigo-400">₱0</div>
                     </div>
@@ -964,24 +966,24 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 <div class="p-3.5 bg-slate-100 dark:bg-[#12151C] border-2 border-amber-500/40 rounded-2xl space-y-2.5 obsidian-key text-xs">
                     <div class="flex justify-between items-center">
                         <div>
-                            <span class="text-[9px] font-black text-amber-400 uppercase tracking-wider block"><i class="fa-solid fa-bullseye mr-1"></i> OVERHEAD BREAK-EVEN GAP</span>
+                            <span class="text-[9px] font-black text-amber-400 uppercase tracking-wider block text-left"><i class="fa-solid fa-bullseye mr-1"></i> OVERHEAD BREAK-EVEN GAP</span>
                         </div>
                         <span id="pl-overhead-pct" class="text-[10px] font-black px-2 py-0.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">0% Covered</span>
                     </div>
 
                     <div class="flex justify-between items-baseline">
-                        <div id="pl-overhead-remaining" class="text-xl font-black text-rose-500">₱32,600.00 Needed</div>
-                        <span id="pl-overhead-target-lbl" class="text-[10px] font-bold text-slate-400">Target: ₱32,600</span>
+                        <div id="pl-overhead-remaining" class="text-xl font-black text-rose-500 text-left">₱32,600.00 Needed</div>
+                        <span id="pl-overhead-target-lbl" class="text-[10px] font-bold text-slate-400 text-right">Target: ₱32,600</span>
                     </div>
 
                     <div class="w-full bg-slate-200 dark:bg-obsidianBorder h-2 rounded-full overflow-hidden">
                         <div id="pl-overhead-progress-bar" class="bg-amber-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
                     </div>
-                    <p class="text-[10px] text-slate-400 italic" id="pl-overhead-status-msg">Earn gross profit to pay off fixed bills.</p>
+                    <p class="text-[10px] text-slate-400 italic text-center sm:text-left" id="pl-overhead-status-msg">Earn gross profit to pay off fixed bills.</p>
                 </div>
 
-                <div class="space-y-2 pt-1">
-                    <h3 class="font-bold text-xs uppercase tracking-wider"><i class="fa-solid fa-calendar-day mr-1"></i> Daily Records</h3>
+                <div class="space-y-2 pt-1 text-left">
+                    <h3 class="font-bold text-xs uppercase tracking-wider text-center sm:text-left"><i class="fa-solid fa-calendar-day mr-1"></i> Daily Records</h3>
                     <div id="pl-daily-list" class="space-y-2 text-xs"></div>
                 </div>
             </div>
@@ -991,14 +993,14 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
     <!-- QUICK ACTIONS MODAL -->
     <div id="quick-action-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-white dark:bg-obsidianCard border-t-2 sm:border-2 border-slate-300 dark:border-obsidianBorder rounded-t-3xl sm:rounded-3xl w-full max-w-md p-4 space-y-2.5 shadow-2xl max-h-[85vh] overflow-y-auto obsidian-key">
+        <div class="bg-white dark:bg-obsidianCard border-t-2 sm:border-2 border-slate-300 dark:border-obsidianBorder rounded-t-3xl sm:rounded-3xl w-full max-w-md p-4 space-y-2.5 shadow-2xl max-h-[85vh] overflow-y-auto obsidian-key text-center">
             <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
-                <h3 class="font-black text-base">Vault Quick Actions</h3>
+                <h3 class="font-black text-base mx-auto sm:mx-0">Vault Quick Actions</h3>
                 <button onclick="closeQuickActionModal()" class="w-7 h-7 bg-slate-100 dark:bg-obsidianBorder rounded-xl flex items-center justify-center text-slate-400 hover:text-white obsidian-key">
                     <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
             </div>
-            <div class="space-y-2 text-xs">
+            <div class="space-y-2 text-xs text-left">
                 <button onclick="switchTab('pos'); closeQuickActionModal();" class="w-full bg-slate-100 dark:bg-[#12151C] p-3 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder flex items-center justify-between text-left obsidian-key group">
                     <div class="flex items-center gap-3">
                         <div class="w-9 h-9 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-xs"><i class="fa-solid fa-cart-shopping"></i></div>
@@ -1060,24 +1062,24 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
     <!-- EDIT TRANSACTION MODAL -->
     <div id="edit-tx-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-md p-4 space-y-3 shadow-2xl obsidian-key">
+        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-md p-4 space-y-3 shadow-2xl obsidian-key text-center">
             <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
-                <h3 class="font-bold text-sm">Edit Transaction</h3>
+                <h3 class="font-bold text-sm mx-auto sm:mx-0">Edit Transaction</h3>
                 <button onclick="closeEditTxModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-sm"></i></button>
             </div>
-            <div class="space-y-2.5 text-xs">
+            <div class="space-y-2.5 text-xs text-left">
                 <input type="hidden" id="etx-id">
-                <div><label class="block mb-1 font-bold">Date & Time</label><input type="text" id="etx-date" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2"></div>
-                <div><label class="block mb-1 font-bold">Customer Name / Note</label><input type="text" id="etx-customer" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2"></div>
-                <div><label class="block mb-1 font-bold">Item Description</label><input type="text" id="etx-items" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2"></div>
-                <div class="grid grid-cols-3 gap-2">
-                    <div><label class="block mb-1 font-bold">Total (₱)</label><input type="number" id="etx-amount" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-2 py-2 font-bold"></div>
-                    <div><label class="block mb-1 font-bold">Cash (₱)</label><input type="number" id="etx-cash" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-2 py-2 font-bold"></div>
-                    <div><label class="block mb-1 font-bold">Change (₱)</label><input type="number" id="etx-change" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-2 py-2 font-bold"></div>
+                <div><label class="block mb-1 font-bold text-center sm:text-left">Date & Time</label><input type="text" id="etx-date" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 text-center sm:text-left"></div>
+                <div><label class="block mb-1 font-bold text-center sm:text-left">Customer Name / Note</label><input type="text" id="etx-customer" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 text-center sm:text-left"></div>
+                <div><label class="block mb-1 font-bold text-center sm:text-left">Item Description</label><input type="text" id="etx-items" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 text-center sm:text-left"></div>
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <div><label class="block mb-1 font-bold">Total (₱)</label><input type="number" id="etx-amount" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-2 py-2 font-bold text-center"></div>
+                    <div><label class="block mb-1 font-bold">Cash (₱)</label><input type="number" id="etx-cash" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-2 py-2 font-bold text-center"></div>
+                    <div><label class="block mb-1 font-bold">Change (₱)</label><input type="number" id="etx-change" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-2 py-2 font-bold text-center"></div>
                 </div>
                 <div>
-                    <label class="block mb-1 font-bold">Status / Type</label>
-                    <select id="etx-type" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                    <label class="block mb-1 font-bold text-center sm:text-left">Status / Type</label>
+                    <select id="etx-type" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
                         <option value="Paid">Paid</option>
                         <option value="Utang">Utang</option>
                         <option value="Expense">Expense</option>
@@ -1093,14 +1095,14 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
     <!-- QUICK SELL MODAL -->
     <div id="quicksell-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-md p-4 space-y-3 shadow-2xl obsidian-key">
+        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-md p-4 space-y-3 shadow-2xl obsidian-key text-center">
             <div class="flex justify-between items-center pb-1">
-                <h3 class="font-bold text-base">Quick Sell by Kilo</h3>
+                <h3 class="font-bold text-base mx-auto sm:mx-0">Quick Sell by Kilo</h3>
                 <button onclick="closeQuickSellModal()" class="w-7 h-7 bg-slate-100 dark:bg-obsidianBorder rounded-xl flex items-center justify-center text-slate-400 hover:text-white obsidian-key"><i class="fa-solid fa-xmark text-xs"></i></button>
             </div>
 
             <div class="flex items-center gap-2">
-                <select id="qs-product-select" onchange="onQsProductChange()" class="flex-1 bg-slate-100 dark:bg-[#12151C] border-2 border-indigo-500/40 rounded-xl px-3 py-2 text-xs font-extrabold text-indigo-400 focus:outline-none">
+                <select id="qs-product-select" onchange="onQsProductChange()" class="flex-1 bg-slate-100 dark:bg-[#12151C] border-2 border-indigo-500/40 rounded-xl px-3 py-2 text-xs font-extrabold text-indigo-400 focus:outline-none text-center">
                 </select>
             </div>
 
@@ -1109,16 +1111,16 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 <button onclick="setQsMode('amount')" id="qs-btn-amount" class="flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-400 obsidian-key">By amount (₱)</button>
             </div>
 
-            <div class="space-y-2.5 text-xs">
+            <div class="space-y-2.5 text-xs text-left">
                 <div>
-                    <label id="qs-input-label" class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">KILOS</label>
-                    <input type="number" id="qs-value-input" oninput="updateQuickSell()" placeholder="e.g. 0.5, 1, 2.5" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl px-3.5 py-2.5 text-sm font-bold focus:outline-none focus:border-indigo-500">
-                    <p class="text-[9px] text-slate-400 mt-0.5" id="qs-stock-display">Stock: 0</p>
+                    <label id="qs-input-label" class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1 text-center">KILOS</label>
+                    <input type="number" id="qs-value-input" oninput="updateQuickSell()" placeholder="e.g. 0.5, 1, 2.5" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl px-3.5 py-2.5 text-sm font-bold focus:outline-none focus:border-indigo-500 text-center">
+                    <p class="text-[9px] text-slate-400 mt-0.5 text-center" id="qs-stock-display">Stock: 0</p>
                 </div>
 
                 <div>
-                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">CUSTOMER NAME</label>
-                    <input type="text" id="qs-customer" placeholder="Walk-in Customer" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl px-3.5 py-2.5">
+                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1 text-center">CUSTOMER NAME</label>
+                    <input type="text" id="qs-customer" placeholder="Walk-in Customer" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl px-3.5 py-2.5 text-center sm:text-left">
                 </div>
 
                 <div class="flex justify-between items-center p-3 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl">
@@ -1136,20 +1138,20 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
     <!-- ADD / EDIT PRODUCT MODAL -->
     <div id="add-product-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-md p-4 space-y-3 shadow-2xl obsidian-key">
+        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-md p-4 space-y-3 shadow-2xl obsidian-key text-center">
             <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
-                <h3 class="font-bold text-sm" id="ap-title">Add Product</h3>
+                <h3 class="font-bold text-sm mx-auto sm:mx-0" id="ap-title">Add Product</h3>
                 <button onclick="closeAddProductModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-sm"></i></button>
             </div>
-            <div class="space-y-2.5 text-xs">
+            <div class="space-y-2.5 text-xs text-left">
                 <input type="hidden" id="ap-id">
                 <div>
-                    <label class="block mb-1 font-bold">Product Name</label>
-                    <input type="text" id="ap-name" oninput="detectCategoryFromName()" placeholder="e.g. Silver Swan Vinegar" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2">
+                    <label class="block mb-1 font-bold text-center sm:text-left">Product Name</label>
+                    <input type="text" id="ap-name" oninput="detectCategoryFromName()" placeholder="e.g. Silver Swan Vinegar" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 text-center sm:text-left">
                 </div>
                 <div>
-                    <label class="block mb-1 font-bold">Category <span class="text-indigo-400 font-normal">(Auto-detected)</span></label>
-                    <select id="ap-cat" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-indigo-500/40 rounded-xl px-3 py-2 font-bold text-indigo-400 focus:outline-none">
+                    <label class="block mb-1 font-bold text-center sm:text-left">Category <span class="text-indigo-400 font-normal">(Auto-detected)</span></label>
+                    <select id="ap-cat" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-indigo-500/40 rounded-xl px-3 py-2 font-bold text-indigo-400 focus:outline-none text-center">
                         <option value="General">General</option>
                         <option value="Dairy">Dairy</option>
                         <option value="Canned">Canned</option>
@@ -1163,47 +1165,47 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     </select>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-2.5">
+                <div class="grid grid-cols-2 gap-2.5 text-center">
                     <div>
                         <label class="block mb-1 font-bold">Base Cost (₱)</label>
-                        <input type="number" id="ap-cost" value="10" oninput="updateModalCalculatedPrice()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                        <input type="number" id="ap-cost" value="10" oninput="updateModalCalculatedPrice()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
                     </div>
                     <div>
                         <label class="block mb-1 font-bold text-amber-400">Shipping Fee (₱)</label>
-                        <input type="number" id="ap-shipping" value="0" oninput="updateModalCalculatedPrice()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-amber-400">
+                        <input type="number" id="ap-shipping" value="0" oninput="updateModalCalculatedPrice()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-amber-400 text-center">
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2.5">
+                <div class="grid grid-cols-2 gap-2.5 text-center">
                     <div>
                         <label class="block mb-1 font-bold">Margin (₱)</label>
-                        <input type="number" id="ap-margin" value="3" oninput="updateModalCalculatedPrice()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                        <input type="number" id="ap-margin" value="3" oninput="updateModalCalculatedPrice()" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
                     </div>
                     <div>
                         <label class="block mb-1 font-bold text-emerald-400">Selling Price (₱)</label>
-                        <input type="number" id="ap-price-display" readonly class="w-full bg-slate-200 dark:bg-obsidianBorder border-2 border-emerald-500/40 rounded-xl px-3 py-2 font-black text-emerald-400 cursor-not-allowed">
+                        <input type="number" id="ap-price-display" readonly class="w-full bg-slate-200 dark:bg-obsidianBorder border-2 border-emerald-500/40 rounded-xl px-3 py-2 font-black text-emerald-400 cursor-not-allowed text-center">
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2.5">
+                <div class="grid grid-cols-2 gap-2.5 text-center">
                     <div>
                         <label class="block mb-1 font-bold">Stock Qty</label>
-                        <input type="number" id="ap-stock" value="10" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                        <input type="number" id="ap-stock" value="10" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
                     </div>
                     <div>
                         <label class="block mb-1 font-bold">Unit Metric</label>
-                        <input type="text" id="ap-unit" value="pcs" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                        <input type="text" id="ap-unit" value="pcs" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2.5">
+                <div class="grid grid-cols-2 gap-2.5 text-center">
                     <div>
                         <label class="block mb-1 font-bold">Date Added</label>
-                        <input type="date" id="ap-date-added" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold">
+                        <input type="date" id="ap-date-added" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
                     </div>
                     <div>
                         <label class="block mb-1 font-bold text-amber-400">Expiry (Optional)</label>
-                        <input type="date" id="ap-expiry" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-amber-400">
+                        <input type="date" id="ap-expiry" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-amber-400 text-center">
                     </div>
                 </div>
             </div>
@@ -1216,15 +1218,15 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
     <!-- ADD / EDIT EXPENSE MODAL -->
     <div id="add-expense-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-md p-4 space-y-3 shadow-2xl obsidian-key">
+        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-md p-4 space-y-3 shadow-2xl obsidian-key text-center">
             <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
-                <h3 class="font-bold text-sm" id="ae-title">Record Expense</h3>
+                <h3 class="font-bold text-sm mx-auto sm:mx-0" id="ae-title">Record Expense</h3>
                 <button onclick="closeAddExpenseModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-sm"></i></button>
             </div>
-            <div class="space-y-2.5 text-xs">
+            <div class="space-y-2.5 text-xs text-left">
                 <input type="hidden" id="ae-id">
-                <div><label class="block mb-1 font-bold">Description</label><input type="text" id="ae-desc" placeholder="e.g. Electric Bill" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2"></div>
-                <div><label class="block mb-1 font-bold">Amount (₱)</label><input type="number" id="ae-amount" placeholder="0.00" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2"></div>
+                <div><label class="block mb-1 font-bold text-center sm:text-left">Description</label><input type="text" id="ae-desc" placeholder="e.g. Electric Bill" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 text-center sm:text-left"></div>
+                <div><label class="block mb-1 font-bold text-center sm:text-left">Amount (₱)</label><input type="number" id="ae-amount" placeholder="0.00" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 text-center sm:text-left"></div>
             </div>
             <div class="flex gap-2 pt-2">
                 <button onclick="closeAddExpenseModal()" class="flex-1 bg-slate-200 dark:bg-obsidianBorder font-bold py-2.5 rounded-xl text-xs obsidian-key">Cancel</button>
@@ -1235,16 +1237,16 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
     <!-- SETTLEMENT MODAL FOR UTANG -->
     <div id="settle-utang-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl obsidian-key">
+        <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl obsidian-key text-center">
             <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
-                <h3 class="font-bold text-sm">Settle Utang Balance</h3>
+                <h3 class="font-bold text-sm mx-auto sm:mx-0">Settle Utang Balance</h3>
                 <button onclick="closeSettleModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-sm"></i></button>
             </div>
-            <div class="space-y-2.5 text-xs">
+            <div class="space-y-2.5 text-xs text-center">
                 <input type="hidden" id="su-customer">
                 <div><label class="block mb-1 font-bold text-slate-400">Customer</label><div id="su-customer-name" class="font-black text-sm text-indigo-400">Customer</div></div>
                 <div><label class="block mb-1 font-bold text-slate-400">Total Outstanding</label><div id="su-balance-display" class="font-black text-base text-amber-400">₱0</div></div>
-                <div><label class="block mb-1 font-bold">Payment Collected (₱)</label><input type="number" id="su-payment" placeholder="0.00" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 text-sm font-black text-emerald-400"></div>
+                <div><label class="block mb-1 font-bold text-center sm:text-left">Payment Collected (₱)</label><input type="number" id="su-payment" placeholder="0.00" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2.5 text-sm font-black text-emerald-400 text-center"></div>
             </div>
             <div class="flex gap-2 pt-2">
                 <button onclick="closeSettleModal()" class="flex-1 bg-slate-200 dark:bg-obsidianBorder font-bold py-2.5 rounded-xl text-xs obsidian-key">Cancel</button>
@@ -1278,14 +1280,14 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         ];
 
         const DEFAULT_EXPENSES = [
-            { id: 'e1', description: 'Vegetables', amount: 150, date: '2026-10-20' }
+            { id: 'e1', description: 'Vegetables', amount: 150, date: '2026-11-06' }
         ];
 
         const DEFAULT_TRANSACTIONS = [
-            { id: 'TX-1309', date: '2026-10-19 14:20:00', customer: 'Mina', items: 'Coca-Cola 1.5L Bottle x1, Jasmine Rice x1', amount: 142, cogs: 115, cash: 500, change: 358, type: 'Paid' },
-            { id: 'TX-1001', date: '2026-10-20 09:15:00', customer: 'Dikong', items: 'Jasmine Rice (20 kg) x1', amount: 1473, cogs: 1170, cash: 2000, change: 527, type: 'Paid' },
-            { id: 'TX-8813', date: '2026-10-20 11:45:00', customer: 'Fing', items: 'Bear Brand 33g x1', amount: 123, cogs: 100, cash: 123, change: 0, type: 'Utang' },
-            { id: 'e1', date: '2026-10-20 12:00:00', customer: 'Store Expense', items: 'Vegetables', amount: 150, cogs: 0, cash: 150, change: 0, type: 'Expense' }
+            { id: 'TX-1309', date: '2026-11-05 14:20:00', customer: 'Mina', items: 'Coca-Cola 1.5L Bottle x1, Jasmine Rice x1', amount: 142, cogs: 115, cash: 500, change: 358, type: 'Paid' },
+            { id: 'TX-1001', date: '2026-11-06 09:15:00', customer: 'Dikong', items: 'Jasmine Rice (20 kg) x1', amount: 1473, cogs: 1170, cash: 2000, change: 527, type: 'Paid' },
+            { id: 'TX-8813', date: '2026-11-06 11:45:00', customer: 'Fing', items: 'Bear Brand 33g x1', amount: 123, cogs: 100, cash: 123, change: 0, type: 'Utang' },
+            { id: 'e1', date: '2026-11-06 12:00:00', customer: 'Store Expense', items: 'Vegetables', amount: 150, cogs: 0, cash: 150, change: 0, type: 'Expense' }
         ];
 
         let products = JSON.parse(localStorage.getItem('ibanez_products')) || JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
@@ -1934,7 +1936,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 let totalItemValue = p.price * p.stock;
 
                 html += `
-                    <div class="p-3.5 bg-slate-100 dark:bg-[#12151C] border-2 ${cardBorder} rounded-3xl space-y-2.5 obsidian-key">
+                    <div class="p-3.5 bg-slate-100 dark:bg-[#12151C] border-2 ${cardBorder} rounded-3xl space-y-2.5 obsidian-key text-left">
                         <div class="flex justify-between items-start">
                             <div>
                                 <h4 class="font-bold text-xs text-indigo-400">${indexCount}. ${p.name}</h4>
@@ -1979,7 +1981,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             currentInvFilter = type;
             ['All', 'Low', 'expired_soon'].forEach(f => {
                 let btn = document.getElementById('inv-filter-' + f);
-                if (btn) btn.className = (f === type) ? "px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key" : "px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key";
+                if (btn) btn.className = (f === type) ? "px-3 py-1.5 rounded-xl font-bold bg-indigo-600 text-white obsidian-key" : "px-3 py-1.5 rounded-xl font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key";
             });
             renderInventory();
         }
@@ -2070,7 +2072,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 if (utangFilter === 'balance' && data.totalUtang <= 0) return;
 
                 html += `
-                    <div class="p-3.5 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-2.5 obsidian-key">
+                    <div class="p-3.5 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-2.5 obsidian-key text-left">
                         <div class="flex justify-between items-center">
                             <div>
                                 <h4 class="font-black text-xs text-indigo-400">${name}</h4>
@@ -2223,7 +2225,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let html = '';
             filtered.forEach(t => {
                 html += `
-                    <div class="p-3.5 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-2 obsidian-key">
+                    <div class="p-3.5 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-2 obsidian-key text-left">
                         <div class="flex justify-between items-start">
                             <div>
                                 <h4 class="font-extrabold text-xs">${t.date} | ${t.customer}</h4>
@@ -2367,7 +2369,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             filtered.forEach(p => {
                 let cartQty = cart[p.id] ? cart[p.id].qty : 0;
                 html += `
-                    <div onclick="addToCart('${p.id}')" class="p-3 bg-white dark:bg-obsidianCard border-2 ${cartQty > 0 ? 'border-indigo-500' : 'border-slate-300 dark:border-obsidianBorder'} rounded-2xl cursor-pointer relative space-y-1 obsidian-key">
+                    <div onclick="addToCart('${p.id}')" class="p-3 bg-white dark:bg-obsidianCard border-2 ${cartQty > 0 ? 'border-indigo-500' : 'border-slate-300 dark:border-obsidianBorder'} rounded-2xl cursor-pointer relative space-y-1 obsidian-key text-left">
                         ${cartQty > 0 ? `<div class="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-indigo-600 text-white font-black text-[10px] flex items-center justify-center">${cartQty}</div>` : ''}
                         <h4 class="font-bold text-xs pr-5 leading-snug">${p.name}</h4>
                         <div class="text-emerald-400 font-bold text-xs">₱${p.price.toLocaleString()}</div>
@@ -2402,7 +2404,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let keys = Object.keys(cart);
             let total = 0;
             if (keys.length === 0) {
-                list.innerHTML = '<p class="text-xs text-slate-400 py-1">No items in cart.</p>';
+                list.innerHTML = '<p class="text-xs text-slate-400 py-1 text-center">No items in cart.</p>';
                 document.getElementById('pos-total-display').textContent = '₱0';
                 document.getElementById('pos-change-row').classList.add('hidden');
                 return;
