@@ -89,7 +89,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-obsidianDark text-slate-900 dark:text-obsidianLight min-h-screen flex flex-col items-center font-sans relative pb-36 transition-colors duration-300">
+<body class="bg-slate-100 dark:bg-obsidianDark text-slate-900 dark:text-obsidianLight min-h-screen flex flex-col items-center font-sans relative pb-80 transition-colors duration-300">
 
     <!-- LOGIN MODAL -->
     <div id="login-modal" class="fixed inset-0 z-50 bg-slate-950/90 dark:bg-[#12151C]/95 flex items-center justify-center p-4">
@@ -353,7 +353,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- FIXED TOP NAVIGATION HEADER CONTAINER (STICKY & SMOOTH & CENTERED) -->
+    <!-- FIXED TOP NAVIGATION HEADER CONTAINER -->
     <div class="sticky top-0 z-40 bg-white/95 dark:bg-obsidianCard/95 backdrop-blur-md border-b-2 border-slate-300 dark:border-obsidianBorder shadow-xl transition-colors duration-300 w-full flex flex-col items-center">
         <header class="max-w-4xl w-full px-3 py-2.5 flex flex-wrap justify-between items-center gap-2">
             <div class="flex items-center space-x-2.5 mx-auto sm:mx-0">
@@ -385,7 +385,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             </div>
         </header>
 
-        <!-- Navigation Tabs Ribbon (Smooth Horizontal Scroll & Centered wrapper) -->
+        <!-- Navigation Tabs Ribbon -->
         <div class="max-w-4xl w-full px-3 py-1.5 border-t border-slate-200 dark:border-obsidianBorder/40 overflow-x-auto no-scrollbar flex justify-start sm:justify-center">
             <nav class="flex space-x-1.5 whitespace-nowrap">
                 <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl obsidian-key bg-indigo-600 text-white">Dashboard</button>
@@ -432,7 +432,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     </div>
                 </div>
 
-                <!-- DYNAMIC PICKER INPUTS -->
                 <div class="pt-1 flex flex-col sm:flex-row justify-between items-center bg-slate-100 dark:bg-[#12151C] p-3 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder gap-2">
                     <label id="dash-picker-label" class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Select Date:</label>
                     
@@ -543,8 +542,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         </section>
 
         <!-- POS TERMINAL TAB -->
-        <section id="view-pos" class="hidden space-y-3 relative pb-28 text-center">
-            <!-- STICKY CONTROL BAR CONTAINER FOR POS -->
+        <section id="view-pos" class="hidden space-y-3 relative pb-80 text-center">
+            <!-- CONTROL BAR FOR POS -->
             <div class="sticky top-[102px] z-30 bg-slate-100/95 dark:bg-obsidianDark/95 backdrop-blur-md py-2 space-y-2 transition-colors">
                 <div class="flex justify-between items-center">
                     <h2 class="text-base font-black tracking-wide mx-auto sm:mx-0">POS Terminal</h2>
@@ -569,71 +568,80 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 </div>
             </div>
 
+            <!-- PRODUCT GRID ONLY (CART REMOVED FROM NORMAL SCROLL) -->
             <div id="pos-products-grid" class="grid grid-cols-2 gap-2.5 pt-1 text-left"></div>
 
-            <div class="bg-white dark:bg-obsidianCard border-2 border-indigo-500/50 rounded-3xl p-4 space-y-3 shadow-2xl relative obsidian-key text-left">
-                <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-obsidianBorder">
-                    <div class="flex items-center gap-2">
-                        <div class="w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-[10px] shadow-md">
-                            <i class="fa-solid fa-cart-shopping"></i>
-                        </div>
-                        <h3 class="text-sm font-black tracking-wide">Cart Summary</h3>
-                    </div>
-                    <button onclick="clearCart()" class="text-[11px] font-black text-rose-500 hover:text-rose-400 px-2.5 py-1 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center gap-1 obsidian-key">
-                        <i class="fa-solid fa-trash-can text-[10px]"></i> Clear
-                    </button>
-                </div>
-
-                <div id="pos-cart-list" class="space-y-2.5 max-h-48 overflow-y-auto pr-1">
-                    <p class="text-xs text-slate-400 py-1 text-center">No items in cart yet.</p>
-                </div>
-
-                <div class="pt-2 border-t border-slate-200 dark:border-obsidianBorder space-y-2 bg-slate-100 dark:bg-[#12151C] p-3 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder">
-                    <div class="flex items-center justify-between">
-                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-indigo-600 text-white font-black text-[11px] shadow-md obsidian-key">
-                            <i class="fa-solid fa-money-bill-wave text-[10px]"></i> Cash Received
-                        </span>
-                        <div class="relative w-36">
-                            <span class="absolute left-2.5 top-2 text-indigo-400 font-black text-xs">₱</span>
-                            <input type="number" id="pos-cash-input" oninput="updatePOSCalculations()" placeholder="0.00" class="w-full bg-white dark:bg-obsidianCard border-2 border-indigo-500/50 rounded-xl pl-6 pr-2.5 py-1.5 text-right text-sm font-black text-emerald-400 focus:outline-none focus:border-indigo-500 shadow-inner">
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-end gap-1 pt-0.5 flex-wrap">
-                        <span class="text-[9px] font-bold text-slate-400 uppercase mr-1">Quick:</span>
-                        <button onclick="setQuickCash('exact')" class="px-2 py-0.5 rounded-lg text-[9px] font-black bg-indigo-600 text-white obsidian-key">Exact</button>
-                        <button onclick="setQuickCash(50)" class="px-2 py-0.5 rounded-lg text-[9px] font-black bg-slate-200 dark:bg-obsidianBorder text-slate-300 obsidian-key">₱50</button>
-                        <button onclick="setQuickCash(100)" class="px-2 py-0.5 rounded-lg text-[9px] font-black bg-slate-200 dark:bg-obsidianBorder text-slate-300 obsidian-key">₱100</button>
-                        <button onclick="setQuickCash(500)" class="px-2 py-0.5 rounded-lg text-[9px] font-black bg-slate-200 dark:bg-obsidianBorder text-slate-300 obsidian-key">₱500</button>
-                        <button onclick="setQuickCash(1000)" class="px-2 py-0.5 rounded-lg text-[9px] font-black bg-slate-200 dark:bg-obsidianBorder text-slate-300 obsidian-key">₱1k</button>
-                    </div>
-                </div>
-
-                <div id="pos-change-row" class="hidden flex justify-between items-center text-xs px-1 pt-0.5">
-                    <span class="text-slate-400 font-bold">Change Due:</span>
-                    <span class="text-emerald-400 font-black text-sm" id="pos-change-val">₱0</span>
-                </div>
-            </div>
-
-            <!-- FIXED BOTTOM CHECKOUT BAR (STICKY & CENTERED) -->
-            <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-obsidianCard/95 backdrop-blur-md border-t-2 border-slate-300 dark:border-obsidianBorder p-2.5 shadow-2xl transition-colors duration-300 flex justify-center">
-                <div class="max-w-4xl w-full mx-auto space-y-2 px-3">
-                    <input type="text" id="pos-customer-input" placeholder="Customer Name (Optional for Cash, Required for Utang)" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3.5 py-2 text-xs placeholder-slate-400 focus:outline-none focus:border-indigo-500 shadow-inner text-center sm:text-left">
+            <!-- STICKY & FROZEN COMBINED CART TOOLBAR AT THE BOTTOM -->
+            <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-obsidianCard/95 backdrop-blur-md border-t-2 border-indigo-500/50 p-3 shadow-2xl transition-colors duration-300 flex justify-center">
+                <div class="max-w-4xl w-full mx-auto space-y-2.5 px-1 text-left">
                     
-                    <div class="flex justify-between items-center">
-                        <div class="text-left">
-                            <span class="text-[9px] text-slate-400 font-bold block uppercase tracking-wider">Total:</span>
-                            <div id="pos-total-display" class="text-xl font-black text-emerald-400">₱0</div>
+                    <!-- CART HEADER & HORIZONTAL SWIPE ITEMS ROW -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between items-center px-1">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-cart-shopping text-indigo-400 text-xs"></i>
+                                <span class="text-xs font-black tracking-wide">Cart Summary</span>
+                                <span id="pos-cart-badge" class="px-1.5 py-0.2 rounded-full bg-indigo-600 text-white font-black text-[10px]">0</span>
+                            </div>
+                            <button onclick="clearCart()" class="text-[10px] font-black text-rose-500 hover:text-rose-400 px-2 py-0.5 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center gap-1 obsidian-key">
+                                <i class="fa-solid fa-trash-can text-[9px]"></i> Clear
+                            </button>
                         </div>
-                        <div class="flex gap-2">
-                            <button onclick="checkout('Paid')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs obsidian-key active:scale-95 flex items-center gap-1 shadow-lg">
-                                <i class="fa-solid fa-money-bill-check text-xs"></i> Pay Cash
-                            </button>
-                            <button onclick="checkout('Utang')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs obsidian-key active:scale-95 flex items-center gap-1 shadow-lg">
-                                <i class="fa-solid fa-hand-holding-dollar text-xs"></i> Utang
-                            </button>
+
+                        <!-- HORIZONTAL SWIPE CAROUSEL CONTAINER -->
+                        <div id="pos-cart-list" class="flex gap-2 overflow-x-auto no-scrollbar py-1 items-center min-h-[46px] scroll-smooth">
+                            <p class="text-xs text-slate-400 text-center w-full my-auto">No items in cart yet.</p>
                         </div>
                     </div>
+
+                    <!-- CASH INPUT & QUICK DENOMINATIONS -->
+                    <div class="pt-1 border-t border-slate-200 dark:border-obsidianBorder flex flex-col sm:flex-row justify-between items-center gap-2 bg-slate-100 dark:bg-[#12151C] p-2 rounded-2xl border border-slate-300 dark:border-obsidianBorder">
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-xl bg-indigo-600 text-white font-black text-[10px] shadow-sm whitespace-nowrap">
+                                <i class="fa-solid fa-money-bill-wave"></i> Cash
+                            </span>
+                            <div class="relative flex-1 sm:w-28">
+                                <span class="absolute left-2 top-1.5 text-indigo-400 font-black text-xs">₱</span>
+                                <input type="number" id="pos-cash-input" oninput="updatePOSCalculations()" placeholder="0.00" class="w-full bg-white dark:bg-obsidianCard border-2 border-indigo-500/50 rounded-xl pl-5 pr-2 py-1 text-right text-xs font-black text-emerald-400 focus:outline-none focus:border-indigo-500 shadow-inner">
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-1 flex-wrap w-full sm:w-auto">
+                            <span class="text-[9px] font-bold text-slate-400 uppercase mr-1">Quick:</span>
+                            <button onclick="setQuickCash('exact')" class="px-2 py-0.5 rounded-lg text-[9px] font-black bg-indigo-600 text-white obsidian-key">Exact</button>
+                            <button onclick="setQuickCash(50)" class="px-2 py-0.5 rounded-lg text-[9px] font-black bg-slate-200 dark:bg-obsidianBorder text-slate-300 obsidian-key">₱50</button>
+                            <button onclick="setQuickCash(100)" class="px-2 py-0.5 rounded-lg text-[9px] font-black bg-slate-200 dark:bg-obsidianBorder text-slate-300 obsidian-key">₱100</button>
+                            <button onclick="setQuickCash(500)" class="px-2 py-0.5 rounded-lg text-[9px] font-black bg-slate-200 dark:bg-obsidianBorder text-slate-300 obsidian-key">₱500</button>
+                            <button onclick="setQuickCash(1000)" class="px-2 py-0.5 rounded-lg text-[9px] font-black bg-slate-200 dark:bg-obsidianBorder text-slate-300 obsidian-key">₱1k</button>
+                        </div>
+                    </div>
+
+                    <!-- CUSTOMER INPUT & CHECKOUT ACTION ROW -->
+                    <div class="space-y-2">
+                        <input type="text" id="pos-customer-input" placeholder="Customer Name (Optional for Cash, Required for Utang)" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1.5 text-xs placeholder-slate-400 focus:outline-none focus:border-indigo-500 shadow-inner text-center sm:text-left">
+                        
+                        <div class="flex justify-between items-center">
+                            <div class="text-left">
+                                <span class="text-[9px] text-slate-400 font-bold block uppercase tracking-wider">TOTAL BILL:</span>
+                                <div id="pos-total-display" class="text-xl font-black text-emerald-400">₱0</div>
+                            </div>
+
+                            <div id="pos-change-row" class="hidden text-right pr-2">
+                                <span class="text-[9px] text-slate-400 font-bold block uppercase tracking-wider">CHANGE:</span>
+                                <div id="pos-change-val" class="text-base font-black text-emerald-400">₱0</div>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <button onclick="checkout('Paid')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs obsidian-key active:scale-95 flex items-center gap-1 shadow-lg">
+                                    <i class="fa-solid fa-money-bill-check text-xs"></i> Pay Cash
+                                </button>
+                                <button onclick="checkout('Utang')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs obsidian-key active:scale-95 flex items-center gap-1 shadow-lg">
+                                    <i class="fa-solid fa-hand-holding-dollar text-xs"></i> Utang
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>
@@ -2403,9 +2411,12 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let list = document.getElementById('pos-cart-list');
             let keys = Object.keys(cart);
             let total = 0;
+            let totalItemCount = 0;
+
             if (keys.length === 0) {
-                list.innerHTML = '<p class="text-xs text-slate-400 py-1 text-center">No items in cart.</p>';
+                list.innerHTML = '<p class="text-xs text-slate-400 text-center w-full my-auto">No items in cart yet.</p>';
                 document.getElementById('pos-total-display').textContent = '₱0';
+                document.getElementById('pos-cart-badge').textContent = '0';
                 document.getElementById('pos-change-row').classList.add('hidden');
                 return;
             }
@@ -2415,21 +2426,26 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 let item = cart[id];
                 let subtotal = item.price * item.qty;
                 total += subtotal;
+                totalItemCount += item.qty;
+
+                // SWIPEABLE HORIZONTAL ITEM CAPSULE
                 html += `
-                    <div class="flex justify-between items-center py-1 border-b border-slate-200 dark:border-obsidianBorder text-xs">
-                        <div>
-                            <span class="font-bold block">${item.name}</span>
-                            <span class="text-[10px] text-slate-400">₱${item.price} × ${item.qty} = ₱${subtotal}</span>
+                    <div class="flex-shrink-0 bg-slate-100 dark:bg-[#12151C] border-2 border-indigo-500/30 rounded-xl px-2.5 py-1 flex items-center gap-2 text-xs obsidian-key">
+                        <div class="text-left">
+                            <span class="font-extrabold text-xs block whitespace-nowrap max-w-[110px] truncate">${item.name}</span>
+                            <span class="text-[10px] text-emerald-400 font-bold block">₱${subtotal}</span>
                         </div>
-                        <div class="flex items-center gap-1.5">
-                            <button onclick="changeQty('${id}', -1)" class="w-6 h-6 rounded-lg bg-slate-200 dark:bg-obsidianBorder font-black text-xs obsidian-key">-</button>
-                            <span class="font-bold text-xs w-3 text-center">${item.qty}</span>
-                            <button onclick="changeQty('${id}', 1)" class="w-6 h-6 rounded-lg bg-slate-200 dark:bg-obsidianBorder font-black text-xs obsidian-key">+</button>
+                        <div class="flex items-center gap-1 bg-white dark:bg-obsidianCard px-1.5 py-0.5 rounded-lg border border-slate-300 dark:border-obsidianBorder">
+                            <button onclick="changeQty('${id}', -1)" class="text-indigo-400 font-black text-xs px-1 hover:text-rose-500">-</button>
+                            <span class="font-black text-xs min-w-[12px] text-center">${item.qty}</span>
+                            <button onclick="changeQty('${id}', 1)" class="text-indigo-400 font-black text-xs px-1 hover:text-emerald-400">+</button>
                         </div>
                     </div>`;
             });
+
             list.innerHTML = html;
             document.getElementById('pos-total-display').textContent = '₱' + total.toLocaleString();
+            document.getElementById('pos-cart-badge').textContent = totalItemCount.toString();
             updatePOSCalculations();
         }
 
