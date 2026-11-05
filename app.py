@@ -549,9 +549,13 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <h2 class="text-base font-black tracking-wide mx-auto sm:mx-0">POS Terminal</h2>
                 </div>
 
+                <!-- SEARCH BAR WITH DROPDOWN AUTOCOMPLETE & +/- CART CONTROLS -->
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
-                    <input type="text" id="pos-search" oninput="renderPOSGrid()" placeholder="Search products" class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl pl-9 pr-4 py-2.5 text-xs placeholder-slate-400 focus:outline-none focus:border-indigo-500 shadow-inner obsidian-key text-center sm:text-left">
+                    <input type="text" id="pos-search" oninput="onPosSearchInput()" onfocus="onPosSearchFocus()" placeholder="Search products or pick from dropdown..." class="w-full bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl pl-9 pr-4 py-2.5 text-xs placeholder-slate-400 focus:outline-none focus:border-indigo-500 shadow-inner obsidian-key text-center sm:text-left">
+                    
+                    <!-- Search Dropdown List -->
+                    <div id="pos-search-dropdown" class="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl shadow-2xl max-h-60 overflow-y-auto z-50 hidden p-2 space-y-1.5 text-left"></div>
                 </div>
 
                 <div class="flex space-x-2 overflow-x-auto no-scrollbar py-1 justify-start sm:justify-center">
@@ -568,8 +572,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 </div>
             </div>
 
-            <!-- PRODUCT GRID ONLY (CART REMOVED FROM NORMAL SCROLL) -->
-            <div id="pos-products-grid" class="grid grid-cols-2 gap-2.5 pt-1 text-left"></div>
+            <!-- PRODUCT GRID (3 COLUMNS, A-Z SORTED) -->
+            <div id="pos-products-grid" class="grid grid-cols-3 gap-2 pt-1 text-left"></div>
 
             <!-- STICKY & FROZEN COMBINED CART TOOLBAR AT THE BOTTOM -->
             <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-obsidianCard/95 backdrop-blur-md border-t-2 border-indigo-500/50 p-3 shadow-2xl transition-colors duration-300 flex justify-center">
@@ -2372,20 +2376,80 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 if (searchQuery && !p.name.toLowerCase().includes(searchQuery)) return false;
                 return true;
             });
+            // SORT ALPHABETICALLY A TO Z
             filtered.sort((a, b) => a.name.localeCompare(b.name));
 
             filtered.forEach(p => {
                 let cartQty = cart[p.id] ? cart[p.id].qty : 0;
                 html += `
-                    <div onclick="addToCart('${p.id}')" class="p-3 bg-white dark:bg-obsidianCard border-2 ${cartQty > 0 ? 'border-indigo-500' : 'border-slate-300 dark:border-obsidianBorder'} rounded-2xl cursor-pointer relative space-y-1 obsidian-key text-left">
-                        ${cartQty > 0 ? `<div class="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-indigo-600 text-white font-black text-[10px] flex items-center justify-center">${cartQty}</div>` : ''}
-                        <h4 class="font-bold text-xs pr-5 leading-snug">${p.name}</h4>
+                    <div onclick="addToCart('${p.id}')" class="p-2.5 bg-white dark:bg-obsidianCard border-2 ${cartQty > 0 ? 'border-indigo-500' : 'border-slate-300 dark:border-obsidianBorder'} rounded-2xl cursor-pointer relative space-y-1 obsidian-key text-left">
+                        ${cartQty > 0 ? `<div class="absolute top-2 right-2 w-4 h-4 rounded-full bg-indigo-600 text-white font-black text-[9px] flex items-center justify-center">${cartQty}</div>` : ''}
+                        <h4 class="font-bold text-[11px] pr-4 leading-snug truncate">${p.name}</h4>
                         <div class="text-emerald-400 font-bold text-xs">₱${p.price.toLocaleString()}</div>
-                        <p class="text-[10px] text-slate-400">${p.stock} ${p.unit}</p>
+                        <p class="text-[9px] text-slate-400">${p.stock} ${p.unit}</p>
                     </div>`;
             });
             document.getElementById('pos-products-grid').innerHTML = html;
         }
+
+        // SEARCH DROPDOWN LIVE FUNCTIONS WITH +/- BUTTONS
+        function onPosSearchFocus() {
+            renderSearchDropdown();
+        }
+
+        function onPosSearchInput() {
+            renderPOSGrid();
+            renderSearchDropdown();
+        }
+
+        function renderSearchDropdown() {
+            let dropdown = document.getElementById('pos-search-dropdown');
+            let query = (document.getElementById('pos-search')?.value || '').toLowerCase();
+            
+            let filtered = products.filter(p => p.name.toLowerCase().includes(query));
+            filtered.sort((a, b) => a.name.localeCompare(b.name));
+
+            if (filtered.length === 0) {
+                dropdown.classList.add('hidden');
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(p => {
+                let cartQty = cart[p.id] ? cart[p.id].qty : 0;
+                html += `
+                    <div class="flex justify-between items-center bg-slate-100 dark:bg-[#12151C] p-2 rounded-xl border border-slate-300 dark:border-obsidianBorder gap-2">
+                        <div class="flex-1 cursor-pointer truncate" onclick="addToCart('${p.id}'); hideSearchDropdown();">
+                            <span class="font-bold text-xs block truncate">${p.name}</span>
+                            <span class="text-[10px] text-emerald-400 font-bold">₱${p.price} <span class="text-slate-400 font-normal">(${p.stock} left)</span></span>
+                        </div>
+                        <div class="flex items-center gap-1.5 bg-white dark:bg-obsidianCard px-2 py-1 rounded-lg border border-slate-300 dark:border-obsidianBorder">
+                            <button onclick="event.stopPropagation(); changeQty('${p.id}', -1); renderSearchDropdown();" class="text-rose-500 font-black text-xs px-1 hover:opacity-75">-</button>
+                            <span class="font-black text-xs min-w-[14px] text-center">${cartQty}</span>
+                            <button onclick="event.stopPropagation(); addToCart('${p.id}'); renderSearchDropdown();" class="text-emerald-400 font-black text-xs px-1 hover:opacity-75">+</button>
+                        </div>
+                    </div>`;
+            });
+
+            dropdown.innerHTML = html;
+            dropdown.classList.remove('hidden');
+        }
+
+        function hideSearchDropdown() {
+            setTimeout(() => {
+                let dropdown = document.getElementById('pos-search-dropdown');
+                if (dropdown) dropdown.classList.add('hidden');
+            }, 200);
+        }
+
+        // Close search dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            let searchBox = document.getElementById('pos-search');
+            let dropdown = document.getElementById('pos-search-dropdown');
+            if (searchBox && dropdown && !searchBox.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
 
         function addToCart(id) {
             let p = products.find(prod => prod.id === id);
