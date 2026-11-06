@@ -1853,6 +1853,16 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             if (currentRole !== 'Admin') return showToast("Access Denied: Admin required.");
             let id = document.getElementById('ap-id').value;
             let name = document.getElementById('ap-name').value.trim();
+            
+            if (!name) return showToast("Please enter a product name.");
+
+            // DUPLICATE CHECK: Check if product name already exists (case-insensitive, excluding current editing item)
+            let duplicate = products.find(p => p.name.toLowerCase() === name.toLowerCase() && p.id !== id);
+            if (duplicate) {
+                alert(`⚠️ DUPLICATE WARNING: "${duplicate.name}" already exists in your inventory under the [${duplicate.category}] category with ${duplicate.stock} ${duplicate.unit} remaining!`);
+                return; // Stops saving to prevent duplication
+            }
+
             let category = document.getElementById('ap-cat').value;
             let cost = parseFloat(document.getElementById('ap-cost').value) || 0;
             let shippingFee = parseFloat(document.getElementById('ap-shipping').value) || 0;
@@ -1861,7 +1871,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let unit = document.getElementById('ap-unit').value.trim() || 'pcs';
             let dateAdded = document.getElementById('ap-date-added').value || new Date().toISOString().split('T')[0];
             let expiryDate = document.getElementById('ap-expiry').value || '';
-            if (!name) return;
+            
             let price = cost + shippingFee + margin;
 
             if (id) {
@@ -1871,7 +1881,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 products.push({ id: Date.now().toString(), name, category, cost, shippingFee, margin, price, stock, unit, dateAdded, expiryDate });
             }
             closeAddProductModal(); renderInventory(); renderPOSGrid(); saveChangesToVault();
-            showToast("Product saved!");
+            showToast("Product saved successfully!");
         }
 
         function getExpiryStatus(expiryStr) {
