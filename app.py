@@ -1162,6 +1162,13 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <input type="text" id="ap-name" oninput="detectCategoryFromName()" placeholder="e.g. Silver Swan Vinegar" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 text-center sm:text-left">
                 </div>
                 <div>
+                    <label class="block mb-1 font-bold text-center sm:text-left">Item Image (Upload File or paste Image URL)</label>
+                    <div class="flex gap-2">
+                        <input type="file" id="ap-image-file" accept="image/*" onchange="handleImageUpload(event)" class="w-1/2 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-2 py-1 text-[10px]">
+                        <input type="text" id="ap-image" placeholder="or paste Image URL / emoji" class="w-1/2 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 text-center sm:text-left">
+                    </div>
+                </div>
+                <div>
                     <label class="block mb-1 font-bold text-center sm:text-left">Category <span class="text-indigo-400 font-normal">(Auto-detected)</span></label>
                     <select id="ap-cat" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-indigo-500/40 rounded-xl px-3 py-2 font-bold text-indigo-400 focus:outline-none text-center">
                         <option value="General">General</option>
@@ -1272,18 +1279,18 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         const PASSWORDS = { 'Admin': '12345bert', 'Store Keeper': 'store123' };
 
         const DEFAULT_PRODUCTS = [
-            { id: '1', name: 'Bear Brand 33g', category: 'Dairy', cost: 10, shippingFee: 0, margin: 3, price: 13, stock: 10, unit: 'sachet', dateAdded: '2026-09-01', expiryDate: '2027-05-15' },
-            { id: '2', name: 'Century Tuna 155g', category: 'Canned', cost: 30, shippingFee: 2, margin: 8, price: 40, stock: 18, unit: 'can', dateAdded: '2026-09-05', expiryDate: '2028-01-10' },
-            { id: '3', name: 'Coca-Cola 1.5L Bottle', category: 'Drinks', cost: 60, shippingFee: 5, margin: 12, price: 77, stock: 24, unit: 'bottle', dateAdded: '2026-10-01', expiryDate: '2026-11-05' },
-            { id: '4', name: 'Coco Pandan Rice', category: 'Grains', cost: 1050, shippingFee: 50, margin: 300, price: 1400, stock: 6, unit: 'pcs', dateAdded: '2026-09-10', expiryDate: '' },
-            { id: '5', name: 'Jasmine Rice', category: 'Grains', cost: 48, shippingFee: 2, margin: 12, price: 62, stock: 47, unit: 'kg', dateAdded: '2026-09-15', expiryDate: '' },
-            { id: '6', name: 'Kopiko Brown Coffee', category: 'Drinks', cost: 7, shippingFee: 0, margin: 3, price: 10, stock: 57, unit: 'sachet', dateAdded: '2026-09-20', expiryDate: '2027-08-20' },
-            { id: '7', name: 'Lucky Me Instant Noodles', category: 'Noodles', cost: 10, shippingFee: 1, margin: 3, price: 14, stock: 40, unit: 'pack', dateAdded: '2026-09-25', expiryDate: '2026-10-25' },
-            { id: '8', name: 'Piattos Cheese 85g', category: 'Snacks', cost: 30, shippingFee: 2, margin: 8, price: 40, stock: 25, unit: 'pack', dateAdded: '2026-10-02', expiryDate: '2026-11-12' },
-            { id: '9', name: 'Red Bull Energy Drink', category: 'Beverages', cost: 45, shippingFee: 3, margin: 10, price: 58, stock: 15, unit: 'can', dateAdded: '2026-10-05', expiryDate: '2026-10-18' },
-            { id: '10', name: 'Silver Swan Vinegar 200ml', category: 'Condiments', cost: 12, shippingFee: 1, margin: 3, price: 16, stock: 20, unit: 'pouch', dateAdded: '2026-10-08', expiryDate: '2027-12-01' },
-            { id: '11', name: 'Datu Puti Patis 350ml', category: 'Condiments', cost: 22, shippingFee: 2, margin: 5, price: 29, stock: 15, unit: 'bottle', dateAdded: '2026-10-10', expiryDate: '2028-02-15' },
-            { id: '12', name: 'Special Tuyo 100g', category: 'Pantry', cost: 35, shippingFee: 3, margin: 10, price: 48, stock: 12, unit: 'pack', dateAdded: '2026-10-12', expiryDate: '2027-01-30' }
+            { id: '1', name: 'Bear Brand 33g', category: 'Dairy', cost: 10, shippingFee: 0, margin: 3, price: 13, stock: 10, unit: 'sachet', image: '', dateAdded: '2026-09-01', expiryDate: '2027-05-15' },
+            { id: '2', name: 'Century Tuna 155g', category: 'Canned', cost: 30, shippingFee: 2, margin: 8, price: 40, stock: 18, unit: 'can', image: '', dateAdded: '2026-09-05', expiryDate: '2028-01-10' },
+            { id: '3', name: 'Coca-Cola 1.5L Bottle', category: 'Drinks', cost: 60, shippingFee: 5, margin: 12, price: 77, stock: 24, unit: 'bottle', image: '', dateAdded: '2026-10-01', expiryDate: '2026-11-05' },
+            { id: '4', name: 'Coco Pandan Rice', category: 'Grains', cost: 1050, shippingFee: 50, margin: 300, price: 1400, stock: 6, unit: 'pcs', image: '', dateAdded: '2026-09-10', expiryDate: '' },
+            { id: '5', name: 'Jasmine Rice', category: 'Grains', cost: 48, shippingFee: 2, margin: 12, price: 62, stock: 47, unit: 'kg', image: '', dateAdded: '2026-09-15', expiryDate: '' },
+            { id: '6', name: 'Kopiko Brown Coffee', category: 'Drinks', cost: 7, shippingFee: 0, margin: 3, price: 10, stock: 57, unit: 'sachet', image: '', dateAdded: '2026-09-20', expiryDate: '2027-08-20' },
+            { id: '7', name: 'Lucky Me Instant Noodles', category: 'Noodles', cost: 10, shippingFee: 1, margin: 3, price: 14, stock: 40, unit: 'pack', image: '', dateAdded: '2026-09-25', expiryDate: '2026-10-25' },
+            { id: '8', name: 'Piattos Cheese 85g', category: 'Snacks', cost: 30, shippingFee: 2, margin: 8, price: 40, stock: 25, unit: 'pack', image: '', dateAdded: '2026-10-02', expiryDate: '2026-11-12' },
+            { id: '9', name: 'Red Bull Energy Drink', category: 'Beverages', cost: 45, shippingFee: 3, margin: 10, price: 58, stock: 15, unit: 'can', image: '', dateAdded: '2026-10-05', expiryDate: '2026-10-18' },
+            { id: '10', name: 'Silver Swan Vinegar 200ml', category: 'Condiments', cost: 12, shippingFee: 1, margin: 3, price: 16, stock: 20, unit: 'pouch', image: '', dateAdded: '2026-10-08', expiryDate: '2027-12-01' },
+            { id: '11', name: 'Datu Puti Patis 350ml', category: 'Condiments', cost: 22, shippingFee: 2, margin: 5, price: 29, stock: 15, unit: 'bottle', image: '', dateAdded: '2026-10-10', expiryDate: '2028-02-15' },
+            { id: '12', name: 'Special Tuyo 100g', category: 'Pantry', cost: 35, shippingFee: 3, margin: 10, price: 48, stock: 12, unit: 'pack', image: '', dateAdded: '2026-10-12', expiryDate: '2027-01-30' }
         ];
 
         const DEFAULT_PURCHASER = [
@@ -1319,7 +1326,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         let utangFilter = 'balance';
         let dashPeriod = 'daily';
 
-        products.forEach(p => { if (p.shippingFee === undefined) p.shippingFee = 0; });
+        products.forEach(p => { 
+            if (p.shippingFee === undefined) p.shippingFee = 0; 
+            if (p.image === undefined) p.image = '';
+        });
 
         function saveChangesToVault() {
             localStorage.setItem('ibanez_products', JSON.stringify(products));
@@ -1496,10 +1506,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let opt = document.getElementById('rc-import-opt').value;
 
             if (opt === 'both' || opt === 'kg') {
-                products.push({ id: Date.now().toString(), name: name + ' (Per KG)', category: 'Grains', cost: Math.round(baseCostPerKg), shippingFee: Math.round(shippingPerKg), margin: Math.round(recPricePerKg - actualCostPerKg), price: Math.round(recPricePerKg), stock: netWeight, unit: 'kg', dateAdded: todayStr, expiryDate: '' });
+                products.push({ id: Date.now().toString(), name: name + ' (Per KG)', category: 'Grains', cost: Math.round(baseCostPerKg), shippingFee: Math.round(shippingPerKg), margin: Math.round(recPricePerKg - actualCostPerKg), price: Math.round(recPricePerKg), stock: netWeight, unit: 'kg', image: '', dateAdded: todayStr, expiryDate: '' });
             }
             if (opt === 'both' || opt === 'sack') {
-                products.push({ id: (Date.now() + 1).toString(), name: name + ' (Whole Sack)', category: 'Grains', cost: Math.round(sackCost), shippingFee: Math.round(transport), margin: Math.round((sackCost + transport) * (margin / 100)), price: Math.round((sackCost + transport) * (1 + (margin / 100))), stock: 1, unit: 'sack', dateAdded: todayStr, expiryDate: '' });
+                products.push({ id: (Date.now() + 1).toString(), name: name + ' (Whole Sack)', category: 'Grains', cost: Math.round(sackCost), shippingFee: Math.round(transport), margin: Math.round((sackCost + transport) * (margin / 100)), price: Math.round((sackCost + transport) * (1 + (margin / 100))), stock: 1, unit: 'sack', image: '', dateAdded: todayStr, expiryDate: '' });
             }
             closeRiceCalcModal(); renderInventory(); renderPOSGrid(); saveChangesToVault();
             showToast("Rice pricing imported to inventory!");
@@ -1536,7 +1546,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let recSellingPrice = totalUnitCost * (1 + (margin / 100));
             let todayStr = new Date().toISOString().split('T')[0];
 
-            products.push({ id: Date.now().toString(), name, category: 'General', cost: Math.round(baseUnitCost), shippingFee: Math.round(shippingPerUnit), margin: Math.round(recSellingPrice - totalUnitCost), price: Math.round(recSellingPrice), stock: units, unit: 'pcs', dateAdded: todayStr, expiryDate: '' });
+            products.push({ id: Date.now().toString(), name, category: 'General', cost: Math.round(baseUnitCost), shippingFee: Math.round(shippingPerUnit), margin: Math.round(recSellingPrice - totalUnitCost), price: Math.round(recSellingPrice), stock: units, unit: 'pcs', image: '', dateAdded: todayStr, expiryDate: '' });
             closeBulkCalcModal(); renderInventory(); renderPOSGrid(); saveChangesToVault();
             showToast("Bulk items imported to inventory!");
         }
@@ -1571,6 +1581,16 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             document.getElementById('ap-price-display').value = (cost + shipping + margin).toFixed(2);
         }
 
+        function handleImageUpload(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('ap-image').value = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
         function detectCategoryFromName() {
             let nameVal = document.getElementById('ap-name').value.toLowerCase();
             let catSelect = document.getElementById('ap-cat');
@@ -1599,6 +1619,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     title.textContent = 'Edit Product';
                     document.getElementById('ap-id').value = p.id;
                     document.getElementById('ap-name').value = p.name;
+                    document.getElementById('ap-image').value = p.image || '';
+                    document.getElementById('ap-image-file').value = '';
                     document.getElementById('ap-cat').value = p.category;
                     document.getElementById('ap-cost').value = p.cost;
                     document.getElementById('ap-shipping').value = p.shippingFee || 0;
@@ -1612,6 +1634,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 title.textContent = 'Add Product';
                 document.getElementById('ap-id').value = '';
                 document.getElementById('ap-name').value = '';
+                document.getElementById('ap-image').value = '';
+                document.getElementById('ap-image-file').value = '';
                 document.getElementById('ap-cat').value = 'General';
                 document.getElementById('ap-cost').value = 10;
                 document.getElementById('ap-shipping').value = 0;
@@ -1793,7 +1817,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let sellingPrice = unitCost + marginVal;
             let todayStr = new Date().toISOString().split('T')[0];
 
-            products.push({ id: Date.now().toString(), name: item.name, category: 'General', cost: Math.round(unitCost), shippingFee: 0, margin: Math.round(marginVal), price: Math.round(sellingPrice), stock: item.qty || 1, unit: item.unit || 'pcs', dateAdded: todayStr, expiryDate: '' });
+            products.push({ id: Date.now().toString(), name: item.name, category: 'General', cost: Math.round(unitCost), shippingFee: 0, margin: Math.round(marginVal), price: Math.round(sellingPrice), stock: item.qty || 1, unit: item.unit || 'pcs', image: '', dateAdded: todayStr, expiryDate: '' });
             renderInventory(); renderPOSGrid(); saveChangesToVault();
             showToast(`Imported ${item.name} to inventory!`);
         }
@@ -1856,13 +1880,13 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             
             if (!name) return showToast("Please enter a product name.");
 
-            // DUPLICATE CHECK: Check if product name already exists (case-insensitive, excluding current editing item)
             let duplicate = products.find(p => p.name.toLowerCase() === name.toLowerCase() && p.id !== id);
             if (duplicate) {
                 alert(`⚠️ DUPLICATE WARNING: "${duplicate.name}" already exists in your inventory under the [${duplicate.category}] category with ${duplicate.stock} ${duplicate.unit} remaining!`);
-                return; // Stops saving to prevent duplication
+                return;
             }
 
+            let image = document.getElementById('ap-image').value.trim();
             let category = document.getElementById('ap-cat').value;
             let cost = parseFloat(document.getElementById('ap-cost').value) || 0;
             let shippingFee = parseFloat(document.getElementById('ap-shipping').value) || 0;
@@ -1876,9 +1900,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
             if (id) {
                 let p = products.find(prod => prod.id === id);
-                if (p) { p.name = name; p.category = category; p.cost = cost; p.shippingFee = shippingFee; p.margin = margin; p.price = price; p.stock = stock; p.unit = unit; p.dateAdded = dateAdded; p.expiryDate = expiryDate; }
+                if (p) { p.name = name; p.image = image; p.category = category; p.cost = cost; p.shippingFee = shippingFee; p.margin = margin; p.price = price; p.stock = stock; p.unit = unit; p.dateAdded = dateAdded; p.expiryDate = expiryDate; }
             } else {
-                products.push({ id: Date.now().toString(), name, category, cost, shippingFee, margin, price, stock, unit, dateAdded, expiryDate });
+                products.push({ id: Date.now().toString(), name, image, category, cost, shippingFee, margin, price, stock, unit, dateAdded, expiryDate });
             }
             closeAddProductModal(); renderInventory(); renderPOSGrid(); saveChangesToVault();
             showToast("Product saved successfully!");
@@ -1953,21 +1977,25 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 let ship = p.shippingFee || 0;
                 let actualCost = p.cost + ship;
                 let marginPesos = p.price - actualCost;
-                let marginPct = p.price > 0 ? ((marginPesos / p.price) * 100).toFixed(1) : 0;
                 let potentialEarnings = marginPesos * p.stock;
                 let totalItemValue = p.price * p.stock;
 
+                let imageHtml = p.image ? `<img src="${p.image}" class="w-10 h-10 object-cover rounded-xl border border-indigo-500/30 flex-shrink-0">` : `<div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-xs flex-shrink-0"><i class="fa-solid fa-box"></i></div>`;
+
                 html += `
                     <div class="p-3.5 bg-slate-100 dark:bg-[#12151C] border-2 ${cardBorder} rounded-3xl space-y-2.5 obsidian-key text-left">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="font-bold text-xs text-indigo-400">${indexCount}. ${p.name}</h4>
-                                <p class="text-[10px] text-slate-400">
-                                    <span class="text-amber-400 font-bold">[${p.category}]</span> • <span class="font-black text-indigo-300">${p.stock} ${p.unit}</span> 
-                                    <span class="font-bold text-emerald-400">• Val: ₱${totalItemValue.toLocaleString()}</span>
-                                </p>
+                        <div class="flex justify-between items-start gap-2">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                ${imageHtml}
+                                <div class="min-w-0">
+                                    <h4 class="font-bold text-xs text-indigo-400 truncate">${indexCount}. ${p.name}</h4>
+                                    <p class="text-[10px] text-slate-400 truncate">
+                                        <span class="text-amber-400 font-bold">[${p.category}]</span> • <span class="font-black text-indigo-300">${p.stock} ${p.unit}</span> 
+                                        <span class="font-bold text-emerald-400">• Val: ₱${totalItemValue.toLocaleString()}</span>
+                                    </p>
+                                </div>
                             </div>
-                            <div class="text-right">
+                            <div class="text-right flex-shrink-0">
                                 <span class="text-[9px] text-slate-400 block uppercase font-bold">Price</span>
                                 <span class="font-black text-emerald-400 text-sm">₱${p.price.toLocaleString()}</span>
                             </div>
@@ -2386,23 +2414,28 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 if (searchQuery && !p.name.toLowerCase().includes(searchQuery)) return false;
                 return true;
             });
-            // SORT ALPHABETICALLY A TO Z
             filtered.sort((a, b) => a.name.localeCompare(b.name));
 
             filtered.forEach(p => {
                 let cartQty = cart[p.id] ? cart[p.id].qty : 0;
+                let imageHtml = p.image ? `<img src="${p.image}" class="w-8 h-8 object-cover rounded-lg border border-indigo-500/30">` : `<div class="w-8 h-8 rounded-lg bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-xs"><i class="fa-solid fa-box"></i></div>`;
+
                 html += `
-                    <div onclick="addToCart('${p.id}')" class="p-2.5 bg-white dark:bg-obsidianCard border-2 ${cartQty > 0 ? 'border-indigo-500' : 'border-slate-300 dark:border-obsidianBorder'} rounded-2xl cursor-pointer relative space-y-1 obsidian-key text-left">
+                    <div onclick="addToCart('${p.id}')" class="p-2.5 bg-white dark:bg-obsidianCard border-2 ${cartQty > 0 ? 'border-indigo-500' : 'border-slate-300 dark:border-obsidianBorder'} rounded-2xl cursor-pointer relative space-y-1 obsidian-key text-left flex flex-col justify-between">
                         ${cartQty > 0 ? `<div class="absolute top-2 right-2 w-4 h-4 rounded-full bg-indigo-600 text-white font-black text-[9px] flex items-center justify-center">${cartQty}</div>` : ''}
-                        <h4 class="font-bold text-[11px] pr-4 leading-snug truncate">${p.name}</h4>
-                        <div class="text-emerald-400 font-bold text-xs">₱${p.price.toLocaleString()}</div>
-                        <p class="text-[9px] text-slate-400">${p.stock} ${p.unit}</p>
+                        <div class="flex items-center gap-1.5">
+                            ${imageHtml}
+                            <h4 class="font-bold text-[11px] pr-2 leading-snug truncate">${p.name}</h4>
+                        </div>
+                        <div>
+                            <div class="text-emerald-400 font-bold text-xs">₱${p.price.toLocaleString()}</div>
+                            <p class="text-[9px] text-slate-400">${p.stock} ${p.unit}</p>
+                        </div>
                     </div>`;
             });
             document.getElementById('pos-products-grid').innerHTML = html;
         }
 
-        // SEARCH DROPDOWN LIVE FUNCTIONS WITH +/- BUTTONS
         function onPosSearchFocus() {
             renderSearchDropdown();
         }
@@ -2427,11 +2460,16 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let html = '';
             filtered.forEach(p => {
                 let cartQty = cart[p.id] ? cart[p.id].qty : 0;
+                let imageHtml = p.image ? `<img src="${p.image}" class="w-7 h-7 object-cover rounded-md">` : `<div class="w-7 h-7 rounded-md bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-[10px]"><i class="fa-solid fa-box"></i></div>`;
+
                 html += `
                     <div class="flex justify-between items-center bg-slate-100 dark:bg-[#12151C] p-2 rounded-xl border border-slate-300 dark:border-obsidianBorder gap-2">
-                        <div class="flex-1 cursor-pointer truncate" onclick="addToCart('${p.id}'); hideSearchDropdown();">
-                            <span class="font-bold text-xs block truncate">${p.name}</span>
-                            <span class="text-[10px] text-emerald-400 font-bold">₱${p.price} <span class="text-slate-400 font-normal">(${p.stock} left)</span></span>
+                        <div class="flex-1 cursor-pointer truncate flex items-center gap-2" onclick="addToCart('${p.id}'); hideSearchDropdown();">
+                            ${imageHtml}
+                            <div class="truncate">
+                                <span class="font-bold text-xs block truncate">${p.name}</span>
+                                <span class="text-[10px] text-emerald-400 font-bold">₱${p.price} <span class="text-slate-400 font-normal">(${p.stock} left)</span></span>
+                            </div>
                         </div>
                         <div class="flex items-center gap-1.5 bg-white dark:bg-obsidianCard px-2 py-1 rounded-lg border border-slate-300 dark:border-obsidianBorder">
                             <button onclick="event.stopPropagation(); changeQty('${p.id}', -1); renderSearchDropdown();" class="text-rose-500 font-black text-xs px-1 hover:opacity-75">-</button>
@@ -2452,7 +2490,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             }, 200);
         }
 
-        // Close search dropdown when clicking outside
         document.addEventListener('click', function(e) {
             let searchBox = document.getElementById('pos-search');
             let dropdown = document.getElementById('pos-search-dropdown');
@@ -2502,7 +2539,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 total += subtotal;
                 totalItemCount += item.qty;
 
-                // SWIPEABLE HORIZONTAL ITEM CAPSULE
                 html += `
                     <div class="flex-shrink-0 bg-slate-100 dark:bg-[#12151C] border-2 border-indigo-500/30 rounded-xl px-2.5 py-1 flex items-center gap-2 text-xs obsidian-key">
                         <div class="text-left">
