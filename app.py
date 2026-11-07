@@ -390,7 +390,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             <nav class="flex space-x-1.5 whitespace-nowrap">
                 <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl obsidian-key bg-indigo-600 text-white">Dashboard</button>
                 <button onclick="switchTab('pos')" id="tab-btn-pos" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">POS</button>
-                <button onclick="switchTab('purchaser')" id="tab-btn-purchaser" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Purchaser</button>
+                <button onclick="switchTab('dailyrecord')" id="tab-btn-dailyrecord" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Daily Record</button>
                 <button onclick="switchTab('transactions')" id="tab-btn-transactions" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Transactions</button>
                 <button onclick="switchTab('inventory')" id="tab-btn-inventory" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Inventory</button>
                 <button onclick="switchTab('expenses')" id="tab-btn-expenses" class="nav-btn text-xs font-bold px-3 py-1.5 rounded-xl obsidian-key bg-slate-200 dark:bg-[#12151C] text-slate-600 dark:text-slate-400">Expenses</button>
@@ -510,11 +510,11 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         </div>
                         <span class="text-[10px] font-bold block">New Sale</span>
                     </button>
-                    <button onclick="switchTab('purchaser')" class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder p-3 rounded-2xl text-center space-y-1.5 obsidian-key group flex flex-col items-center justify-center">
+                    <button onclick="switchTab('dailyrecord')" class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder p-3 rounded-2xl text-center space-y-1.5 obsidian-key group flex flex-col items-center justify-center">
                         <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center mx-auto">
-                            <i class="fa-solid fa-basket-shopping text-xs"></i>
+                            <i class="fa-solid fa-calendar-days text-xs"></i>
                         </div>
-                        <span class="text-[10px] font-bold block">Shopping</span>
+                        <span class="text-[10px] font-bold block">Daily Record</span>
                     </button>
                     <button onclick="switchTab('expenses')" class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder p-3 rounded-2xl text-center space-y-1.5 obsidian-key group flex flex-col items-center justify-center">
                         <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center mx-auto">
@@ -650,16 +650,16 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             </div>
         </section>
 
-        <!-- STORE PURCHASER / DAILY TOTAL RECORD TAB -->
-        <section id="view-purchaser" class="hidden space-y-4 text-center">
+        <!-- DAILY RECORD TAB (BASED ON TRANSACTIONS) -->
+        <section id="view-dailyrecord" class="hidden space-y-4 text-center">
             <div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-1 obsidian-key flex flex-col items-center">
-                <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">OVERALL PURCHASES TOTAL</span>
-                <div id="purchaser-overall-total" class="text-2xl font-black text-emerald-400">₱0</div>
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">OVERALL TRANSACTIONS TOTAL</span>
+                <div id="dailyrecord-overall-total" class="text-2xl font-black text-emerald-400">₱0</div>
             </div>
 
             <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key text-left">
-                <h3 class="font-bold text-xs text-center uppercase tracking-wider text-indigo-400"><i class="fa-solid fa-calendar-days mr-1"></i> Overall Daily Records</h3>
-                <div id="purchaser-daily-list" class="space-y-2 text-xs py-1"></div>
+                <h3 class="font-bold text-xs text-center uppercase tracking-wider text-indigo-400"><i class="fa-solid fa-calendar-days mr-1"></i> Daily Records (From Transactions)</h3>
+                <div id="dailyrecord-list" class="space-y-2 text-xs py-1"></div>
             </div>
         </section>
 
@@ -1229,11 +1229,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             { id: '12', name: 'Special Tuyo 100g', category: 'Pantry', cost: 35, shippingFee: 3, margin: 10, price: 48, stock: 12, unit: 'pack', image: '', dateAdded: '2026-10-12', expiryDate: '2027-01-30' }
         ];
 
-        const DEFAULT_PURCHASER = [
-            { id: 'p1', name: 'Itlog', status: 'Bought', amount: 1200, qty: 2, unit: 'tray', margin: 20, date: '2026-11-01' },
-            { id: 'p2', name: 'Shampoo', status: 'Bought', amount: 3000, qty: 10, unit: 'sachet', margin: 25, date: '2026-11-02' }
-        ];
-
         const DEFAULT_EXPENSES = [
             { id: 'e1', description: 'Vegetables', amount: 150, date: '2026-11-06' }
         ];
@@ -1246,7 +1241,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         ];
 
         let products = JSON.parse(localStorage.getItem('ibanez_products')) || JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
-        let purchaserItems = JSON.parse(localStorage.getItem('ibanez_purchaser')) || JSON.parse(JSON.stringify(DEFAULT_PURCHASER));
         let expenses = JSON.parse(localStorage.getItem('ibanez_expenses')) || JSON.parse(JSON.stringify(DEFAULT_EXPENSES));
         let transactions = JSON.parse(localStorage.getItem('ibanez_transactions')) || JSON.parse(JSON.stringify(DEFAULT_TRANSACTIONS));
 
@@ -1267,14 +1261,13 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
         function saveChangesToVault() {
             localStorage.setItem('ibanez_products', JSON.stringify(products));
-            localStorage.setItem('ibanez_purchaser', JSON.stringify(purchaserItems));
             localStorage.setItem('ibanez_expenses', JSON.stringify(expenses));
             localStorage.setItem('ibanez_transactions', JSON.stringify(transactions));
             showToast("All changes saved permanently!");
         }
 
         function openSyncModal() {
-            let payload = { products, purchaser: purchaserItems, expenses, transactions };
+            let payload = { products, expenses, transactions };
             document.getElementById('sync-payload-box').value = JSON.stringify(payload, null, 2);
             document.getElementById('sync-modal').classList.remove('hidden');
         }
@@ -1293,12 +1286,11 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             try {
                 let parsed = JSON.parse(rawText);
                 if (parsed.products) products = parsed.products;
-                if (parsed.purchaser) purchaserItems = parsed.purchaser;
                 if (parsed.expenses) expenses = parsed.expenses;
                 if (parsed.transactions) transactions = parsed.transactions;
                 saveChangesToVault();
                 closeSyncModal();
-                renderInventory(); renderPOSGrid(); renderPurchaser(); renderExpenses(); renderTransactions(); renderDashboard(); renderUtang(); renderPLReport();
+                renderInventory(); renderPOSGrid(); renderDailyRecord(); renderExpenses(); renderTransactions(); renderDashboard(); renderUtang(); renderPLReport();
                 showToast("Vault successfully synced!");
             } catch (e) {
                 showToast("Invalid vault code format.");
@@ -1369,7 +1361,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let pill = document.getElementById('dash-role-pill');
             if (currentRole === 'Store Keeper') { greeting.textContent = 'Hi, Store Keeper'; pill.textContent = 'Store Keeper'; }
             else { greeting.textContent = 'Hi, Administrator'; pill.textContent = 'Administrator'; }
-            renderTransactions(); renderInventory(); renderExpenses(); renderPurchaser(); populateYearPicker(); renderDashboard(); renderUtang(); renderPLReport();
+            renderTransactions(); renderInventory(); renderExpenses(); renderDailyRecord(); populateYearPicker(); renderDashboard(); renderUtang(); renderPLReport();
         }
 
         function toggleTheme() {
@@ -1380,7 +1372,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         }
 
         function switchTab(tab) {
-            ['dashboard', 'pos', 'purchaser', 'transactions', 'inventory', 'expenses', 'utang', 'breakeven', 'pl'].forEach(t => {
+            ['dashboard', 'pos', 'dailyrecord', 'transactions', 'inventory', 'expenses', 'utang', 'breakeven', 'pl'].forEach(t => {
                 const view = document.getElementById('view-' + t);
                 const btn = document.getElementById('tab-btn-' + t);
                 if (view) view.classList.add('hidden');
@@ -1395,7 +1387,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             if (tab === 'dashboard') { populateYearPicker(); renderDashboard(); }
             if (tab === 'utang') renderUtang();
             if (tab === 'inventory') renderInventory();
-            if (tab === 'purchaser') renderPurchaser();
+            if (tab === 'dailyrecord') renderDailyRecord();
         }
 
         function openQuickActionModal() { document.getElementById('quick-action-modal').classList.remove('hidden'); }
@@ -1666,25 +1658,28 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             list.innerHTML = html;
         }
 
-        function renderPurchaser() {
-            let totalOverall = purchaserItems.reduce((sum, i) => sum + (i.amount || 0), 0);
-            let overallEl = document.getElementById('purchaser-overall-total');
+        function renderDailyRecord() {
+            // Group transactions by date (excluding expenses)
+            let salesTransactions = transactions.filter(t => t.type !== 'Expense');
+            let totalOverall = salesTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
+            let overallEl = document.getElementById('dailyrecord-overall-total');
             if (overallEl) overallEl.textContent = '₱' + totalOverall.toLocaleString();
 
             let dailyMap = {};
-            purchaserItems.forEach(i => {
-                let d = i.date || new Date().toISOString().split('T')[0];
-                if (!dailyMap[d]) dailyMap[d] = { total: 0, items: [] };
-                dailyMap[d].total += (i.amount || 0);
-                dailyMap[d].items.push(i);
+            salesTransactions.forEach(t => {
+                let d = t.date ? t.date.split(' ')[0] : new Date().toISOString().split('T')[0];
+                if (!dailyMap[d]) dailyMap[d] = { total: 0, count: 0, items: [] };
+                dailyMap[d].total += (t.amount || 0);
+                dailyMap[d].count += 1;
+                dailyMap[d].items.push(t);
             });
 
             let sortedDates = Object.keys(dailyMap).sort((a, b) => b.localeCompare(a));
-            let list = document.getElementById('purchaser-daily-list');
+            let list = document.getElementById('dailyrecord-list');
             if (!list) return;
 
             if (sortedDates.length === 0) {
-                list.innerHTML = '<p class="text-xs text-slate-400 py-3 text-center">No daily purchase records found.</p>';
+                list.innerHTML = '<p class="text-xs text-slate-400 py-3 text-center">No transaction records found.</p>';
                 return;
             }
 
@@ -1702,17 +1697,22 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 html += `
                     <div class="p-3.5 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl space-y-2 obsidian-key text-left">
                         <div class="flex justify-between items-center">
-                            <span class="font-black text-xs text-indigo-400"><i class="fa-regular fa-calendar mr-1"></i> ${formattedDate}</span>
+                            <span class="font-black text-xs text-indigo-400"><i class="fa-regular fa-calendar mr-1"></i> ${formattedDate} (${record.count} txns)</span>
                             <span class="font-black text-emerald-400 text-sm">₱${record.total.toLocaleString()}</span>
                         </div>
-                        <div class="space-y-1 pt-1.5 border-t border-slate-200 dark:border-obsidianBorder/60 text-[10px]">`;
-                record.items.forEach(item => {
+                        <div class="space-y-1.5 pt-1.5 border-t border-slate-200 dark:border-obsidianBorder/60 text-[10px]">`;
+                
+                record.items.forEach(tx => {
                     html += `
-                        <div class="flex justify-between items-center">
-                            <span class="text-slate-400">${item.name} (${item.qty || 1} ${item.unit || 'pcs'})</span>
-                            <span class="font-bold text-slate-200">₱${(item.amount || 0).toLocaleString()}</span>
+                        <div class="flex justify-between items-center bg-white dark:bg-obsidianCard p-2 rounded-xl border border-slate-200 dark:border-obsidianBorder/40">
+                            <div>
+                                <span class="font-bold text-indigo-300 block">${tx.customer} <span class="text-slate-400 font-normal">(${tx.type})</span></span>
+                                <span class="text-slate-400">${tx.items}</span>
+                            </div>
+                            <span class="font-black text-emerald-400">₱${(tx.amount || 0).toLocaleString()}</span>
                         </div>`;
                 });
+
                 html += `</div></div>`;
             });
             list.innerHTML = html;
@@ -2505,7 +2505,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             if (document.getElementById('dash-month-picker')) document.getElementById('dash-month-picker').value = currentMonthStr;
             populateYearPicker();
             applyUserRolePermissions();
-            renderPOSGrid(); renderInventory(); renderPurchaser(); renderExpenses(); renderTransactions(); renderRecentSales(); renderDashboard(); renderUtang();
+            renderPOSGrid(); renderInventory(); renderDailyRecord(); renderExpenses(); renderTransactions(); renderRecentSales(); renderDashboard(); renderUtang();
             calcMarginFormula(); calcBreakEven();
         }
     </script>
