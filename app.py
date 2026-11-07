@@ -1681,7 +1681,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             let dailyMap = {};
             salesTransactions.forEach(t => {
                 let d = t.date ? t.date.split(' ')[0] : new Date().toISOString().split('T')[0];
-                if (filterDate && d !== filterDate) return; // Skip if date filter is active and doesn't match
+                if (filterDate && d !== filterDate) return; 
                 if (!dailyMap[d]) dailyMap[d] = { total: 0, count: 0, items: [] };
                 dailyMap[d].total += (t.amount || 0);
                 dailyMap[d].count += 1;
@@ -1716,11 +1716,13 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         </div>
                         <div class="space-y-1.5 pt-1.5 border-t border-slate-200 dark:border-obsidianBorder/60 text-[10px]">`;
                 
-                record.items.forEach(tx => {
+                // Add numbering starting from 1 for each day's sales
+                record.items.forEach((tx, idx) => {
+                    let itemNum = idx + 1;
                     html += `
                         <div class="flex justify-between items-center bg-white dark:bg-obsidianCard p-2 rounded-xl border border-slate-200 dark:border-obsidianBorder/40">
                             <div>
-                                <span class="font-bold text-indigo-300 block">${tx.customer} <span class="text-slate-400 font-normal">(${tx.type})</span></span>
+                                <span class="font-bold text-indigo-300 block"><span class="text-slate-400 font-mono mr-1">#${itemNum}</span> ${tx.customer} <span class="text-slate-400 font-normal">(${tx.type})</span></span>
                                 <span class="text-slate-400">${tx.items}</span>
                             </div>
                             <span class="font-black text-emerald-400">₱${(tx.amount || 0).toLocaleString()}</span>
