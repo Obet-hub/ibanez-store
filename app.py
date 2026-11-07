@@ -658,7 +658,13 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             </div>
 
             <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key text-left">
-                <h3 class="font-bold text-xs text-center uppercase tracking-wider text-indigo-400"><i class="fa-solid fa-calendar-days mr-1"></i> Daily Records (From Transactions)</h3>
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-2 pb-2 border-b border-slate-200 dark:border-obsidianBorder">
+                    <h3 class="font-bold text-xs uppercase tracking-wider text-indigo-400"><i class="fa-solid fa-calendar-days mr-1"></i> Daily Records</h3>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <input type="date" id="dailyrecord-date-filter" onchange="renderDailyRecord()" class="w-full sm:w-auto bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-1 text-xs font-bold text-indigo-400 focus:outline-none text-center">
+                        <button onclick="clearDailyRecordFilter()" class="text-[10px] font-bold bg-slate-200 dark:bg-obsidianBorder px-2.5 py-1 rounded-xl obsidian-key">Reset</button>
+                    </div>
+                </div>
                 <div id="dailyrecord-list" class="space-y-2 text-xs py-1"></div>
             </div>
         </section>
@@ -1658,16 +1664,24 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             list.innerHTML = html;
         }
 
+        function clearDailyRecordFilter() {
+            let filterInput = document.getElementById('dailyrecord-date-filter');
+            if (filterInput) filterInput.value = '';
+            renderDailyRecord();
+        }
+
         function renderDailyRecord() {
-            // Group transactions by date (excluding expenses)
             let salesTransactions = transactions.filter(t => t.type !== 'Expense');
             let totalOverall = salesTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
             let overallEl = document.getElementById('dailyrecord-overall-total');
             if (overallEl) overallEl.textContent = '₱' + totalOverall.toLocaleString();
 
+            let filterDate = document.getElementById('dailyrecord-date-filter')?.value || '';
+
             let dailyMap = {};
             salesTransactions.forEach(t => {
                 let d = t.date ? t.date.split(' ')[0] : new Date().toISOString().split('T')[0];
+                if (filterDate && d !== filterDate) return; // Skip if date filter is active and doesn't match
                 if (!dailyMap[d]) dailyMap[d] = { total: 0, count: 0, items: [] };
                 dailyMap[d].total += (t.amount || 0);
                 dailyMap[d].count += 1;
@@ -1679,7 +1693,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             if (!list) return;
 
             if (sortedDates.length === 0) {
-                list.innerHTML = '<p class="text-xs text-slate-400 py-3 text-center">No transaction records found.</p>';
+                list.innerHTML = '<p class="text-xs text-slate-400 py-3 text-center">No transaction records found for this date.</p>';
                 return;
             }
 
