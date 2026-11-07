@@ -650,80 +650,16 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             </div>
         </section>
 
-        <!-- STORE PURCHASER TAB -->
+        <!-- STORE PURCHASER / DAILY TOTAL RECORD TAB -->
         <section id="view-purchaser" class="hidden space-y-4 text-center">
-            <div class="grid grid-cols-2 gap-3">
-                <div class="p-3.5 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-1 obsidian-key flex flex-col items-center">
-                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">RUNNING TOTAL</span>
-                    <div id="p-running-total" class="text-xl font-black text-emerald-400">₱0</div>
-                </div>
-                <div class="p-3.5 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-1 obsidian-key flex flex-col items-center">
-                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">BOUGHT / TOTAL</span>
-                    <div id="p-ratio" class="text-xl font-black">0 / 0</div>
-                </div>
+            <div class="p-4 bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl space-y-1 obsidian-key flex flex-col items-center">
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">OVERALL PURCHASES TOTAL</span>
+                <div id="purchaser-overall-total" class="text-2xl font-black text-emerald-400">₱0</div>
             </div>
 
             <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key text-left">
-                <h3 class="font-bold text-xs text-center" id="p-form-title">Add Item</h3>
-                <input type="hidden" id="p-edit-id">
-                <div class="flex bg-slate-100 dark:bg-[#12151C] p-1 rounded-2xl border-2 border-slate-300 dark:border-obsidianBorder">
-                    <button onclick="setPurchaserMode('plan')" id="btn-p-plan" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key">Plan Item List</button>
-                    <button onclick="setPurchaserMode('log')" id="btn-p-log" class="flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-400">Log Actual Purchase</button>
-                </div>
-                
-                <div class="space-y-2.5 text-xs">
-                    <div>
-                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1 text-center">ITEM NAME / DESCRIPTION</label>
-                        <input type="text" id="p-item-name" placeholder="e.g. Itlog, Shampoo, Colgate" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl px-3.5 py-2.5 text-center sm:text-left">
-                    </div>
-
-                    <div id="p-log-details" class="space-y-2.5">
-                        <div class="grid grid-cols-2 gap-2.5">
-                            <div>
-                                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1 text-center">TOTAL COST (₱)</label>
-                                <input type="number" id="p-cost" value="150" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
-                            </div>
-                            <div>
-                                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1 text-center">QUANTITY</label>
-                                <input type="number" id="p-qty" value="1" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2.5">
-                            <div>
-                                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1 text-center">UNIT METRIC</label>
-                                <select id="p-unit" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
-                                    <option value="pcs">pcs</option>
-                                    <option value="box">box</option>
-                                    <option value="kg">kg</option>
-                                    <option value="sacks">sacks</option>
-                                    <option value="tray">tray</option>
-                                    <option value="sachet">sachet</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1 text-center">MARGIN (%)</label>
-                                <input type="number" id="p-margin" value="20" class="w-full bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-xl px-3 py-2 font-bold text-center">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-2">
-                        <button onclick="cancelPurchaserEdit()" id="p-cancel-btn" class="hidden flex-1 bg-slate-200 dark:bg-obsidianBorder font-bold py-3 rounded-2xl text-xs obsidian-key">Cancel</button>
-                        <button onclick="addPurchaserItem()" id="p-submit-btn" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-2xl text-xs obsidian-key flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-clipboard-list"></i> Add to Planned List
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white dark:bg-obsidianCard border-2 border-slate-300 dark:border-obsidianBorder rounded-3xl p-4 space-y-3 obsidian-key text-left">
-                <h3 class="font-bold text-xs text-center">Shopping List & Log</h3>
-                <div class="flex gap-2 justify-center">
-                    <button onclick="filterPurchaser('All')" id="p-filter-All" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key">All (0)</button>
-                    <button onclick="filterPurchaser('To buy')" id="p-filter-Tobuy" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key">To buy (0)</button>
-                    <button onclick="filterPurchaser('Bought')" id="p-filter-Bought" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key">Bought (0)</button>
-                </div>
-                <div id="purchaser-items-list" class="space-y-2 text-xs py-1"></div>
+                <h3 class="font-bold text-xs text-center uppercase tracking-wider text-indigo-400"><i class="fa-solid fa-calendar-days mr-1"></i> Overall Daily Records</h3>
+                <div id="purchaser-daily-list" class="space-y-2 text-xs py-1"></div>
             </div>
         </section>
 
@@ -777,8 +713,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                         <i class="fa-solid fa-triangle-exclamation"></i>
                     </div>
                     <div class="text-left">
-                        <h4 class="font-black text-amber-400 text-xs uppercase tracking-wider">Expiration Warning</h4>
-                        <p class="text-[11px] text-slate-300" id="inventory-alert-text">Items near expiry.</p>
+                        <h4 class="font-black text-amber-400 text-xs uppercase tracking-wider">Inventory Alert</h4>
+                        <p class="text-[11px] text-slate-300" id="inventory-alert-text">Items require attention.</p>
                     </div>
                 </div>
                 <button onclick="filterInventory('expired_soon')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-3 py-1.5 rounded-xl text-[10px] obsidian-key shadow-lg">View</button>
@@ -828,7 +764,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                     <div class="flex gap-1.5 overflow-x-auto no-scrollbar">
                         <button onclick="filterInventory('All')" id="inv-filter-All" class="px-3 py-1.5 rounded-xl font-bold bg-indigo-600 text-white obsidian-key">All Status</button>
                         <button onclick="filterInventory('Low')" id="inv-filter-Low" class="px-3 py-1.5 rounded-xl font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key">Low stock</button>
-                        <button onclick="filterInventory('expired_soon')" id="inv-filter-expired_soon" class="px-3 py-1.5 rounded-xl font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key text-amber-400">⚠️ Expiry</button>
+                        <button onclick="filterInventory('expired_soon')" id="inv-filter-expired_soon" class="px-3 py-1.5 rounded-xl font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key text-amber-400">⚠️ Alerts</button>
                     </div>
                     <div class="text-right mx-auto sm:mx-0">
                         <span class="text-[9px] text-slate-400 font-bold block uppercase">Stock Value</span>
@@ -1294,8 +1230,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         ];
 
         const DEFAULT_PURCHASER = [
-            { id: 'p1', name: 'Itlog', status: 'To buy', amount: 0, qty: 0, unit: 'tray', margin: 20 },
-            { id: 'p2', name: 'Shampoo', status: 'Bought', amount: 150, qty: 10, unit: 'sachet', margin: 25 }
+            { id: 'p1', name: 'Itlog', status: 'Bought', amount: 1200, qty: 2, unit: 'tray', margin: 20, date: '2026-11-01' },
+            { id: 'p2', name: 'Shampoo', status: 'Bought', amount: 3000, qty: 10, unit: 'sachet', margin: 25, date: '2026-11-02' }
         ];
 
         const DEFAULT_EXPENSES = [
@@ -1315,8 +1251,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
         let transactions = JSON.parse(localStorage.getItem('ibanez_transactions')) || JSON.parse(JSON.stringify(DEFAULT_TRANSACTIONS));
 
         let cart = {};
-        let purchaserMode = 'plan';
-        let currentPurchaserFilter = 'All';
         let currentTxFilter = 'All';
         let currentPosCategory = 'All';
         let currentInvCategory = 'All';
@@ -1461,6 +1395,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             if (tab === 'dashboard') { populateYearPicker(); renderDashboard(); }
             if (tab === 'utang') renderUtang();
             if (tab === 'inventory') renderInventory();
+            if (tab === 'purchaser') renderPurchaser();
         }
 
         function openQuickActionModal() { document.getElementById('quick-action-modal').classList.remove('hidden'); }
@@ -1731,144 +1666,54 @@ HTML_CONTENT = r"""<!DOCTYPE html>
             list.innerHTML = html;
         }
 
-        function setPurchaserMode(mode) {
-            purchaserMode = mode;
-            let btnPlan = document.getElementById('btn-p-plan');
-            let btnLog = document.getElementById('btn-p-log');
-            let submitBtn = document.getElementById('p-submit-btn');
-            if (mode === 'plan') {
-                btnPlan.className = "flex-1 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key";
-                btnLog.className = "flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-400 obsidian-key";
-                submitBtn.innerHTML = '<i class="fa-solid fa-clipboard-list"></i> Add to Planned List';
-            } else {
-                btnLog.className = "flex-1 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key";
-                btnPlan.className = "flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-400 obsidian-key";
-                submitBtn.innerHTML = '<i class="fa-solid fa-cart-shopping"></i> Add & Save Purchase';
-            }
-        }
-
-        function addPurchaserItem() {
-            let editId = document.getElementById('p-edit-id').value;
-            let name = document.getElementById('p-item-name').value.trim();
-            if (!name) return;
-            if (editId && currentRole !== 'Admin') return showToast("Access Denied: Admin required.");
-
-            let amount = parseFloat(document.getElementById('p-cost').value) || 0;
-            let qty = parseFloat(document.getElementById('p-qty').value) || 1;
-            let unit = document.getElementById('p-unit').value;
-            let margin = parseFloat(document.getElementById('p-margin').value) || 20;
-            let status = purchaserMode === 'plan' && !editId ? 'To buy' : 'Bought';
-
-            if (editId) {
-                let item = purchaserItems.find(i => i.id === editId);
-                if (item) { item.name = name; item.amount = amount; item.qty = qty; item.unit = unit; item.margin = margin; }
-                cancelPurchaserEdit();
-                showToast("Purchaser item updated!");
-            } else {
-                purchaserItems.push({ id: 'p-' + Date.now(), name, status, amount, qty, unit, margin });
-                showToast("Item added!");
-            }
-            document.getElementById('p-item-name').value = '';
-            renderPurchaser(); saveChangesToVault();
-        }
-
-        function editPurchaserItem(id) {
-            if (currentRole !== 'Admin') return showToast("Access Denied: Admin required.");
-            let item = purchaserItems.find(i => i.id === id);
-            if (!item) return;
-            document.getElementById('p-edit-id').value = item.id;
-            document.getElementById('p-item-name').value = item.name;
-            document.getElementById('p-cost').value = item.amount;
-            document.getElementById('p-qty').value = item.qty;
-            document.getElementById('p-unit').value = item.unit;
-            document.getElementById('p-margin').value = item.margin;
-            document.getElementById('p-form-title').textContent = 'Edit Purchaser Item';
-            document.getElementById('p-submit-btn').innerHTML = '<i class="fa-solid fa-check"></i> Save Changes';
-            document.getElementById('p-cancel-btn').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function cancelPurchaserEdit() {
-            document.getElementById('p-edit-id').value = '';
-            document.getElementById('p-item-name').value = '';
-            document.getElementById('p-cost').value = '150';
-            document.getElementById('p-qty').value = '1';
-            document.getElementById('p-unit').value = 'pcs';
-            document.getElementById('p-margin').value = '20';
-            document.getElementById('p-form-title').textContent = 'Add Item';
-            document.getElementById('p-submit-btn').innerHTML = '<i class="fa-solid fa-clipboard-list"></i> Add to Planned List';
-            document.getElementById('p-cancel-btn').classList.add('hidden');
-        }
-
-        function deletePurchaserItem(id) {
-            if (currentRole !== 'Admin') return showToast("Access Denied: Admin required.");
-            if (confirm("Delete item?")) {
-                purchaserItems = purchaserItems.filter(i => i.id !== id);
-                renderPurchaser(); saveChangesToVault();
-                showToast("Item deleted.");
-            }
-        }
-
-        function importPurchaserToInventory(id) {
-            let item = purchaserItems.find(i => i.id === id);
-            if (!item) return;
-            let unitCost = item.qty > 0 ? (item.amount / item.qty) : item.amount;
-            let marginVal = unitCost * (item.margin / 100);
-            let sellingPrice = unitCost + marginVal;
-            let todayStr = new Date().toISOString().split('T')[0];
-
-            products.push({ id: Date.now().toString(), name: item.name, category: 'General', cost: Math.round(unitCost), shippingFee: 0, margin: Math.round(marginVal), price: Math.round(sellingPrice), stock: item.qty || 1, unit: item.unit || 'pcs', image: '', dateAdded: todayStr, expiryDate: '' });
-            renderInventory(); renderPOSGrid(); saveChangesToVault();
-            showToast(`Imported ${item.name} to inventory!`);
-        }
-
-        function filterPurchaser(filter) {
-            currentPurchaserFilter = filter;
-            ['All', 'Tobuy', 'Bought'].forEach(f => {
-                let btn = document.getElementById('p-filter-' + f);
-                if (btn) btn.className = (f === filter || (filter === 'To buy' && f === 'Tobuy')) ? "px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white obsidian-key" : "px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#12151C] text-slate-400 border-2 border-slate-300 dark:border-obsidianBorder obsidian-key";
-            });
-            renderPurchaser();
-        }
-
         function renderPurchaser() {
-            let boughtItems = purchaserItems.filter(i => i.status === 'Bought');
-            let total = boughtItems.reduce((sum, i) => sum + i.amount, 0);
-            document.getElementById('p-running-total').textContent = '₱' + total.toLocaleString();
-            document.getElementById('p-ratio').textContent = `${boughtItems.length} / ${purchaserItems.length}`;
+            let totalOverall = purchaserItems.reduce((sum, i) => sum + (i.amount || 0), 0);
+            let overallEl = document.getElementById('purchaser-overall-total');
+            if (overallEl) overallEl.textContent = '₱' + totalOverall.toLocaleString();
 
-            let filtered = purchaserItems.filter(i => {
-                if (currentPurchaserFilter === 'To buy') return i.status === 'To buy';
-                if (currentPurchaserFilter === 'Bought') return i.status === 'Bought';
-                return true;
+            let dailyMap = {};
+            purchaserItems.forEach(i => {
+                let d = i.date || new Date().toISOString().split('T')[0];
+                if (!dailyMap[d]) dailyMap[d] = { total: 0, items: [] };
+                dailyMap[d].total += (i.amount || 0);
+                dailyMap[d].items.push(i);
             });
 
-            let list = document.getElementById('purchaser-items-list');
-            if (filtered.length === 0) { list.innerHTML = '<p class="text-xs text-slate-400 py-3 text-center">No items.</p>'; return; }
+            let sortedDates = Object.keys(dailyMap).sort((a, b) => b.localeCompare(a));
+            let list = document.getElementById('purchaser-daily-list');
+            if (!list) return;
+
+            if (sortedDates.length === 0) {
+                list.innerHTML = '<p class="text-xs text-slate-400 py-3 text-center">No daily purchase records found.</p>';
+                return;
+            }
+
             let html = '';
-            filtered.forEach(i => {
+            sortedDates.forEach(dateStr => {
+                let record = dailyMap[dateStr];
+                let formattedDate = dateStr;
+                try {
+                    let parsedDate = new Date(dateStr);
+                    if (!isNaN(parsedDate)) {
+                        formattedDate = parsedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' });
+                    }
+                } catch(e) {}
+
                 html += `
-                    <div class="p-3 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl space-y-2 text-xs obsidian-key">
+                    <div class="p-3.5 bg-slate-100 dark:bg-[#12151C] border-2 border-slate-300 dark:border-obsidianBorder rounded-2xl space-y-2 obsidian-key text-left">
                         <div class="flex justify-between items-center">
-                            <div>
-                                <span class="font-bold text-xs">${i.name}</span>
-                                <div class="mt-0.5 flex items-center gap-1.5">
-                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-black ${i.status === 'Bought' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${i.status}</span>
-                                    <span class="text-[9px] text-slate-400">Margin: ${i.margin}%</span>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <span class="font-black text-emerald-400 text-xs">₱${i.amount.toLocaleString()}</span>
-                                <p class="text-[9px] text-slate-400">${i.qty} ${i.unit}</p>
-                            </div>
+                            <span class="font-black text-xs text-indigo-400"><i class="fa-regular fa-calendar mr-1"></i> ${formattedDate}</span>
+                            <span class="font-black text-emerald-400 text-sm">₱${record.total.toLocaleString()}</span>
                         </div>
-                        <div class="flex justify-end gap-1.5 pt-1.5 border-t border-slate-200 dark:border-obsidianBorder/60">
-                            ${i.status === 'Bought' ? `<button onclick="importPurchaserToInventory('${i.id}')" class="bg-emerald-500/10 text-emerald-400 font-bold px-2.5 py-1 rounded-lg text-[10px] obsidian-key"><i class="fa-solid fa-file-import mr-1"></i> Import</button>` : ''}
-                            ${currentRole === 'Admin' ? `
-                            <button onclick="editPurchaserItem('${i.id}')" class="bg-indigo-500/10 text-indigo-400 font-bold px-2.5 py-1 rounded-lg text-[10px] obsidian-key">Edit</button>
-                            <button onclick="deletePurchaserItem('${i.id}')" class="bg-rose-500/10 text-rose-500 font-bold px-2.5 py-1 rounded-lg text-[10px] obsidian-key">Delete</button>` : ''}
-                        </div>
-                    </div>`;
+                        <div class="space-y-1 pt-1.5 border-t border-slate-200 dark:border-obsidianBorder/60 text-[10px]">`;
+                record.items.forEach(item => {
+                    html += `
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">${item.name} (${item.qty || 1} ${item.unit || 'pcs'})</span>
+                            <span class="font-bold text-slate-200">₱${(item.amount || 0).toLocaleString()}</span>
+                        </div>`;
+                });
+                html += `</div></div>`;
             });
             list.innerHTML = html;
         }
@@ -1938,18 +1783,31 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
             let today = new Date(); today.setHours(0,0,0,0);
             let alertCount = 0;
+            let outOfStockCount = 0;
+
             products.forEach(p => {
                 if (p.expiryDate) {
                     let exp = new Date(p.expiryDate); exp.setHours(0,0,0,0);
                     let diffDays = Math.ceil((exp - today) / (1000 * 60 * 60 * 24));
                     if (diffDays <= 30) alertCount++;
                 }
+                if (p.stock <= 0) {
+                    outOfStockCount++;
+                }
             });
 
+            let totalAlerts = alertCount + outOfStockCount;
             let banner = document.getElementById('inventory-alert-banner');
             let alertText = document.getElementById('inventory-alert-text');
-            if (alertCount > 0) { banner.classList.remove('hidden'); alertText.textContent = `${alertCount} product(s) expiring within 30 days.`; }
-            else { banner.classList.add('hidden'); }
+            if (totalAlerts > 0) {
+                banner.classList.remove('hidden');
+                let msgs = [];
+                if (alertCount > 0) msgs.push(`${alertCount} expiring/expired item(s)`);
+                if (outOfStockCount > 0) msgs.push(`${outOfStockCount} out-of-stock item(s)`);
+                alertText.textContent = msgs.join(' and ');
+            } else {
+                banner.classList.add('hidden');
+            }
 
             let filteredShippingSum = 0;
             let sortedProducts = [...products].sort((a, b) => a.name.localeCompare(b.name));
@@ -1967,11 +1825,13 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                 if (query && !p.name.toLowerCase().includes(query)) return;
                 
                 let expInfo = getExpiryStatus(p.expiryDate);
+                let isOutOrLow = (p.stock <= 0);
+
                 if (currentInvFilter === 'Low' && p.stock > 5) return;
-                if (currentInvFilter === 'expired_soon' && expInfo.status !== 'warning' && expInfo.status !== 'expired') return;
+                if (currentInvFilter === 'expired_soon' && expInfo.status !== 'warning' && expInfo.status !== 'expired' && !isOutOrLow) return;
 
                 let cardBorder = 'border-slate-300 dark:border-obsidianBorder';
-                if (expInfo.status === 'expired') cardBorder = 'border-rose-500';
+                if (expInfo.status === 'expired' || isOutOrLow) cardBorder = 'border-rose-500';
                 else if (expInfo.status === 'warning') cardBorder = 'border-amber-500';
 
                 let ship = p.shippingFee || 0;
@@ -1990,7 +1850,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                                 <div class="min-w-0">
                                     <h4 class="font-bold text-xs text-indigo-400 truncate">${indexCount}. ${p.name}</h4>
                                     <p class="text-[10px] text-slate-400 truncate">
-                                        <span class="text-amber-400 font-bold">[${p.category}]</span> • <span class="font-black text-indigo-300">${p.stock} ${p.unit}</span> 
+                                        <span class="text-amber-400 font-bold">[${p.category}]</span> • <span class="font-black ${p.stock <= 0 ? 'text-rose-500' : 'text-indigo-300'}">${p.stock} ${p.unit} ${p.stock <= 0 ? '(OUT OF STOCK)' : ''}</span> 
                                         <span class="font-bold text-emerald-400">• Val: ₱${totalItemValue.toLocaleString()}</span>
                                     </p>
                                 </div>
@@ -2003,7 +1863,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
                         <div class="grid grid-cols-4 gap-1.5 bg-white dark:bg-obsidianCard p-2 rounded-2xl border border-slate-300 dark:border-obsidianBorder text-center text-[10px]">
                             <div><span class="text-slate-400 block">Cost</span><span class="font-black text-rose-400">₱${actualCost}</span></div>
-                            <div><span class="text-amber-400 block">Stock</span><span class="font-black text-amber-400">${p.stock}</span></div>
+                            <div><span class="text-amber-400 block">Stock</span><span class="font-black ${p.stock <= 0 ? 'text-rose-500 font-black' : 'text-amber-400'}">${p.stock}</span></div>
                             <div><span class="text-slate-400 block">Margin</span><span class="font-black text-indigo-400">₱${marginPesos}</span></div>
                             <div><span class="text-slate-400 block">Potential</span><span class="font-black text-emerald-400">₱${potentialEarnings}</span></div>
                         </div>
@@ -2012,6 +1872,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
                             <div class="flex flex-wrap items-center gap-1">
                                 <span class="px-2 py-0.5 rounded font-bold bg-indigo-500/10 text-indigo-400">Added: ${p.dateAdded || 'N/A'}</span>
                                 ${p.expiryDate ? `<span class="px-2 py-0.5 rounded font-bold ${expInfo.badgeClass}">${expInfo.label}</span>` : ''}
+                                ${p.stock <= 0 ? `<span class="px-2 py-0.5 rounded font-bold bg-rose-500/20 text-rose-400 border border-rose-500/40">Out of Stock</span>` : ''}
                             </div>
                             ${currentRole === 'Admin' ? `
                             <div class="flex gap-1.5">
